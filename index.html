@@ -278,15 +278,48 @@
          <div class="max-w-4xl mx-auto px-6 text-center">
             <h2 class="font-display text-6xl text-white mb-6">Let's Build Together</h2>
             <div class="bg-[#050507] p-8 rounded-3xl border border-white/10 text-left mt-12 shadow-2xl">
-                <form onsubmit="event.preventDefault()" class="space-y-6">
+                <form id="contact-form" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <input type="text" placeholder="Your Name" class="w-full bg-[#0a0a0e] border border-white/10 rounded-lg px-5 py-4 text-white focus:border-purple-500 outline-none">
-                        <input type="email" placeholder="Email Address" class="w-full bg-[#0a0a0e] border border-white/10 rounded-lg px-5 py-4 text-white focus:border-purple-500 outline-none">
+                        <input type="text" name="name" required placeholder="Your Name" class="w-full bg-[#0a0a0e] border border-white/10 rounded-lg px-5 py-4 text-white focus:border-purple-500 outline-none">
+                        <input type="email" name="email" required placeholder="Email Address" class="w-full bg-[#0a0a0e] border border-white/10 rounded-lg px-5 py-4 text-white focus:border-purple-500 outline-none">
                     </div>
-                    <textarea rows="4" placeholder="Your Message" class="w-full bg-[#0a0a0e] border border-white/10 rounded-lg px-5 py-4 text-white focus:border-purple-500 outline-none"></textarea>
-                    <button class="w-full bg-purple-600 hover:bg-purple-500 text-white font-display text-2xl py-4 rounded-lg transition-colors shadow-lg">SEND MESSAGE</button>
+                    <textarea rows="4" name="message" required placeholder="Your Message" class="w-full bg-[#0a0a0e] border border-white/10 rounded-lg px-5 py-4 text-white focus:border-purple-500 outline-none"></textarea>
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-display text-2xl py-4 rounded-lg transition-colors shadow-lg">SEND MESSAGE</button>
+                    <p id="contact-form-status" class="text-sm text-center"></p>
                 </form>
             </div>
+            <script>
+                document.getElementById('contact-form').addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const form = e.target;
+                    const status = document.getElementById('contact-form-status');
+                    const btn = form.querySelector('button[type="submit"]');
+                    const data = new FormData(form);
+                    data.append('_subject', 'New message from ANGAGSU website');
+                    data.append('_captcha', 'false');
+                    btn.disabled = true;
+                    btn.textContent = 'SENDING...';
+                    fetch('https://formsubmit.co/ajax/spartakangagsugs@gmail.com', {
+                        method: 'POST',
+                        headers: { 'Accept': 'application/json' },
+                        body: data
+                    })
+                    .then(res => res.json())
+                    .then(() => {
+                        status.textContent = 'Thanks! Your message has been sent.';
+                        status.className = 'text-sm text-center text-green-500';
+                        form.reset();
+                    })
+                    .catch(() => {
+                        status.textContent = 'Something went wrong. Please email us directly at spartakangagsugs@gmail.com.';
+                        status.className = 'text-sm text-center text-red-500';
+                    })
+                    .finally(() => {
+                        btn.disabled = false;
+                        btn.textContent = 'SEND MESSAGE';
+                    });
+                });
+            </script>
          </div>
     </section>
 
@@ -325,7 +358,7 @@
                 <div>
                     <h5 class="text-white font-bold uppercase tracking-widest mb-6 text-sm">Contact</h5>
                     <ul class="space-y-4 text-gray-500 text-sm">
-                        <li class="flex items-center gap-3"><i class="fas fa-envelope text-purple-600"></i> info@angagsu.com</li>
+                        <li class="flex items-center gap-3"><i class="fas fa-envelope text-purple-600"></i> spartakangagsugs@gmail.com</li>
                         <li class="flex items-center gap-3"><i class="fas fa-map-marker-alt text-purple-600"></i> Yerevan, Armenia</li>
                     </ul>
                 </div>

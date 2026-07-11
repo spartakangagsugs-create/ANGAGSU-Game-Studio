@@ -178,15 +178,48 @@
                 </div>
                 <div class="mt-16 bg-[#050507] p-8 rounded-2xl border border-white/5">
                     <h3 class="font-display text-3xl text-white mb-6">Apply for this position</h3>
-                    <form onsubmit="event.preventDefault()" class="space-y-4">
+                    <form id="apply-form" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input type="text" placeholder="Full Name" class="bg-[#0a0a0e] border border-white/10 p-4 rounded-lg outline-none text-white focus:border-purple-500">
-                            <input type="email" placeholder="Email" class="bg-[#0a0a0e] border border-white/10 p-4 rounded-lg outline-none text-white focus:border-purple-500">
+                            <input type="text" name="name" required placeholder="Full Name" class="bg-[#0a0a0e] border border-white/10 p-4 rounded-lg outline-none text-white focus:border-purple-500">
+                            <input type="email" name="email" required placeholder="Email" class="bg-[#0a0a0e] border border-white/10 p-4 rounded-lg outline-none text-white focus:border-purple-500">
                         </div>
-                        <input type="text" placeholder="Portfolio / LinkedIn Link" class="w-full bg-[#0a0a0e] border border-white/10 p-4 rounded-lg outline-none text-white focus:border-purple-500">
-                        <button class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 rounded-lg uppercase tracking-widest">Submit Application</button>
+                        <input type="text" name="portfolio" required placeholder="Portfolio / LinkedIn Link" class="w-full bg-[#0a0a0e] border border-white/10 p-4 rounded-lg outline-none text-white focus:border-purple-500">
+                        <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 rounded-lg uppercase tracking-widest">Submit Application</button>
+                        <p id="apply-form-status" class="text-sm text-center"></p>
                     </form>
                 </div>
+                <script>
+                    document.getElementById('apply-form').addEventListener('submit', function (e) {
+                        e.preventDefault();
+                        const form = e.target;
+                        const status = document.getElementById('apply-form-status');
+                        const btn = form.querySelector('button[type="submit"]');
+                        const data = new FormData(form);
+                        data.append('_subject', 'New application: Unity Developer');
+                        data.append('_captcha', 'false');
+                        btn.disabled = true;
+                        btn.textContent = 'SENDING...';
+                        fetch('https://formsubmit.co/ajax/spartakangagsugs@gmail.com', {
+                            method: 'POST',
+                            headers: { 'Accept': 'application/json' },
+                            body: data
+                        })
+                        .then(res => res.json())
+                        .then(() => {
+                            status.textContent = 'Thanks! Your application has been sent.';
+                            status.className = 'text-sm text-center text-green-500';
+                            form.reset();
+                        })
+                        .catch(() => {
+                            status.textContent = 'Something went wrong. Please email us directly at spartakangagsugs@gmail.com.';
+                            status.className = 'text-sm text-center text-red-500';
+                        })
+                        .finally(() => {
+                            btn.disabled = false;
+                            btn.textContent = 'Submit Application';
+                        });
+                    });
+                </script>
             </div>
         </div>
     </div>
@@ -226,7 +259,7 @@
                 <div>
                     <h5 class="text-white font-bold uppercase tracking-widest mb-6 text-sm">Contact</h5>
                     <ul class="space-y-4 text-gray-500 text-sm">
-                        <li class="flex items-center gap-3"><i class="fas fa-envelope text-purple-600"></i> info@angagsu.com</li>
+                        <li class="flex items-center gap-3"><i class="fas fa-envelope text-purple-600"></i> spartakangagsugs@gmail.com</li>
                         <li class="flex items-center gap-3"><i class="fas fa-map-marker-alt text-purple-600"></i> Yerevan, Armenia</li>
                     </ul>
                 </div>
