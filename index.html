@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="public/Icon_transparent.png">
     <title>ANGAGSU Game Studio | We Forge Legends</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -22,13 +23,11 @@
             letter-spacing: 0.05em;
         }
 
-        /* Support for transparent PNGs */
         img[src$=".png"] {
             background-color: transparent !important;
             object-fit: contain;
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: #050507; }
         ::-webkit-scrollbar-thumb { background: #4c1d95; border-radius: 5px; }
@@ -53,19 +52,6 @@
         .hover-lift:hover {
             transform: translateY(-8px);
             box-shadow: 0 20px 40px -10px rgba(109, 40, 217, 0.4);
-        }
-
-        .page-content {
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .hidden-section {
-            display: none;
         }
 
         .video-container {
@@ -100,6 +86,19 @@
             transform: translateY(-2px);
         }
 
+        .legal-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: color 0.2s ease;
+        }
+        .legal-link:hover { color: #a78bfa; }
+
         .social-btn {
             width: 44px;
             height: 44px;
@@ -118,33 +117,25 @@
             border-color: #7c3aed;
         }
 
-        /* Lightbox Styles */
-        #lightbox-modal {
-            transition: opacity 0.3s ease;
-        }
-        #lightbox-img {
-            transition: transform 0.3s ease;
-        }
-        .clickable-img {
-            cursor: zoom-in;
-        }
-    </style>
+        #lightbox-modal { transition: opacity 0.3s ease; }
+        #lightbox-img { transition: transform 0.3s ease; }
+        .clickable-img { cursor: zoom-in; }
+</style>
 </head>
 <body class="antialiased">
 
-    <!-- Navigation -->
     <nav class="fixed w-full z-50 transition-all duration-300 bg-[#050507]/90 backdrop-blur-md border-b border-white/5" id="navbar">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="javascript:void(0)" onclick="showPage('home')" class="flex items-center gap-3 z-50">
+            <a href="index.html" class="flex items-center gap-3 z-50">
                 <img src="public/Icon_transparent.png" alt="ANGAGSU Icon" class="h-10 w-10 block">
                 <span class="font-display text-2xl text-white tracking-widest mt-1 uppercase">ANGAGSU</span>
             </a>
-            
+
             <div class="hidden md:flex items-center gap-8 font-bold text-sm tracking-widest uppercase">
-                <a href="javascript:void(0)" onclick="showPage('home', 'games')" class="text-gray-400 hover:text-purple-400 transition-colors">Games</a>
-                <a href="javascript:void(0)" onclick="showPage('home', 'team')" class="text-gray-400 hover:text-purple-400 transition-colors">Studio</a>
-                <a href="javascript:void(0)" onclick="showPage('careers')" class="text-gray-400 hover:text-purple-400 transition-colors">Careers</a>
-                <a href="javascript:void(0)" onclick="showPage('home', 'contact')" class="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 transition-colors">Contact Us</a>
+                <a href="index.html#games" class="text-gray-400 hover:text-purple-400 transition-colors">Games</a>
+                <a href="index.html#team" class="text-gray-400 hover:text-purple-400 transition-colors">Studio</a>
+                <a href="careers.html" class="text-gray-400 hover:text-purple-400 transition-colors">Careers</a>
+                <a href="index.html#contact" class="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 transition-colors">Contact Us</a>
             </div>
 
             <button class="md:hidden text-white z-50" id="mobile-btn">
@@ -152,59 +143,56 @@
             </button>
         </div>
         <div id="mobile-menu" class="fixed inset-0 bg-[#050507] z-40 hidden flex-col items-center justify-center gap-8 font-display text-4xl">
-            <a href="javascript:void(0)" onclick="showPage('home', 'games')">Games</a>
-            <a href="javascript:void(0)" onclick="showPage('home', 'team')">Studio</a>
-            <a href="javascript:void(0)" onclick="showPage('careers')">Careers</a>
-            <a href="javascript:void(0)" onclick="showPage('home', 'contact')" class="text-purple-500">Contact Us</a>
+            <a href="index.html#games">Games</a>
+            <a href="index.html#team">Studio</a>
+            <a href="careers.html">Careers</a>
+            <a href="index.html#contact" class="text-purple-500">Contact Us</a>
         </div>
     </nav>
 
-    <!-- HOME PAGE -->
-    <div id="home-page" class="page-section">
-        <!-- Hero Section -->
-        <section id="home" class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden clip-diagonal bg-[#0a0a0e]">
-            <div class="glow-effect top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
-            <div class="absolute inset-0 bg-[url('image_b17fee.jpg')] bg-cover bg-center opacity-10"></div>
-            
-            <div class="relative z-10 max-w-5xl mx-auto px-6 text-center">
-                <img src="public/icon_with_name_t.png" alt="ANGAGSU Studio" class="w-72 md:w-[28rem] mx-auto mb-10 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] block">
-                <h1 class="font-display text-6xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 mb-6">WE FORGE LEGENDS</h1>
-                <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-light leading-relaxed">An independent game development studio pushing the boundaries of creativity, gameplay, and visual storytelling.</p>
-                <a href="#games" class="inline-flex items-center gap-3 bg-white text-black font-bold uppercase tracking-widest px-8 py-4 rounded-full hover:bg-gray-200">Explore Games <i class="fas fa-arrow-down"></i></a>
+
+    <section id="home" class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden clip-diagonal bg-[#0a0a0e]">
+        <div class="glow-effect top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute inset-0 bg-[url('image_b17fee.jpg')] bg-cover bg-center opacity-10"></div>
+
+        <div class="relative z-10 max-w-5xl mx-auto px-6 text-center">
+            <img src="public/icon_with_name_t.png" alt="ANGAGSU Studio" class="w-72 md:w-[28rem] mx-auto mb-10 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] block">
+            <h1 class="font-display text-6xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 mb-6">WE FORGE LEGENDS</h1>
+            <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-light leading-relaxed">An independent game development studio pushing the boundaries of creativity, gameplay, and visual storytelling.</p>
+            <a href="#games" class="inline-flex items-center gap-3 bg-white text-black font-bold uppercase tracking-widest px-8 py-4 rounded-full hover:bg-gray-200">Explore Games <i class="fas fa-arrow-down"></i></a>
+        </div>
+    </section>
+
+    <section id="games" class="py-32 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-24">
+                <h2 class="font-display text-5xl md:text-6xl text-white mb-4">Our Projects</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-blue-600 mx-auto"></div>
             </div>
-        </section>
 
-        <!-- Games List (3 Games) -->
-        <section id="games" class="py-32 relative">
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="text-center mb-24">
-                    <h2 class="font-display text-5xl md:text-6xl text-white mb-4">Our Projects</h2>
-                    <div class="w-24 h-1 bg-gradient-to-r from-purple-600 to-blue-600 mx-auto"></div>
-                </div>
-
-                <!-- Game 1: Fantasy Tower Defense -->
                 <div class="flex flex-col md:flex-row items-center gap-12 lg:gap-20 mb-32">
                     <div class="w-full md:w-1/2 relative group">
-                        <div class="absolute inset-0 bg-blue-500 rounded-2xl rotate-3 opacity-20 group-hover:rotate-6 transition-transform"></div>
-                        <img src="public/Tower_defense.jpg" alt="Fantasy Tower Defense" class="relative rounded-2xl shadow-2xl w-full object-cover aspect-video border border-white/10 clickable-img">
-                        <div class="absolute top-4 left-4 px-4 py-1 bg-green-600 text-white font-bold rounded-full text-xs uppercase">Released</div>
+                        <div class="absolute inset-0 bg-blue-500 rounded-2xl rotate-3 group-hover:rotate-6 opacity-20 transition-transform"></div>
+                        <img src="public/Tower_defense.jpg" alt="Hayguard: Rise of Highland" class="relative rounded-2xl shadow-2xl w-full object-cover aspect-video border border-white/10 clickable-img">
+                        <div class="absolute top-4 left-4 px-4 py-1 bg-yellow-600 text-white font-bold rounded-full text-xs uppercase">In Process</div>
                     </div>
-                    <div class="w-full md:w-1/2">
+                    <div class="w-full md:w-1/2 ">
                         <div class="flex items-center gap-3 mb-4">
                             <span class="px-3 py-1 bg-blue-900/50 text-blue-400 border border-blue-700/50 rounded-full text-xs font-bold uppercase tracking-widest">Strategy</span>
                             <div class="flex gap-2 text-gray-500 text-sm ml-2"><i class="fab fa-android"></i> <i class="fab fa-apple"></i></div>
                         </div>
-                        <h3 class="font-display text-4xl md:text-5xl text-white mb-6">Fantasy Tower Defense</h3>
-                        <p class="text-gray-400 text-lg leading-relaxed mb-8">Defend your lands against endless hordes of mythical creatures. Build ingenious defenses and wield powerful ancient magic.</p>
-                        <button onclick="showPage('game-details', null, 'Fantasy Tower Defense')" class="text-white font-bold uppercase tracking-widest hover:text-blue-400 flex items-center gap-2">View Details <i class="fas fa-chevron-right text-xs"></i></button>
+                        <h3 class="font-display text-4xl md:text-5xl text-white mb-6">Hayguard: Rise of Highland</h3>
+                        <p class="text-gray-400 text-lg leading-relaxed mb-8">Defend the Highland against endless hordes of mythical creatures. Build ingenious defenses and wield powerful ancient magic.</p>
+                        <a href="hayguard.html" class="text-white font-bold uppercase tracking-widest hover:text-blue-400 flex items-center gap-2">View Details <i class="fas fa-chevron-right text-xs"></i></a>
                     </div>
                 </div>
 
-                <!-- Game 2: Fantasy Forest -->
+
                 <div class="flex flex-col md:flex-row-reverse items-center gap-12 lg:gap-20 mb-32">
                     <div class="w-full md:w-1/2 relative group">
-                        <div class="absolute inset-0 bg-green-500 rounded-2xl -rotate-3 opacity-20 group-hover:-rotate-6 transition-transform"></div>
+                        <div class="absolute inset-0 bg-green-500 rounded-2xl -rotate-3 group-hover:-rotate-6 opacity-20 transition-transform"></div>
                         <img src="public/Match_3.jpg" alt="Fantasy Forest" class="relative rounded-2xl shadow-2xl w-full object-cover aspect-video border border-white/10 clickable-img">
+                        <div class="absolute top-4 left-4 px-4 py-1 bg-green-600 text-white font-bold rounded-full text-xs uppercase">Released</div>
                     </div>
                     <div class="w-full md:w-1/2 md:text-right flex flex-col items-start md:items-end">
                         <div class="flex items-center gap-3 mb-4">
@@ -213,339 +201,102 @@
                         </div>
                         <h3 class="font-display text-4xl md:text-5xl text-white mb-6">Fantasy Forest</h3>
                         <p class="text-gray-400 text-lg leading-relaxed mb-8">Immerse yourself in a relaxing adventure. Heal the enchanted forest by solving nature's ancient riddles.</p>
-                        <button onclick="showPage('game-details', null, 'Fantasy Forest')" class="text-white font-bold uppercase tracking-widest hover:text-green-400 flex items-center gap-2 md:flex-row-reverse">View Details <i class="fas fa-chevron-right text-xs"></i></button>
+                        <a href="fantasy-forest.html" class="text-white font-bold uppercase tracking-widest hover:text-green-400 flex items-center gap-2 md:flex-row-reverse">View Details <i class="fas fa-chevron-right text-xs"></i></a>
                     </div>
                 </div>
 
-                <!-- Game 3: Kitchen Chaos -->
-                <div class="flex flex-col md:flex-row items-center gap-12 lg:gap-20">
+
+                <div class="flex flex-col md:flex-row items-center gap-12 lg:gap-20 mb-32">
                     <div class="w-full md:w-1/2 relative group">
-                        <div class="absolute inset-0 bg-red-500 rounded-2xl rotate-3 opacity-20 group-hover:rotate-6 transition-transform"></div>
+                        <div class="absolute inset-0 bg-red-500 rounded-2xl rotate-3 group-hover:rotate-6 opacity-20 transition-transform"></div>
                         <img src="public/kitchen_chaos.png" alt="Kitchen Chaos" class="relative rounded-2xl shadow-2xl w-full object-cover aspect-video border border-white/10 clickable-img">
+                        <div class="absolute top-4 left-4 px-4 py-1 bg-yellow-600 text-white font-bold rounded-full text-xs uppercase">In Process</div>
                     </div>
-                    <div class="w-full md:w-1/2">
+                    <div class="w-full md:w-1/2 ">
                         <div class="flex items-center gap-3 mb-4">
                             <span class="px-3 py-1 bg-red-900/50 text-red-400 border border-red-700/50 rounded-full text-xs font-bold uppercase tracking-widest">Arcade</span>
                             <div class="flex gap-2 text-gray-500 text-sm ml-2"><i class="fab fa-android"></i> <i class="fab fa-apple"></i></div>
                         </div>
                         <h3 class="font-display text-4xl md:text-5xl text-white mb-6">Kitchen Chaos</h3>
                         <p class="text-gray-400 text-lg leading-relaxed mb-8">Work as a team in this culinary madness. Cook, serve, and try not to burn the restaurant down.</p>
-                        <button onclick="showPage('game-details', null, 'Kitchen Chaos')" class="text-white font-bold uppercase tracking-widest hover:text-red-400 flex items-center gap-2">View Details <i class="fas fa-chevron-right text-xs"></i></button>
+                        <a href="kitchen-chaos.html" class="text-white font-bold uppercase tracking-widest hover:text-red-400 flex items-center gap-2">View Details <i class="fas fa-chevron-right text-xs"></i></a>
                     </div>
+                </div>
+
+        </div>
+    </section>
+
+    <section id="team" class="py-32 bg-[#0a0a0e] border-y border-white/5 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20">
+                <h2 class="font-display text-5xl md:text-6xl text-white mb-4">The Creative Minds</h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">Meet the core team driving our vision forward.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center mb-24">
+                <div class="bg-[#050507] p-8 rounded-2xl border border-white/5 hover-lift group">
+                    <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 border-4 border-purple-900/50">
+                        <img src="public/dev_img.jpg" alt="Gagik Balabekyan" class="w-full h-full object-cover clickable-img">
+                    </div>
+                    <h4 class="font-display text-3xl text-white mb-1">Gagik Balabekyan</h4>
+                    <p class="text-purple-400 font-bold text-sm tracking-widest uppercase">Founder / Lead Developer</p>
+                </div>
+                <div class="bg-[#050507] p-8 rounded-2xl border border-white/5 hover-lift group">
+                    <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 border-4 border-blue-900/50">
+                        <img src="public/art_img.jpg" alt="Spartak Khachatryan" class="w-full h-full object-cover clickable-img">
+                    </div>
+                    <h4 class="font-display text-3xl text-white mb-1">Spartak Khachatryan</h4>
+                    <p class="text-blue-400 font-bold text-sm tracking-widest uppercase">3D Generalist</p>
+                </div>
+                <div class="bg-[#050507] p-8 rounded-2xl border border-white/5 hover-lift group">
+                    <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 border-4 border-teal-900/50">
+                        <img src="public/vfx_img.jpg" alt="Anan Harutyunyan" class="w-full h-full object-cover clickable-img">
+                    </div>
+                    <h4 class="font-display text-3xl text-white mb-1">Anan Harutyunyan</h4>
+                    <p class="text-teal-400 font-bold text-sm tracking-widest uppercase">VFX Artist</p>
                 </div>
             </div>
-        </section>
 
-        <!-- Studio Section -->
-        <section id="team" class="py-32 bg-[#0a0a0e] border-y border-white/5 relative">
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="text-center mb-20">
-                    <h2 class="font-display text-5xl md:text-6xl text-white mb-4">The Creative Minds</h2>
-                    <p class="text-gray-400 text-lg max-w-2xl mx-auto">Meet the core team driving our vision forward.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center mb-24">
-                    <div class="bg-[#050507] p-8 rounded-2xl border border-white/5 hover-lift group">
-                        <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 border-4 border-purple-900/50">
-                            <img src="public/dev_img.jpg" alt="Gagik Balabekyan" class="w-full h-full object-cover clickable-img">
-                        </div>
-                        <h4 class="font-display text-3xl text-white mb-1">Gagik Balabekyan</h4>
-                        <p class="text-purple-400 font-bold text-sm tracking-widest uppercase">Founder / Lead Developer</p>
+            <div class="pt-20 border-t border-white/5">
+                <h3 class="font-display text-4xl text-white mb-12 text-center">Team Gallery</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="rounded-2xl overflow-hidden aspect-video border border-white/10 hover-lift">
+                        <img src="public/team_1.png" class="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity clickable-img" alt="Team Photo 1">
                     </div>
-                    <div class="bg-[#050507] p-8 rounded-2xl border border-white/5 hover-lift group">
-                        <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 border-4 border-blue-900/50">
-                            <img src="public/art_img.jpg" alt="Spartak Khachatryan" class="w-full h-full object-cover clickable-img">
-                        </div>
-                        <h4 class="font-display text-3xl text-white mb-1">Spartak Khachatryan</h4>
-                        <p class="text-blue-400 font-bold text-sm tracking-widest uppercase">3D Generalist</p>
+                    <div class="rounded-2xl overflow-hidden aspect-video border border-white/10 hover-lift">
+                        <img src="public/team_2.png" class="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity clickable-img" alt="Team Photo 2">
                     </div>
-                    <div class="bg-[#050507] p-8 rounded-2xl border border-white/5 hover-lift group">
-                        <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 border-4 border-teal-900/50">
-                            <img src="public/vfx_img.jpg" alt="Anan Harutyunyan" class="w-full h-full object-cover clickable-img">
-                        </div>
-                        <h4 class="font-display text-3xl text-white mb-1">Anan Harutyunyan</h4>
-                        <p class="text-teal-400 font-bold text-sm tracking-widest uppercase">VFX Artist</p>
-                    </div>
-                </div>
-
-                <!-- Team Photos Gallery (Max 3) -->
-                <div class="pt-20 border-t border-white/5">
-                    <h3 class="font-display text-4xl text-white mb-12 text-center">Team Gallery</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="rounded-2xl overflow-hidden aspect-video border border-white/10 hover-lift">
-                            <img src="public/team_1.png" class="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity clickable-img" alt="Team Photo 1">
-                        </div>
-                        <div class="rounded-2xl overflow-hidden aspect-video border border-white/10 hover-lift">
-                            <img src="public/team_2.png" class="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity clickable-img" alt="Team Photo 2">
-                        </div>
-                        <div class="rounded-2xl overflow-hidden aspect-video border border-white/10 hover-lift">
-                            <img src="public/team_3.png" class="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity clickable-img" alt="Team Photo 3">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section id="contact" class="py-32 bg-[#0a0a0e]">
-             <div class="max-w-4xl mx-auto px-6 text-center">
-                <h2 class="font-display text-6xl text-white mb-6">Let's Build Together</h2>
-                <div class="bg-[#050507] p-8 rounded-3xl border border-white/10 text-left mt-12 shadow-2xl">
-                    <form onsubmit="event.preventDefault()" class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <input type="text" placeholder="Your Name" class="w-full bg-[#0a0a0e] border border-white/10 rounded-lg px-5 py-4 text-white focus:border-purple-500 outline-none">
-                            <input type="email" placeholder="Email Address" class="w-full bg-[#0a0a0e] border border-white/10 rounded-lg px-5 py-4 text-white focus:border-purple-500 outline-none">
-                        </div>
-                        <textarea rows="4" placeholder="Your Message" class="w-full bg-[#0a0a0e] border border-white/10 rounded-lg px-5 py-4 text-white focus:border-purple-500 outline-none"></textarea>
-                        <button class="w-full bg-purple-600 hover:bg-purple-500 text-white font-display text-2xl py-4 rounded-lg transition-colors shadow-lg">SEND MESSAGE</button>
-                    </form>
-                </div>
-             </div>
-        </section>
-    </div>
-
-    <!-- CAREERS PAGE -->
-    <div id="careers-page" class="page-section hidden-section pt-32 min-h-screen">
-        <div class="max-w-5xl mx-auto px-6 py-20">
-            <h1 class="font-display text-6xl md:text-8xl text-white mb-4">Careers</h1>
-            <div class="w-32 h-2 bg-purple-600 mb-12"></div>
-            
-            <div class="grid gap-6">
-                <div class="bg-[#0a0a0e] border border-white/5 p-8 rounded-2xl hover:border-purple-500 transition-all group">
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div>
-                            <span class="text-purple-500 font-bold uppercase tracking-widest text-xs mb-2 block">Engineering</span>
-                            <h3 class="text-2xl font-bold text-white mb-1">Unity Game Developer (Mid/Senior)</h3>
-                            <p class="text-gray-500 text-sm">Remote / Full-time</p>
-                        </div>
-                        <button onclick="showJob('unity-dev')" class="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-lg group-hover:bg-purple-600 transition-all font-bold uppercase tracking-widest text-xs">Job Details</button>
-                    </div>
-                </div>
-                <div class="bg-[#0a0a0e] border border-white/5 p-8 rounded-2xl hover:border-blue-500 transition-all group">
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div>
-                            <span class="text-blue-500 font-bold uppercase tracking-widest text-xs mb-2 block">Art & Design</span>
-                            <h3 class="text-2xl font-bold text-white mb-1">3D Environment Artist</h3>
-                            <p class="text-gray-500 text-sm">Hybrid / Project-based</p>
-                        </div>
-                        <button onclick="showJob('artist')" class="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-lg group-hover:bg-blue-600 transition-all font-bold uppercase tracking-widest text-xs">Job Details</button>
+                    <div class="rounded-2xl overflow-hidden aspect-video border border-white/10 hover-lift">
+                        <img src="public/team_3.png" class="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity clickable-img" alt="Team Photo 3">
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- JOB DETAILS PAGE -->
-    <div id="job-details-page" class="page-section hidden-section pt-32 min-h-screen pb-32">
-        <div class="max-w-4xl mx-auto px-6 pt-10">
-            <button onclick="showPage('careers')" class="flex items-center gap-2 text-gray-500 hover:text-white mb-12 transition-colors uppercase font-bold tracking-widest text-sm">
-                <i class="fas fa-arrow-left"></i> Back to Careers
-            </button>
-            <div class="bg-[#0a0a0e] border border-white/10 rounded-3xl p-8 md:p-12">
-                <span id="job-category" class="text-purple-500 font-bold uppercase tracking-widest text-xs mb-2 block"></span>
-                <h1 id="job-title" class="font-display text-5xl md:text-6xl text-white mb-4"></h1>
-                <p id="job-location" class="text-gray-400 mb-10 pb-10 border-b border-white/5"></p>
-                <div class="space-y-10 text-gray-400 leading-relaxed">
-                    <div>
-                        <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-4">Role Overview</h4>
-                        <p id="job-overview"></p>
+    <section id="contact" class="py-32 bg-[#0a0a0e]">
+         <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="font-display text-6xl text-white mb-6">Let's Build Together</h2>
+            <div class="bg-[#050507] p-8 rounded-3xl border border-white/10 text-left mt-12 shadow-2xl">
+                <form onsubmit="event.preventDefault()" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <input type="text" placeholder="Your Name" class="w-full bg-[#0a0a0e] border border-white/10 rounded-lg px-5 py-4 text-white focus:border-purple-500 outline-none">
+                        <input type="email" placeholder="Email Address" class="w-full bg-[#0a0a0e] border border-white/10 rounded-lg px-5 py-4 text-white focus:border-purple-500 outline-none">
                     </div>
-                    <div>
-                        <h4 class="text-white font-bold uppercase tracking-widest text-sm mb-4">Requirements</h4>
-                        <ul id="job-requirements" class="list-disc list-inside space-y-2"></ul>
-                    </div>
-                </div>
-                <div class="mt-16 bg-[#050507] p-8 rounded-2xl border border-white/5">
-                    <h3 class="font-display text-3xl text-white mb-6">Apply for this position</h3>
-                    <form onsubmit="event.preventDefault()" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input type="text" placeholder="Full Name" class="bg-[#0a0a0e] border border-white/10 p-4 rounded-lg outline-none text-white focus:border-purple-500">
-                            <input type="email" placeholder="Email" class="bg-[#0a0a0e] border border-white/10 p-4 rounded-lg outline-none text-white focus:border-purple-500">
-                        </div>
-                        <input type="text" placeholder="Portfolio / LinkedIn Link" class="w-full bg-[#0a0a0e] border border-white/10 p-4 rounded-lg outline-none text-white focus:border-purple-500">
-                        <button class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 rounded-lg uppercase tracking-widest">Submit Application</button>
-                    </form>
-                </div>
+                    <textarea rows="4" placeholder="Your Message" class="w-full bg-[#0a0a0e] border border-white/10 rounded-lg px-5 py-4 text-white focus:border-purple-500 outline-none"></textarea>
+                    <button class="w-full bg-purple-600 hover:bg-purple-500 text-white font-display text-2xl py-4 rounded-lg transition-colors shadow-lg">SEND MESSAGE</button>
+                </form>
             </div>
-        </div>
-    </div>
+         </div>
+    </section>
 
-    <!-- GAME DETAILS PAGE -->
-    <div id="game-details-page" class="page-section hidden-section pt-24 min-h-screen pb-32">
-        <div class="max-w-7xl mx-auto px-6 pt-10">
-            <button onclick="showPage('home', 'games')" class="flex items-center gap-2 text-gray-500 hover:text-white mb-12 transition-colors uppercase font-bold tracking-widest text-sm">
-                <i class="fas fa-arrow-left"></i> Back to Games
-            </button>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                <div class="lg:col-span-2">
-                    <div id="game-video" class="video-container mb-10 shadow-2xl"></div>
-                    
-                    <div class="flex gap-4 mb-10 overflow-x-auto pb-4 scrollbar-hide">
-                        <img id="screenshot-1" class="w-48 aspect-video rounded-xl border border-white/10 object-cover cursor-pointer hover:border-purple-500 transition-all clickable-img">
-                        <img id="screenshot-2" class="w-48 aspect-video rounded-xl border border-white/10 object-cover cursor-pointer hover:border-purple-500 transition-all clickable-img">
-                        <img id="screenshot-3" class="w-48 aspect-video rounded-xl border border-white/10 object-cover cursor-pointer hover:border-purple-500 transition-all clickable-img">
-                    </div>
-
-                    <h1 id="detail-title" class="font-display text-5xl md:text-7xl text-white mb-6"></h1>
-                    <div id="detail-desc" class="text-gray-400 text-lg leading-relaxed space-y-4"></div>
-                </div>
-
-                <div class="lg:col-span-1">
-                    <div class="bg-[#0a0a0e] border border-white/5 rounded-3xl p-8 sticky top-32">
-                        <img id="detail-icon" class="w-32 h-32 rounded-2xl mb-8 border border-white/10 shadow-lg mx-auto lg:mx-0 clickable-img">
-                        
-                        <div class="space-y-4 mb-10">
-                            <a href="#" class="store-button w-full">
-                                <i class="fab fa-google-play text-3xl text-green-500"></i>
-                                <div>
-                                    <p class="text-[10px] uppercase font-bold text-gray-500">Get it on</p>
-                                    <p class="text-lg font-bold">Google Play</p>
-                                </div>
-                            </a>
-                            <a href="#" class="store-button w-full">
-                                <i class="fab fa-apple text-3xl text-gray-100"></i>
-                                <div>
-                                    <p class="text-[10px] uppercase font-bold text-gray-500">Download on the</p>
-                                    <p class="text-lg font-bold">App Store</p>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="space-y-4 text-sm">
-                            <div class="flex justify-between border-b border-white/5 pb-2">
-                                <span class="text-gray-500 uppercase font-bold tracking-widest text-[10px]">Developer</span>
-                                <span class="text-white">ANGAGSU</span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/5 pb-2">
-                                <span class="text-gray-500 uppercase font-bold tracking-widest text-[10px]">Genre</span>
-                                <span id="detail-genre" class="text-white"></span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/5 pb-2">
-                                <span class="text-gray-500 uppercase font-bold tracking-widest text-[10px]">Status</span>
-                                <span id="detail-status" class="text-green-500 font-bold">LIVE</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- PRIVACY POLICY PAGE -->
-    <div id="privacy-page" class="page-section hidden-section pt-24 min-h-screen pb-32">
-        <div class="max-w-4xl mx-auto px-6 pt-10">
-            <button onclick="showPage('home')" class="flex items-center gap-2 text-gray-500 hover:text-white mb-12 transition-colors uppercase font-bold tracking-widest text-sm">
-                <i class="fas fa-arrow-left"></i> Back to Home
-            </button>
-
-            <h1 class="font-display text-5xl md:text-7xl text-white mb-4">Privacy Policy</h1>
-            <p class="text-gray-500 text-sm uppercase tracking-widest font-bold mb-16">Last Updated: July 10, 2026</p>
-
-            <div class="space-y-14 text-gray-400 text-lg leading-relaxed">
-
-                <section>
-                    <p>ANGAGSU Game Studio ("we", "us", or "our") develops mobile games, including Fantasy Tower Defense, Fantasy Forest, and Kitchen Chaos (the "Games"). This Privacy Policy explains how we collect, use, disclose, and safeguard information when you download, install, or play our Games. By using our Games, you agree to the collection and use of information in accordance with this policy.</p>
-                </section>
-
-                <section>
-                    <h2 class="font-display text-3xl md:text-4xl text-white mb-6">1. Information We Collect</h2>
-                    <p class="mb-4">We may collect the following categories of information:</p>
-                    <ul class="list-disc list-inside space-y-3 pl-2">
-                        <li><span class="text-white font-semibold">Device Information:</span> device model, operating system and version, unique device identifiers (such as advertising ID / IDFA / GAID), language settings, and mobile network information.</li>
-                        <li><span class="text-white font-semibold">Gameplay Data:</span> in-game progress, scores, achievements, session length, and settings, which may be stored locally or synced via a linked account (e.g., Google Play Games Services or Game Center).</li>
-                        <li><span class="text-white font-semibold">Usage & Analytics Data:</span> app interactions, crash reports, performance data, and general engagement metrics.</li>
-                        <li><span class="text-white font-semibold">Purchase Information:</span> if a Game offers in-app purchases, transaction data is processed by the applicable app store (Google Play or Apple App Store); we do not receive or store your payment card details.</li>
-                        <li><span class="text-white font-semibold">Communications:</span> information you voluntarily provide when you contact us for support or feedback, such as your email address and message content.</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h2 class="font-display text-3xl md:text-4xl text-white mb-6">2. How We Use Information</h2>
-                    <ul class="list-disc list-inside space-y-3 pl-2">
-                        <li>To operate, maintain, and improve our Games and their features.</li>
-                        <li>To save your progress and enable cloud sync or leaderboards where applicable.</li>
-                        <li>To diagnose technical issues and fix bugs through crash and performance reporting.</li>
-                        <li>To display advertising (where applicable) and measure ad performance.</li>
-                        <li>To process in-app purchases through the relevant app store.</li>
-                        <li>To respond to support requests and communicate important updates.</li>
-                        <li>To comply with legal obligations and enforce our terms.</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h2 class="font-display text-3xl md:text-4xl text-white mb-6">3. Third-Party Services</h2>
-                    <p class="mb-4">Our Games may integrate third-party services that collect information used to identify you or your device, including but not limited to:</p>
-                    <ul class="list-disc list-inside space-y-3 pl-2">
-                        <li><span class="text-white font-semibold">Google Play Services / Apple Game Center</span> — for achievements, leaderboards, and cloud saves.</li>
-                        <li><span class="text-white font-semibold">Google Analytics / Firebase</span> — for app usage analytics and crash reporting.</li>
-                        <li><span class="text-white font-semibold">Google AdMob</span> (or similar ad networks) — for displaying in-game advertisements.</li>
-                        <li><span class="text-white font-semibold">Google Play Billing / Apple In-App Purchase</span> — for processing in-app purchases.</li>
-                    </ul>
-                    <p class="mt-4">These third parties have their own privacy policies governing how they handle information. We encourage you to review the privacy policies of Google and Apple for more details on their data practices.</p>
-                </section>
-
-                <section>
-                    <h2 class="font-display text-3xl md:text-4xl text-white mb-6">4. Children's Privacy</h2>
-                    <p>Our Games are not directed at children under the age of 13 (or the applicable minimum age in your jurisdiction), and we do not knowingly collect personal information from children. If any of our Games are designed for a general audience that may include children, we limit data collection to what is strictly necessary for the Game to function and rely on age-appropriate advertising settings and parental controls provided by app store platforms. If you believe a child has provided us with personal information, please contact us so we can promptly remove it.</p>
-                </section>
-
-                <section>
-                    <h2 class="font-display text-3xl md:text-4xl text-white mb-6">5. Data Sharing & Disclosure</h2>
-                    <p class="mb-4">We do not sell your personal information. We may share information with:</p>
-                    <ul class="list-disc list-inside space-y-3 pl-2">
-                        <li>Service providers who help us operate our Games (analytics, hosting, advertising networks).</li>
-                        <li>App store platforms (Google Play, Apple App Store) for purchase processing and account services.</li>
-                        <li>Authorities, when required by law, legal process, or to protect our rights and the safety of our users.</li>
-                        <li>A successor entity in the event of a merger, acquisition, or sale of assets.</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h2 class="font-display text-3xl md:text-4xl text-white mb-6">6. Data Retention & Security</h2>
-                    <p>We retain information only for as long as necessary to fulfill the purposes described in this policy, or as required by law. We implement reasonable technical and organizational measures to protect your information; however, no method of electronic storage or transmission is 100% secure, and we cannot guarantee absolute security.</p>
-                </section>
-
-                <section>
-                    <h2 class="font-display text-3xl md:text-4xl text-white mb-6">7. Your Rights & Choices</h2>
-                    <p class="mb-4">Depending on your location, you may have rights regarding your personal information, including the right to access, correct, delete, or restrict the use of your data, and the right to opt out of certain data processing (such as personalized advertising).</p>
-                    <ul class="list-disc list-inside space-y-3 pl-2">
-                        <li>You can reset your advertising identifier or limit ad tracking in your device settings.</li>
-                        <li>You can manage app permissions (e.g., notifications) through your device's settings menu.</li>
-                        <li>You can request access to or deletion of your data by contacting us using the details below.</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h2 class="font-display text-3xl md:text-4xl text-white mb-6">8. International Data Transfers</h2>
-                    <p>Our Games are developed in Armenia, and information we collect may be processed and stored in Armenia or other countries where our service providers operate. By using our Games, you consent to the transfer of information to countries that may have different data protection laws than your country of residence.</p>
-                </section>
-
-                <section>
-                    <h2 class="font-display text-3xl md:text-4xl text-white mb-6">9. Changes to This Policy</h2>
-                    <p>We may update this Privacy Policy from time to time to reflect changes in our practices or for legal, operational, or regulatory reasons. We will post the updated policy on this page with a revised "Last Updated" date. Continued use of our Games after changes are posted constitutes acceptance of the updated policy.</p>
-                </section>
-
-                <section>
-                    <h2 class="font-display text-3xl md:text-4xl text-white mb-6">10. Contact Us</h2>
-                    <p class="mb-6">If you have any questions or concerns about this Privacy Policy or our data practices, please contact us:</p>
-                    <div class="bg-[#0a0a0e] border border-white/5 rounded-2xl p-8 space-y-4">
-                        <p class="flex items-center gap-3"><i class="fas fa-envelope text-purple-600"></i> info@angagsu.com</p>
-                        <p class="flex items-center gap-3"><i class="fas fa-map-marker-alt text-purple-600"></i> Yerevan, Armenia</p>
-                    </div>
-                </section>
-
-            </div>
-        </div>
-    </div>
-
-    <!-- Lightbox Modal -->
     <div id="lightbox-modal" class="fixed inset-0 bg-black/95 z-[100] hidden flex items-center justify-center p-4 cursor-zoom-out">
         <button class="absolute top-6 right-6 text-white text-4xl hover:text-purple-500 transition-colors">&times;</button>
         <img id="lightbox-img" src="" alt="Enlarged view" class="max-w-full max-h-full rounded-lg shadow-2xl">
     </div>
 
-    <!-- Footer -->
+
     <footer class="bg-[#050507] pt-20 pb-10 border-t border-white/5">
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
@@ -565,10 +316,10 @@
                 <div>
                     <h5 class="text-white font-bold uppercase tracking-widest mb-6 text-sm">Quick Links</h5>
                     <ul class="space-y-4 text-gray-500 text-sm">
-                        <li><a href="javascript:void(0)" onclick="showPage('home', 'games')" class="hover:text-purple-400 transition-colors">All Games</a></li>
-                        <li><a href="javascript:void(0)" onclick="showPage('home', 'team')" class="hover:text-purple-400 transition-colors">Our Studio</a></li>
-                        <li><a href="javascript:void(0)" onclick="showPage('careers')" class="hover:text-purple-400 transition-colors">Join the Team</a></li>
-                        <li><a href="javascript:void(0)" onclick="showPage('home', 'contact')" class="hover:text-purple-400 transition-colors">Press Kit</a></li>
+                        <li><a href="index.html#games" class="hover:text-purple-400 transition-colors">All Games</a></li>
+                        <li><a href="index.html#team" class="hover:text-purple-400 transition-colors">Our Studio</a></li>
+                        <li><a href="careers.html" class="hover:text-purple-400 transition-colors">Join the Team</a></li>
+                        <li><a href="index.html#contact" class="hover:text-purple-400 transition-colors">Press Kit</a></li>
                     </ul>
                 </div>
                 <div>
@@ -580,124 +331,14 @@
                 </div>
             </div>
             <div class="border-t border-white/5 pt-10 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-center text-gray-600 text-[10px] uppercase font-bold tracking-[0.2em]">
-                <span>&copy; 2024 ANGAGSU GAME STUDIO. All rights reserved.</span>
-                <a href="javascript:void(0)" onclick="showPage('privacy')" class="text-gray-500 hover:text-purple-400 transition-colors">Privacy Policy</a>
-                <a href="privacy-hayguard.html" class="text-gray-500 hover:text-purple-400 transition-colors">Hayguard: Rise of Highlands — Privacy Policy</a>
+                <span>&copy; 2026 ANGAGSU GAME STUDIO. All rights reserved.</span>
+                <a href="privacy.html" class="text-gray-500 hover:text-purple-400 transition-colors">Privacy Policy</a>
             </div>
         </div>
     </footer>
 
+
     <script>
-        const gameData = {
-            'Fantasy Tower Defense': {
-                genre: 'Strategy',
-                icon: 'games/tower_defense/tdicon.png',
-                video: '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>',
-                desc: 'Experience the ultimate strategy challenge in Fantasy Tower Defense. Command diverse elemental towers and unlock devastating spells to halt the advance of the Dark Legion. With over 50 unique levels and endless combinations of tactical possibilities, every wave is a test of your wit.',
-                status: 'RELEASED',
-                screens: ['games/tower_defense/art_1.png', 'games/tower_defense/art_2.png', 'games/tower_defense/art_3.png']
-            },
-            'Fantasy Forest': {
-                genre: 'Puzzle',
-                icon: 'games/fantasy_forest/fficon.png',
-                video: '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>',
-                desc: 'A serene yet challenging journey through the Heart of Nature. Match ancient runes to clear pathways and restore life to a dying world. Fantasy Forest combines relaxing visuals with deep, satisfying mechanics for a puzzle experience like no other.',
-                status: 'BETA',
-                screens: ['games/fantasy_forest/art_1.png', 'games/fantasy_forest/art_2.png', 'games/fantasy_forest/art_3.png']
-            },
-            'Kitchen Chaos': {
-                genre: 'Arcade',
-                icon: 'games/kitchen_chaos/kcicon.png',
-                video: '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>',
-                desc: 'Panic! Plate! Perfect! Kitchen Chaos is a high-octane co-op cooking simulator where speed and communication are everything. Master exotic recipes while dealing with shifting environments, crazy customers, and your own mistakes.',
-                status: 'IN DEVELOPMENT',
-                screens: ['games/kitchen_chaos/art_1.png', 'games/kitchen_chaos/art_2.png', 'games/kitchen_chaos/art_3.png']
-            }
-        };
-
-        const jobData = {
-            'unity-dev': {
-                title: 'Unity Game Developer (Mid/Senior)',
-                category: 'Engineering',
-                location: 'Remote / Full-time',
-                overview: 'We are looking for a passionate Unity Developer to join our core team. You will be responsible for building high-performance gameplay systems, implementing complex UI, and ensuring the architectural integrity of our upcoming titles.',
-                requirements: [
-                    '3+ years of professional experience with Unity and C#',
-                    'Strong understanding of game mathematics and physics',
-                    'Experience optimizing mobile game performance',
-                    'Proven track record of shipped titles',
-                    'Self-driven and comfortable with remote collaboration'
-                ]
-            },
-            'artist': {
-                title: '3D Environment Artist',
-                category: 'Art & Design',
-                location: 'Hybrid / Project-based',
-                overview: 'Help us build immersive worlds. As a 3D Environment Artist, you will create high-quality assets and environments that define the visual identity of our games.',
-                requirements: [
-                    'Expert knowledge of Blender or Maya',
-                    'Strong texturing skills (Substance Painter/Designer)',
-                    'Knowledge of real-time lighting and composition',
-                    'Ability to work within technical constraints for mobile devices',
-                    'Portfolio demonstrating environmental storytelling'
-                ]
-            }
-        };
-
-        function showPage(pageId, sectionId, gameKey) {
-            // Hide all pages
-            document.querySelectorAll('.page-section').forEach(p => p.classList.add('hidden-section'));
-            
-            // Show requested page
-            const target = document.getElementById(pageId + '-page');
-            target.classList.remove('hidden-section');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            // Close mobile menu
-            document.getElementById('mobile-menu').classList.add('hidden');
-
-            // Handle sub-sections on home page
-            if (pageId === 'home' && sectionId) {
-                setTimeout(() => {
-                    document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-            }
-
-            // Handle game details
-            if (pageId === 'game-details' && gameKey) {
-                const data = gameData[gameKey];
-                document.getElementById('detail-title').innerText = gameKey;
-                document.getElementById('detail-desc').innerText = data.desc;
-                document.getElementById('detail-genre').innerText = data.genre;
-                document.getElementById('detail-status').innerText = data.status;
-                document.getElementById('detail-icon').src = data.icon;
-                document.getElementById('game-video').innerHTML = data.video;
-                document.getElementById('screenshot-1').src = data.screens[0];
-                document.getElementById('screenshot-2').src = data.screens[1];
-                document.getElementById('screenshot-3').src = data.screens[2];
-            }
-        }
-
-        function showJob(key) {
-            const data = jobData[key];
-            document.querySelectorAll('.page-section').forEach(p => p.classList.add('hidden-section'));
-            document.getElementById('job-details-page').classList.remove('hidden-section');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            document.getElementById('job-title').innerText = data.title;
-            document.getElementById('job-category').innerText = data.category;
-            document.getElementById('job-location').innerText = data.location;
-            document.getElementById('job-overview').innerText = data.overview;
-            
-            const reqList = document.getElementById('job-requirements');
-            reqList.innerHTML = '';
-            data.requirements.forEach(r => {
-                const li = document.createElement('li');
-                li.innerText = r;
-                reqList.appendChild(li);
-            });
-        }
-
         // Lightbox Logic
         const lightbox = document.getElementById('lightbox-modal');
         const lightboxImg = document.getElementById('lightbox-img');
@@ -733,5 +374,7 @@
             menu.classList.toggle('flex');
         });
     </script>
+
+
 </body>
 </html>

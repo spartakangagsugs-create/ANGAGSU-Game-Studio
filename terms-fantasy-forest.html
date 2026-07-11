@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="public/Icon_transparent.png">
+    <title>Terms of Use — Fantasy Forest | ANGAGSU Game Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #050507;
+            color: #e2e8f0;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, h4, .font-display {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.05em;
+        }
+
+        img[src$=".png"] {
+            background-color: transparent !important;
+            object-fit: contain;
+        }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #050507; }
+        ::-webkit-scrollbar-thumb { background: #4c1d95; border-radius: 5px; }
+
+        .glow-effect {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(109, 40, 217, 0.15) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .clip-diagonal {
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -10px rgba(109, 40, 217, 0.4);
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+
+        .store-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #111;
+            border: 1px solid #333;
+            padding: 12px 24px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            text-align: left;
+            min-width: 200px;
+        }
+        .store-button:hover {
+            background: #222;
+            border-color: #6d28d9;
+            transform: translateY(-2px);
+        }
+
+        .legal-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: color 0.2s ease;
+        }
+        .legal-link:hover { color: #a78bfa; }
+
+        .social-btn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            color: #94a3b8;
+        }
+        .social-btn:hover {
+            background: #6d28d9;
+            color: white;
+            border-color: #7c3aed;
+        }
+
+        #lightbox-modal { transition: opacity 0.3s ease; }
+        #lightbox-img { transition: transform 0.3s ease; }
+        .clickable-img { cursor: zoom-in; }
+</style>
+</head>
+<body class="antialiased">
+
+    <nav class="w-full border-b border-white/5 bg-[#050507]/90 backdrop-blur-md">
+        <div class="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3">
+                <img src="public/Icon_transparent.png" alt="ANGAGSU Icon" class="h-9 w-9 block">
+                <span class="font-display text-xl text-white tracking-widest uppercase">ANGAGSU</span>
+            </a>
+            <a href="fantasy-forest.html" class="text-gray-400 hover:text-purple-400 transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i> Back to Game
+            </a>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto px-6 pt-16 pb-32">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 bg-green-900/50 text-green-400 border border-green-700/50 rounded-full text-xs font-bold uppercase tracking-widest">Fantasy Forest</span>
+        </div>
+        <h1 class="font-display text-5xl md:text-7xl text-white mb-4">Terms of Use</h1>
+        <p class="text-gray-500 text-sm uppercase tracking-widest font-bold mb-16">Effective Date: July 10, 2026</p>
+
+        <div class="space-y-14 text-gray-400 text-lg leading-relaxed">
+            <section>
+                <p>These Terms of Use ("Terms") govern your access to and use of <span class="text-white font-semibold">Fantasy Forest</span> (the "Game"), developed and published by <span class="text-white font-semibold">Angagsu Game Studio</span>. Please read these Terms carefully before using the Game.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">Acceptance of Terms</h2>
+                <p>By downloading, installing, accessing, or playing <span class="text-white font-semibold">Fantasy Forest</span> (the "Game"), developed by <span class="text-white font-semibold">Angagsu Game Studio</span> ("we", "us", "our"), you agree to be bound by these Terms of Use ("Terms"). If you do not agree to these Terms, please do not install or use the Game.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">License Grant</h2>
+                <p>Subject to your compliance with these Terms, we grant you a limited, non-exclusive, non-transferable, revocable license to download and use the Game for your personal, non-commercial entertainment purposes on a device that you own or control. All rights not expressly granted to you are reserved by us and our licensors.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">Account Registration</h2>
+                <p>Certain features of the Game may require you to sign in through a supported authentication provider (such as Apple Sign In, Google Sign-In, Facebook Login, or Unity Authentication). You are responsible for maintaining the confidentiality of your account credentials and for all activity that occurs through your account.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">User Conduct</h2>
+                <p class="mb-4">When using the Game, you agree that you will not:</p>
+                <ul class="list-disc list-inside space-y-2 pl-2">
+                    <li>Use cheats, exploits, automation software, bots, hacks, mods, or any unauthorized third-party software to modify or interfere with the Game.</li>
+                    <li>Reverse engineer, decompile, or disassemble the Game, except where permitted by applicable law.</li>
+                    <li>Copy, sell, resell, rent, lease, or otherwise commercially exploit the Game.</li>
+                    <li>Use the Game for any unlawful purpose or in a manner that infringes the rights of others.</li>
+                    <li>Harass, abuse, or harm other players in any online or social features of the Game.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">Virtual Items &amp; In-App Purchases</h2>
+                <p class="mb-4">The Game may offer optional in-app purchases of virtual currency, items, or content ("Virtual Items"). Virtual Items have no monetary value, cannot be redeemed for real currency, and are licensed to you, not sold. All purchases are processed by the applicable platform provider (Google Play or Apple App Store) and are subject to that provider's payment terms and refund policies. All purchases are final and non-refundable except as required by applicable law.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">Advertising</h2>
+                <p>The Game may display third-party advertisements, including through Unity Ads or other advertising networks. We are not responsible for the content of third-party advertisements or for any transactions you enter into with advertisers.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">Intellectual Property</h2>
+                <p>The Game, including all characters, artwork, music, code, and other content, is owned by Angagsu Game Studio or its licensors and is protected by copyright, trademark, and other intellectual property laws. Except for the limited license granted above, no rights are transferred to you.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">Termination</h2>
+                <p>We may suspend or terminate your access to the Game at any time, with or without notice, if we believe you have violated these Terms. Upon termination, your license to use the Game will immediately end.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">Disclaimer of Warranties</h2>
+                <p>The Game is provided "as is" and "as available" without warranties of any kind, whether express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, and non-infringement. We do not warrant that the Game will be uninterrupted, error-free, or free of harmful components.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">Limitation of Liability</h2>
+                <p>To the maximum extent permitted by applicable law, Angagsu Game Studio shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, revenue, or profits, arising out of or related to your use of the Game.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">Changes to These Terms</h2>
+                <p>We may update these Terms from time to time. Any updates will be posted at the same Terms of Use URL. Continued use of the Game after changes become effective constitutes acceptance of the revised Terms.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">Contact Us</h2>
+                <p class="mb-6">If you have any questions regarding this policy, please contact us.</p>
+                <div class="bg-[#0a0a0e] border border-white/5 rounded-2xl p-8 space-y-4">
+                    <p class="flex items-center gap-3"><i class="fas fa-gamepad text-purple-600 w-5"></i> <span class="text-gray-500 uppercase font-bold tracking-widest text-[10px] mr-2">Developer</span> Angagsu Game Studio</p>
+                    <p class="flex items-center gap-3"><i class="fas fa-mobile-alt text-purple-600 w-5"></i> <span class="text-gray-500 uppercase font-bold tracking-widest text-[10px] mr-2">Game</span> Fantasy Forest</p>
+                    <p class="flex items-center gap-3"><i class="fas fa-envelope text-purple-600 w-5"></i> <a href="mailto:gagbalabekyan@gmail.com" class="hover:text-purple-400 transition-colors">gagbalabekyan@gmail.com</a></p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div id="lightbox-modal" class="fixed inset-0 bg-black/95 z-[100] hidden items-center justify-center p-4 cursor-zoom-out">
+        <button class="absolute top-6 right-6 text-white text-4xl hover:text-purple-500 transition-colors">&times;</button>
+        <img id="lightbox-img" src="" alt="Enlarged view" class="max-w-full max-h-full rounded-lg shadow-2xl">
+    </div>
+
+    <footer class="border-t border-white/5 py-10 text-center text-gray-600 text-[10px] uppercase font-bold tracking-[0.2em]">
+        &copy; 2026 ANGAGSU GAME STUDIO. All rights reserved.
+    </footer>
+
+    <script>
+        const lightbox = document.getElementById('lightbox-modal');
+        const lightboxImg = document.getElementById('lightbox-img');
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('clickable-img')) {
+                lightboxImg.src = e.target.src;
+                lightbox.classList.remove('hidden');
+                lightbox.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            } else if (lightbox.classList.contains('flex')) {
+                lightbox.classList.add('hidden');
+                lightbox.classList.remove('flex');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="public/Icon_transparent.png">
+    <title>Privacy Policy | ANGAGSU Game Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #050507;
+            color: #e2e8f0;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, h4, .font-display {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.05em;
+        }
+
+        img[src$=".png"] {
+            background-color: transparent !important;
+            object-fit: contain;
+        }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #050507; }
+        ::-webkit-scrollbar-thumb { background: #4c1d95; border-radius: 5px; }
+
+        .glow-effect {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(109, 40, 217, 0.15) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .clip-diagonal {
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -10px rgba(109, 40, 217, 0.4);
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+
+        .store-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #111;
+            border: 1px solid #333;
+            padding: 12px 24px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            text-align: left;
+            min-width: 200px;
+        }
+        .store-button:hover {
+            background: #222;
+            border-color: #6d28d9;
+            transform: translateY(-2px);
+        }
+
+        .legal-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: color 0.2s ease;
+        }
+        .legal-link:hover { color: #a78bfa; }
+
+        .social-btn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            color: #94a3b8;
+        }
+        .social-btn:hover {
+            background: #6d28d9;
+            color: white;
+            border-color: #7c3aed;
+        }
+
+        #lightbox-modal { transition: opacity 0.3s ease; }
+        #lightbox-img { transition: transform 0.3s ease; }
+        .clickable-img { cursor: zoom-in; }
+</style>
+</head>
+<body class="antialiased">
+
+    <nav class="w-full border-b border-white/5 bg-[#050507]/90 backdrop-blur-md">
+        <div class="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3">
+                <img src="public/Icon_transparent.png" alt="ANGAGSU Icon" class="h-9 w-9 block">
+                <span class="font-display text-xl text-white tracking-widest uppercase">ANGAGSU</span>
+            </a>
+            <a href="index.html" class="text-gray-400 hover:text-purple-400 transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto px-6 pt-16 pb-32">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="px-3 py-1 bg-purple-900/50 text-purple-400 border border-purple-700/50 rounded-full text-xs font-bold uppercase tracking-widest">All Games</span>
+        </div>
+        <h1 class="font-display text-5xl md:text-7xl text-white mb-4">Privacy Policy</h1>
+        <p class="text-gray-500 text-sm uppercase tracking-widest font-bold mb-16">Effective Date: July 10, 2026</p>
+
+        <div class="space-y-14 text-gray-400 text-lg leading-relaxed">
+            <section>
+                <p>ANGAGSU Game Studio ("we", "us", or "our") develops mobile games, including Hayguard: Rise of Highland, Fantasy Forest, and Kitchen Chaos (the "Games"). This Privacy Policy explains how we collect, use, disclose, and safeguard information when you download, install, or play our Games. By using our Games, you agree to the collection and use of information in accordance with this policy.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">1. Information We Collect</h2>
+                <p class="mb-4">We may collect the following categories of information:</p>
+                <ul class="list-disc list-inside space-y-2 pl-2">
+                    <li><span class="text-white font-semibold">Device Information:</span> device model, operating system and version, unique device identifiers (such as advertising ID / IDFA / GAID), language settings, and mobile network information.</li>
+                    <li><span class="text-white font-semibold">Gameplay Data:</span> in-game progress, scores, achievements, session length, and settings, which may be stored locally or synced via a linked account (e.g., Google Play Games Services or Game Center).</li>
+                    <li><span class="text-white font-semibold">Usage &amp; Analytics Data:</span> app interactions, crash reports, performance data, and general engagement metrics.</li>
+                    <li><span class="text-white font-semibold">Purchase Information:</span> if a Game offers in-app purchases, transaction data is processed by the applicable app store (Google Play or Apple App Store); we do not receive or store your payment card details.</li>
+                    <li><span class="text-white font-semibold">Communications:</span> information you voluntarily provide when you contact us for support or feedback, such as your email address and message content.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">2. How We Use Information</h2>
+                <ul class="list-disc list-inside space-y-2 pl-2">
+                    <li>To operate, maintain, and improve our Games and their features.</li>
+                    <li>To save your progress and enable cloud sync or leaderboards where applicable.</li>
+                    <li>To diagnose technical issues and fix bugs through crash and performance reporting.</li>
+                    <li>To display advertising (where applicable) and measure ad performance.</li>
+                    <li>To process in-app purchases through the relevant app store.</li>
+                    <li>To respond to support requests and communicate important updates.</li>
+                    <li>To comply with legal obligations and enforce our terms.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">3. Third-Party Services</h2>
+                <p class="mb-4">Our Games may integrate third-party services that collect information used to identify you or your device, including but not limited to:</p>
+                <ul class="list-disc list-inside space-y-2 pl-2">
+                    <li><span class="text-white font-semibold">Google Play Services / Apple Game Center</span> — for achievements, leaderboards, and cloud saves.</li>
+                    <li><span class="text-white font-semibold">Google Analytics / Firebase</span> — for app usage analytics and crash reporting.</li>
+                    <li><span class="text-white font-semibold">Google AdMob</span> (or similar ad networks) — for displaying in-game advertisements.</li>
+                    <li><span class="text-white font-semibold">Google Play Billing / Apple In-App Purchase</span> — for processing in-app purchases.</li>
+                </ul>
+                <p class="mt-4">These third parties have their own privacy policies governing how they handle information. We encourage you to review the privacy policies of Google and Apple for more details on their data practices.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">4. Children's Privacy</h2>
+                <p>Our Games are not directed at children under the age of 13 (or the applicable minimum age in your jurisdiction), and we do not knowingly collect personal information from children. If any of our Games are designed for a general audience that may include children, we limit data collection to what is strictly necessary for the Game to function and rely on age-appropriate advertising settings and parental controls provided by app store platforms. If you believe a child has provided us with personal information, please contact us so we can promptly remove it.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">5. Data Sharing &amp; Disclosure</h2>
+                <p class="mb-4">We do not sell your personal information. We may share information with:</p>
+                <ul class="list-disc list-inside space-y-2 pl-2">
+                    <li>Service providers who help us operate our Games (analytics, hosting, advertising networks).</li>
+                    <li>App store platforms (Google Play, Apple App Store) for purchase processing and account services.</li>
+                    <li>Authorities, when required by law, legal process, or to protect our rights and the safety of our users.</li>
+                    <li>A successor entity in the event of a merger, acquisition, or sale of assets.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">6. Data Retention &amp; Security</h2>
+                <p>We retain information only for as long as necessary to fulfill the purposes described in this policy, or as required by law. We implement reasonable technical and organizational measures to protect your information; however, no method of electronic storage or transmission is 100% secure, and we cannot guarantee absolute security.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">7. Your Rights &amp; Choices</h2>
+                <p class="mb-4">Depending on your location, you may have rights regarding your personal information, including the right to access, correct, delete, or restrict the use of your data, and the right to opt out of certain data processing (such as personalized advertising).</p>
+                <ul class="list-disc list-inside space-y-2 pl-2">
+                    <li>You can reset your advertising identifier or limit ad tracking in your device settings.</li>
+                    <li>You can manage app permissions (e.g., notifications) through your device's settings menu.</li>
+                    <li>You can request access to or deletion of your data by contacting us using the details below.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">8. International Data Transfers</h2>
+                <p>Our Games are developed in Armenia, and information we collect may be processed and stored in Armenia or other countries where our service providers operate. By using our Games, you consent to the transfer of information to countries that may have different data protection laws than your country of residence.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">9. Changes to This Policy</h2>
+                <p>We may update this Privacy Policy from time to time to reflect changes in our practices or for legal, operational, or regulatory reasons. We will post the updated policy on this page with a revised "Last Updated" date. Continued use of our Games after changes are posted constitutes acceptance of the updated policy.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-3xl md:text-4xl text-white mb-6">Contact Us</h2>
+                <p class="mb-6">If you have any questions regarding this policy, please contact us.</p>
+                <div class="bg-[#0a0a0e] border border-white/5 rounded-2xl p-8 space-y-4">
+                    <p class="flex items-center gap-3"><i class="fas fa-gamepad text-purple-600 w-5"></i> <span class="text-gray-500 uppercase font-bold tracking-widest text-[10px] mr-2">Developer</span> Angagsu Game Studio</p>
+                    <p class="flex items-center gap-3"><i class="fas fa-map-marker-alt text-purple-600 w-5"></i> <span class="text-gray-500 uppercase font-bold tracking-widest text-[10px] mr-2">Location</span> Yerevan, Armenia</p>
+                    <p class="flex items-center gap-3"><i class="fas fa-envelope text-purple-600 w-5"></i> <a href="mailto:gagbalabekyan@gmail.com" class="hover:text-purple-400 transition-colors">gagbalabekyan@gmail.com</a></p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div id="lightbox-modal" class="fixed inset-0 bg-black/95 z-[100] hidden items-center justify-center p-4 cursor-zoom-out">
+        <button class="absolute top-6 right-6 text-white text-4xl hover:text-purple-500 transition-colors">&times;</button>
+        <img id="lightbox-img" src="" alt="Enlarged view" class="max-w-full max-h-full rounded-lg shadow-2xl">
+    </div>
+
+    <footer class="border-t border-white/5 py-10 text-center text-gray-600 text-[10px] uppercase font-bold tracking-[0.2em]">
+        &copy; 2026 ANGAGSU GAME STUDIO. All rights reserved.
+    </footer>
+
+    <script>
+        const lightbox = document.getElementById('lightbox-modal');
+        const lightboxImg = document.getElementById('lightbox-img');
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('clickable-img')) {
+                lightboxImg.src = e.target.src;
+                lightbox.classList.remove('hidden');
+                lightbox.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            } else if (lightbox.classList.contains('flex')) {
+                lightbox.classList.add('hidden');
+                lightbox.classList.remove('flex');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+
+</body>
+</html>
