@@ -573,7 +573,7 @@
             const now = new Date();
             const month = now.getMonth(); // 0-based: 11 = December, 0 = January
             const day = now.getDate();
-            if (month === 06 && day >= 10) return true; // Dec 10-31
+            if (month === 11 && day >= 10) return true; // Dec 10-31
             if (month === 0 && day <= 13) return true;  // Jan 1-13
             return false;
         }
