@@ -10,6 +10,10 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700&display=swap');
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: #050507;
@@ -120,16 +124,155 @@
         #lightbox-modal { transition: opacity 0.3s ease; }
         #lightbox-img { transition: transform 0.3s ease; }
         .clickable-img { cursor: zoom-in; }
+
+        /* ===== Preloader ===== */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #050507;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        #preloader.loaded {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .preloader-ring-wrap {
+            position: relative;
+            width: 168px;
+            height: 168px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .preloader-ring-wrap img {
+            width: 64px;
+            height: 64px;
+            animation: pulseLogo 1.6s ease-in-out infinite;
+        }
+        .preloader-ring {
+            position: absolute;
+            inset: 0;
+            transform: rotate(-90deg);
+        }
+        .preloader-ring circle {
+            fill: none;
+            stroke-linecap: round;
+        }
+        .preloader-ring .ring-track {
+            stroke: rgba(255,255,255,0.08);
+        }
+        .preloader-ring .ring-progress {
+            stroke: #a78bfa;
+            stroke-dasharray: 477;
+            stroke-dashoffset: 477;
+            transition: stroke-dashoffset 0.2s linear;
+        }
+        @keyframes pulseLogo {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50%      { transform: scale(1.08); opacity: 0.75; }
+        }
+
+        /* ===== Hero video background ===== */
+        .hero-video-wrap {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .hero-video-wrap video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            filter: brightness(0.55) saturate(1.1);
+        }
+        .hero-video-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(5,5,7,0.35) 0%, rgba(5,5,7,0.85) 75%, #050507 100%);
+        }
+
+        /* ===== Hero text animation ===== */
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(36px);
+            animation: revealUp 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation-play-state: paused;
+        }
+        .reveal-up.play {
+            animation-play-state: running;
+        }
+        @keyframes revealUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== Flip words (More Than Pixels / Code / Games) ===== */
+        #flip-word {
+            display: inline-block;
+            position: relative;
+            opacity: 0;
+            filter: blur(8px);
+            transform: translateY(14px) scale(0.9);
+        }
+        #flip-word.flip-out {
+            animation: flipWordOut 0.35s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+        }
+        #flip-word.flip-in {
+            animation: flipWordIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes flipWordOut {
+            0%   { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
+            100% { opacity: 0; filter: blur(8px); transform: translateY(-14px) scale(0.9); }
+        }
+        @keyframes flipWordIn {
+            0%   { opacity: 0; filter: blur(8px); transform: translateY(14px) scale(0.9); }
+            100% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
+        }
+
+        /* ===== Seasonal easter-egg icon (appears Dec 10 - Jan 13) ===== */
+        .xmas-icon-pulse {
+            animation: xmasIconPulse 1.8s ease-in-out infinite;
+        }
+        @keyframes xmasIconPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(34,197,94,0.45)); }
+            50%      { transform: scale(1.15); filter: drop-shadow(0 0 13px rgba(34,197,94,0.9)); }
+        }
 </style>
 </head>
 <body class="antialiased">
 
+    <div id="preloader">
+        <div class="preloader-ring-wrap">
+            <svg class="preloader-ring" viewBox="0 0 168 168">
+                <circle class="ring-track" cx="84" cy="84" r="76" stroke-width="4"></circle>
+                <circle id="ring-progress" class="ring-progress" cx="84" cy="84" r="76" stroke-width="4"></circle>
+            </svg>
+            <img src="public/Icon_transparent.png" alt="ANGAGSU">
+        </div>
+    </div>
+
     <nav class="fixed w-full z-50 transition-all duration-300 bg-[#050507]/90 backdrop-blur-md border-b border-white/5" id="navbar">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-3 z-50">
-                <img src="public/Icon_transparent.png" alt="ANGAGSU Icon" class="h-10 w-10 block">
-                <span class="font-display text-2xl text-white tracking-widest mt-1 uppercase">ANGAGSU</span>
-            </a>
+            <div class="flex items-center gap-2 z-50">
+                <a href="index.html" class="flex items-center gap-3">
+                    <img src="public/Icon_transparent.png" alt="ANGAGSU Icon" class="h-10 w-10 block">
+                    <span class="font-display text-2xl text-white tracking-widest mt-1 uppercase">ANGAGSU</span>
+                </a>
+                <a id="xmas-icon" href="christmas.html" class="items-center justify-center w-10 h-10 rounded-full xmas-icon-pulse" style="display:none; text-decoration:none;" title="Праздничный сюрприз">
+                    <span style="font-size:1.7rem; line-height:1;">🎄</span>
+                </a>
+            </div>
 
             <div class="hidden md:flex items-center gap-8 font-bold text-sm tracking-widest uppercase">
                 <a href="index.html#games" class="text-gray-400 hover:text-purple-400 transition-colors">Games</a>
@@ -152,14 +295,21 @@
 
 
     <section id="home" class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden clip-diagonal bg-[#0a0a0e]">
+        <div class="hero-video-wrap">
+            <video autoplay muted loop playsinline poster="image_b17fee.jpg">
+                <source src="public/hero-bg.mp4" type="video/mp4">
+            </video>
+        </div>
         <div class="glow-effect top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
-        <div class="absolute inset-0 bg-[url('image_b17fee.jpg')] bg-cover bg-center opacity-10"></div>
 
         <div class="relative z-10 max-w-5xl mx-auto px-6 text-center">
-            <img src="public/icon_with_name_t.png" alt="ANGAGSU Studio" class="w-72 md:w-[28rem] mx-auto mb-10 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] block">
-            <h1 class="font-display text-6xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 mb-6">WE FORGE LEGENDS</h1>
-            <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-light leading-relaxed">An independent game development studio pushing the boundaries of creativity, gameplay, and visual storytelling.</p>
-            <a href="#games" class="inline-flex items-center gap-3 bg-white text-black font-bold uppercase tracking-widest px-8 py-4 rounded-full hover:bg-gray-200">Explore Games <i class="fas fa-arrow-down"></i></a>
+            <img id="hero-logo" src="public/icon_with_name_t.png" alt="ANGAGSU Studio" class="w-72 md:w-[28rem] mx-auto mb-10 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] block reveal-up">
+            <p class="font-display text-2xl md:text-3xl text-gray-300 tracking-widest uppercase mb-6">
+                <span id="more-than-text" class="reveal-up inline-block">More Than</span>
+                <span id="flip-word" class="text-purple-400 italic">Pixels</span>
+            </p>
+            <p id="hero-desc" class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-light leading-relaxed reveal-up">An independent game development studio pushing the boundaries of creativity, gameplay, and visual storytelling.</p>
+            <a id="hero-cta" href="#games" class="inline-flex items-center gap-3 bg-white text-black font-bold uppercase tracking-widest px-8 py-4 rounded-full hover:bg-gray-200 reveal-up">Explore Games <i class="fas fa-arrow-down"></i></a>
         </div>
     </section>
 
@@ -406,6 +556,124 @@
             menu.classList.toggle('hidden');
             menu.classList.toggle('flex');
         });
+
+        // Hidden easter egg: type "santa" to unwrap the holiday page
+        let eggBuffer = '';
+        window.addEventListener('keydown', (e) => {
+            if (e.key.length !== 1) return;
+            eggBuffer = (eggBuffer + e.key.toLowerCase()).slice(-5);
+            if (eggBuffer === 'santa') {
+                window.location.href = 'christmas.html';
+            }
+        });
+
+        // Seasonal icon: shows a Christmas tree next to the logo every year from
+        // December 10 through January 13, linking straight to the holiday page.
+        function isHolidaySeasonActive() {
+            const now = new Date();
+            const month = now.getMonth(); // 0-based: 11 = December, 0 = January
+            const day = now.getDate();
+            if (month === 06 && day >= 10) return true; // Dec 10-31
+            if (month === 0 && day <= 13) return true;  // Jan 1-13
+            return false;
+        }
+        (function revealSeasonalIcon() {
+            const icon = document.getElementById('xmas-icon');
+            if (icon && isHolidaySeasonActive()) {
+                icon.style.display = 'inline-flex';
+            }
+        })();
+
+        // Smooth scroll for same-page anchor links, offset for the fixed navbar
+        document.querySelectorAll('a[href^="#"], a[href^="index.html#"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const hash = link.getAttribute('href').split('#')[1];
+                const target = document.getElementById(hash);
+                if (!target) return;
+                e.preventDefault();
+                if (menu.classList.contains('flex')) {
+                    menu.classList.add('hidden');
+                    menu.classList.remove('flex');
+                }
+                const navHeight = document.getElementById('navbar').offsetHeight;
+                const targetTop = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+                window.scrollTo({ top: targetTop, behavior: 'smooth' });
+            });
+        });
+
+        // Flip words: "More Than Pixels / Code / Games"
+        const flipWordEl = document.getElementById('flip-word');
+        function startFlipWordCycle() {
+            if (!flipWordEl) return;
+            const flipWords = ['Pixels', 'Code', 'Games'];
+            let flipIndex = 0;
+            setInterval(() => {
+                flipWordEl.classList.remove('flip-in');
+                flipWordEl.classList.add('flip-out');
+                setTimeout(() => {
+                    flipIndex = (flipIndex + 1) % flipWords.length;
+                    flipWordEl.textContent = flipWords[flipIndex];
+                    flipWordEl.classList.remove('flip-out');
+                    flipWordEl.classList.add('flip-in');
+                }, 350);
+            }, 2200);
+        }
+
+        // Hero entrance sequence: logo -> "More Than" -> word-flip animation starts
+        function playHeroSequence() {
+            const logo = document.getElementById('hero-logo');
+            const moreThan = document.getElementById('more-than-text');
+            const desc = document.getElementById('hero-desc');
+            const cta = document.getElementById('hero-cta');
+
+            setTimeout(() => logo && logo.classList.add('play'), 150);
+            setTimeout(() => moreThan && moreThan.classList.add('play'), 700);
+            setTimeout(() => {
+                if (flipWordEl) flipWordEl.classList.add('flip-in');
+            }, 1150);
+            setTimeout(() => startFlipWordCycle(), 1650);
+            setTimeout(() => desc && desc.classList.add('play'), 1500);
+            setTimeout(() => cta && cta.classList.add('play'), 1750);
+        }
+
+        // Preloader: stays visible for at least 1s, then hides once page is ready
+        const preloader = document.getElementById('preloader');
+        const ringProgress = document.getElementById('ring-progress');
+        const RING_CIRCUMFERENCE = 477;
+        const pageLoadStart = Date.now();
+        const MIN_PRELOADER_MS = 1000;
+        let pageReady = false;
+
+        if (ringProgress) {
+            ringProgress.style.transition = `stroke-dashoffset ${MIN_PRELOADER_MS}ms linear`;
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => { ringProgress.style.strokeDashoffset = '0'; });
+            });
+        }
+
+        function hidePreloader() {
+            const elapsed = Date.now() - pageLoadStart;
+            const remaining = Math.max(MIN_PRELOADER_MS - elapsed, 0);
+            setTimeout(() => {
+                preloader.classList.add('loaded');
+                playHeroSequence();
+            }, remaining);
+        }
+        window.addEventListener('load', () => { pageReady = true; hidePreloader(); });
+        // Fallback in case 'load' never fires (slow/broken external assets)
+        setTimeout(() => { if (!pageReady) hidePreloader(); }, 4000);
+
+        // Scroll-reveal for sections below the fold
+        const revealTargets = document.querySelectorAll('#games, #team, #contact');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal-up', 'play');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        revealTargets.forEach(el => revealObserver.observe(el));
     </script>
 
 
