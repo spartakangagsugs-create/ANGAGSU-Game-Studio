@@ -281,14 +281,14 @@
                 <a href="index.html#contact" class="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 transition-colors">Contact Us</a>
             </div>
 
-            <button class="md:hidden text-white z-50" id="mobile-btn">
-                <i class="fas fa-bars text-2xl"></i>
+            <button class="md:hidden relative z-[110] text-white w-10 h-10 flex items-center justify-center" id="mobile-btn" aria-label="Toggle menu">
+                <i class="fas fa-bars text-2xl" id="mobile-btn-icon"></i>
             </button>
         </div>
-        <div id="mobile-menu" class="fixed inset-0 bg-[#050507] z-40 hidden flex-col items-center justify-center gap-8 font-display text-4xl">
-            <a href="index.html#games">Games</a>
-            <a href="index.html#team">Studio</a>
-            <a href="careers.html">Careers</a>
+        <div id="mobile-menu" class="fixed inset-0 z-[100] hidden flex-col items-center justify-center gap-8 font-display text-4xl bg-[#050507] overflow-y-auto" style="height: 100dvh;">
+            <a href="index.html#games" class="text-white">Games</a>
+            <a href="index.html#team" class="text-white">Studio</a>
+            <a href="careers.html" class="text-white">Careers</a>
             <a href="index.html#contact" class="text-purple-500">Contact Us</a>
         </div>
     </nav>
@@ -404,21 +404,6 @@
                     </div>
                     <h4 class="font-display text-3xl text-white mb-1">Anan Harutyunyan</h4>
                     <p class="text-purple-400 font-bold text-sm tracking-widest uppercase">VFX Artist</p>
-                </div>
-            </div>
-
-            <div class="pt-20 border-t border-white/5">
-                <h3 class="font-display text-4xl text-white mb-12 text-center">Team Gallery</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="rounded-2xl overflow-hidden aspect-video border border-white/10 hover-lift">
-                        <img src="public/team_1.png" class="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity clickable-img" alt="Team Photo 1">
-                    </div>
-                    <div class="rounded-2xl overflow-hidden aspect-video border border-white/10 hover-lift">
-                        <img src="public/team_2.png" class="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity clickable-img" alt="Team Photo 2">
-                    </div>
-                    <div class="rounded-2xl overflow-hidden aspect-video border border-white/10 hover-lift">
-                        <img src="public/team_3.png" class="w-full h-full object-cover opacity-60 hover:opacity-100 transition-opacity clickable-img" alt="Team Photo 3">
-                    </div>
                 </div>
             </div>
         </div>
@@ -551,10 +536,36 @@
 
         // Mobile Menu Toggle
         const btn = document.getElementById('mobile-btn');
+        const btnIcon = document.getElementById('mobile-btn-icon');
         const menu = document.getElementById('mobile-menu');
+
+        function openMobileMenu() {
+            menu.classList.remove('hidden');
+            menu.classList.add('flex');
+            btnIcon.classList.remove('fa-bars');
+            btnIcon.classList.add('fa-times');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+            menu.classList.add('hidden');
+            menu.classList.remove('flex');
+            btnIcon.classList.remove('fa-times');
+            btnIcon.classList.add('fa-bars');
+            document.body.style.overflow = '';
+        }
+
         btn.addEventListener('click', () => {
-            menu.classList.toggle('hidden');
-            menu.classList.toggle('flex');
+            if (menu.classList.contains('flex')) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        });
+
+        // Close the mobile menu whenever a menu link is tapped
+        menu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => closeMobileMenu());
         });
 
         // Hidden easter egg: type "santa" to unwrap the holiday page
@@ -592,8 +603,7 @@
                 if (!target) return;
                 e.preventDefault();
                 if (menu.classList.contains('flex')) {
-                    menu.classList.add('hidden');
-                    menu.classList.remove('flex');
+                    closeMobileMenu();
                 }
                 const navHeight = document.getElementById('navbar').offsetHeight;
                 const targetTop = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
