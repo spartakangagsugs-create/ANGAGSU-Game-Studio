@@ -49,9 +49,37 @@
         .hover-lift {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .hover-lift:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px -10px rgba(109, 40, 217, 0.4);
+        @media (hover: hover) and (pointer: fine) {
+            .hover-lift:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 40px -10px rgba(109, 40, 217, 0.4);
+            }
+        }
+
+        .job-card {
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+        .job-card-btn {
+            transition: background-color 0.3s ease;
+        }
+        .job-card.accent-purple,
+        .job-card.accent-blue {
+            border-color: rgba(168, 85, 247, 0.5);
+        }
+        .job-card.accent-purple .job-card-btn,
+        .job-card.accent-blue .job-card-btn {
+            background-color: #9333ea;
+            border-color: #9333ea;
+        }
+        @media (hover: hover) and (pointer: fine) {
+            .job-card.accent-purple:hover,
+            .job-card.accent-blue:hover {
+                border-color: #a855f7;
+            }
+            .job-card.accent-purple:hover .job-card-btn,
+            .job-card.accent-blue:hover .job-card-btn {
+                background-color: #a855f7;
+            }
         }
 
         .video-container {
@@ -138,15 +166,19 @@
                 <a href="index.html#contact" class="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 transition-colors">Contact Us</a>
             </div>
 
-            <button class="md:hidden text-white z-50" id="mobile-btn">
-                <i class="fas fa-bars text-2xl"></i>
+            <button class="md:hidden relative z-[110] text-white w-10 h-10 flex items-center justify-center" id="mobile-btn" aria-label="Toggle menu">
+                <i class="fas fa-bars text-2xl" id="mobile-btn-icon"></i>
             </button>
         </div>
-        <div id="mobile-menu" class="fixed inset-0 bg-[#050507] z-40 hidden flex-col items-center justify-center gap-8 font-display text-4xl">
-            <a href="index.html#games">Games</a>
-            <a href="index.html#team">Studio</a>
-            <a href="careers.html">Careers</a>
-            <a href="index.html#contact" class="text-purple-500">Contact Us</a>
+        <div id="mobile-menu" class="fixed inset-0 z-[100] hidden flex-col bg-[#050507]/90 backdrop-blur-xl overflow-y-auto overscroll-contain" style="height: 100dvh;">
+            <div class="flex-1 flex flex-col items-center justify-center w-full px-8">
+                <div class="flex flex-col items-center w-full max-w-xs divide-y divide-white/10">
+                    <a href="index.html#games" class="font-display text-4xl text-gray-200 hover:text-purple-400 transition-colors uppercase w-full text-center py-5">Games</a>
+                    <a href="index.html#team" class="font-display text-4xl text-gray-200 hover:text-purple-400 transition-colors uppercase w-full text-center py-5">Studio</a>
+                    <a href="careers.html" class="font-display text-4xl text-gray-200 hover:text-purple-400 transition-colors uppercase w-full text-center py-5">Careers</a>
+                    <a href="index.html#contact" class="font-display text-4xl text-purple-400 hover:text-purple-300 transition-colors uppercase w-full text-center py-5">Contact Us</a>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -158,26 +190,26 @@
 
             <div class="grid gap-6">
 
-                <div class="bg-[#0a0a0e] border border-white/5 p-8 rounded-2xl hover:border-purple-500 transition-all group">
+                <div class="bg-[#0a0a0e] border border-white/5 p-8 rounded-2xl job-card accent-purple transition-all">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div>
                             <span class="text-purple-500 font-bold uppercase tracking-widest text-xs mb-2 block">Engineering</span>
                             <h3 class="text-2xl font-bold text-white mb-1">Unity Game Developer (Mid/Senior)</h3>
                             <p class="text-gray-500 text-sm">Remote / Full-time</p>
                         </div>
-                        <a href="job-unity-dev.html" class="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-lg group-hover:bg-purple-600 transition-all font-bold uppercase tracking-widest text-xs">Job Details</a>
+                        <a href="job-unity-dev.html" class="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-lg job-card-btn transition-all font-bold uppercase tracking-widest text-xs">Job Details</a>
                     </div>
                 </div>
 
 
-                <div class="bg-[#0a0a0e] border border-white/5 p-8 rounded-2xl hover:border-blue-500 transition-all group">
+                <div class="bg-[#0a0a0e] border border-white/5 p-8 rounded-2xl job-card accent-blue transition-all">
                     <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div>
                             <span class="text-blue-500 font-bold uppercase tracking-widest text-xs mb-2 block">Art & Design</span>
                             <h3 class="text-2xl font-bold text-white mb-1">3D Environment Artist</h3>
                             <p class="text-gray-500 text-sm">Hybrid / Project-based</p>
                         </div>
-                        <a href="job-artist.html" class="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-lg group-hover:bg-blue-600 transition-all font-bold uppercase tracking-widest text-xs">Job Details</a>
+                        <a href="job-artist.html" class="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-lg job-card-btn transition-all font-bold uppercase tracking-widest text-xs">Job Details</a>
                     </div>
                 </div>
 
@@ -263,10 +295,47 @@
 
         // Mobile Menu Toggle
         const btn = document.getElementById('mobile-btn');
+        const btnIcon = document.getElementById('mobile-btn-icon');
         const menu = document.getElementById('mobile-menu');
+        let mobileMenuScrollY = 0;
+
+        function openMobileMenu() {
+            mobileMenuScrollY = window.scrollY;
+            menu.classList.remove('hidden');
+            menu.classList.add('flex');
+            btnIcon.classList.remove('fa-bars');
+            btnIcon.classList.add('fa-times');
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${mobileMenuScrollY}px`;
+            document.body.style.left = '0';
+            document.body.style.right = '0';
+            document.body.style.width = '100%';
+        }
+
+        function closeMobileMenu() {
+            menu.classList.add('hidden');
+            menu.classList.remove('flex');
+            btnIcon.classList.remove('fa-times');
+            btnIcon.classList.add('fa-bars');
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            document.body.style.width = '';
+            window.scrollTo(0, mobileMenuScrollY);
+        }
+
         btn.addEventListener('click', () => {
-            menu.classList.toggle('hidden');
-            menu.classList.toggle('flex');
+            if (menu.classList.contains('flex')) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        });
+
+        // Close the mobile menu whenever a menu link is tapped
+        menu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => closeMobileMenu());
         });
     </script>
 

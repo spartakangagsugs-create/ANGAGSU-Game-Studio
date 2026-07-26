@@ -138,15 +138,19 @@
                 <a href="index.html#contact" class="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-500 transition-colors">Contact Us</a>
             </div>
 
-            <button class="md:hidden text-white z-50" id="mobile-btn">
-                <i class="fas fa-bars text-2xl"></i>
+            <button class="md:hidden relative z-[110] text-white w-10 h-10 flex items-center justify-center" id="mobile-btn" aria-label="Toggle menu">
+                <i class="fas fa-bars text-2xl" id="mobile-btn-icon"></i>
             </button>
         </div>
-        <div id="mobile-menu" class="fixed inset-0 bg-[#050507] z-40 hidden flex-col items-center justify-center gap-8 font-display text-4xl">
-            <a href="index.html#games">Games</a>
-            <a href="index.html#team">Studio</a>
-            <a href="careers.html">Careers</a>
-            <a href="index.html#contact" class="text-purple-500">Contact Us</a>
+        <div id="mobile-menu" class="fixed inset-0 z-[100] hidden flex-col bg-[#050507]/90 backdrop-blur-xl overflow-y-auto overscroll-contain" style="height: 100dvh;">
+            <div class="flex-1 flex flex-col items-center justify-center w-full px-8">
+                <div class="flex flex-col items-center w-full max-w-xs divide-y divide-white/10">
+                    <a href="index.html#games" class="font-display text-4xl text-gray-200 hover:text-purple-400 transition-colors uppercase w-full text-center py-5">Games</a>
+                    <a href="index.html#team" class="font-display text-4xl text-gray-200 hover:text-purple-400 transition-colors uppercase w-full text-center py-5">Studio</a>
+                    <a href="careers.html" class="font-display text-4xl text-gray-200 hover:text-purple-400 transition-colors uppercase w-full text-center py-5">Careers</a>
+                    <a href="index.html#contact" class="font-display text-4xl text-purple-400 hover:text-purple-300 transition-colors uppercase w-full text-center py-5">Contact Us</a>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -300,10 +304,47 @@
 
         // Mobile Menu Toggle
         const btn = document.getElementById('mobile-btn');
+        const btnIcon = document.getElementById('mobile-btn-icon');
         const menu = document.getElementById('mobile-menu');
+        let mobileMenuScrollY = 0;
+
+        function openMobileMenu() {
+            mobileMenuScrollY = window.scrollY;
+            menu.classList.remove('hidden');
+            menu.classList.add('flex');
+            btnIcon.classList.remove('fa-bars');
+            btnIcon.classList.add('fa-times');
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${mobileMenuScrollY}px`;
+            document.body.style.left = '0';
+            document.body.style.right = '0';
+            document.body.style.width = '100%';
+        }
+
+        function closeMobileMenu() {
+            menu.classList.add('hidden');
+            menu.classList.remove('flex');
+            btnIcon.classList.remove('fa-times');
+            btnIcon.classList.add('fa-bars');
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+            document.body.style.width = '';
+            window.scrollTo(0, mobileMenuScrollY);
+        }
+
         btn.addEventListener('click', () => {
-            menu.classList.toggle('hidden');
-            menu.classList.toggle('flex');
+            if (menu.classList.contains('flex')) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        });
+
+        // Close the mobile menu whenever a menu link is tapped
+        menu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => closeMobileMenu());
         });
     </script>
 
