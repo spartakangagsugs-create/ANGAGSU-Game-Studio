@@ -626,6 +626,7 @@
             position: relative;
             max-width: 460px;
             height: min(460px, 70vh);
+            height: min(460px, 70dvh); /* dvh fixes the mobile address-bar jump; vh above is the fallback for old browsers */
             margin: 0 auto;
             overflow-y: auto;
             overflow-x: hidden;
@@ -1207,114 +1208,77 @@
         // score (uncapped) before the level actually ends and stars are tallied.
         // NOTE on `target`: this is the score threshold star ratings are computed against
         // (1 star at target, 2 at 1.3x, 3 at 1.6x — see computeStars). It should scale with
-        // `moves` at roughly the same score-per-move rate for a given board `shape` as the
-        // procedurally generated levels below use (see EXTENDED_TARGETS) — otherwise stars
-        // become wildly easier or harder to earn from one level to the next for no reason
-        // the player can see. BUG FIX: these targets used to be tuned independently of that
-        // rate and were 2.5x-10x too high for levels 1-3 (e.g. level 1's FULL board demanded
-        // ~708 score/move vs. the ~66 score/move a FULL board realistically supports elsewhere
-        // in the game) — 1 star, let alone 3, was essentially unreachable on those levels even
-        // with a flawless run. Retuned below to match the same score/move rate as same-shape
-        // procedural levels (level 6/RING was already correctly tuned and is unchanged).
+        // `moves` at roughly the same score-per-move rate for a given board `shape` — otherwise
+        // stars become wildly easier or harder to earn from one level to the next for no reason
+        // the player can see (a FULL board realistically supports ~66 score/move; a sparse
+        // board like RING scores far less per move even with more moves allotted).
+        //
+        // All 30 levels are hand-authored below across 3 worlds (Cozy Village 1-10,
+        // Magical Winter Forest 11-20, Santa's Workshop-Landia 21-30): ice count/toughness
+        // and move budgets ramp up, timers appear more often in later worlds, and every
+        // level's ice-cell placement + collect-toy types are unique.
         const LEVELS = [
-            { target: 1700, moves: 26, types: 4, shape: SHAPES.FULL,      ice: [],
-              objectives: [ { type: 'collect', tileType: 0, target: 16 } ] },
-            { target: 1550, moves: 30, types: 5, shape: SHAPES.DIAMOND,   ice: [[3,2,1],[4,5,1],[2,3,1],[5,4,1]],
-              objectives: [ { type: 'collect', tileType: 1, target: 18 }, { type: 'ice', target: 4 } ] },
-            { target: 1900, moves: 34, types: 5, shape: SHAPES.CROSS,     ice: [[2,1,1],[3,6,1],[5,2,2],[2,6,1],[4,1,1]],
-              objectives: [ { type: 'collect', tileType: 0, target: 20 }, { type: 'ice', target: 5 } ] },
-            { target: 1600, moves: 38, types: 6, shape: SHAPES.TREE,      ice: [[3,2,1],[4,5,1],[5,1,1],[5,6,2],[2,4,1]],
-              objectives: [ { type: 'collect', tileType: 1, target: 22 }, { type: 'collect', tileType: 4, target: 18 }, { type: 'ice', target: 5 } ] },
-            { target: 1700, moves: 42, types: 6, shape: SHAPES.HOURGLASS, ice: [[0,1,1],[0,6,1],[7,1,1],[7,6,2],[1,2,1],[6,5,1]],
-              objectives: [ { type: 'collect', tileType: 2, target: 24 }, { type: 'collect', tileType: 5, target: 20 }, { type: 'ice', target: 6 }, { type: 'timer', seconds: 150 } ] },
-            { target: 750, moves: 46, types: 7, shape: SHAPES.RING,      ice: [[0,3,1],[0,4,2],[7,3,1],[7,4,2],[3,0,1],[4,7,1],[3,7,1]],
-              objectives: [ { type: 'collect', tileType: 0, target: 18 }, { type: 'collect', tileType: 3, target: 16 }, { type: 'collect', tileType: 6, target: 14 }, { type: 'ice', target: 7 }, { type: 'timer', seconds: 180 } ] },
+            { target: 1700, moves: 26, types: 4, shape: SHAPES.FULL, ice: [],
+              objectives: [ { type: 'collect', tileType: 2, target: 16 } ] }, // level 1
+            { target: 1550, moves: 30, types: 5, shape: SHAPES.DIAMOND, ice: [[3,5,1], [1,3,1], [0,3,1], [3,3,1]],
+              objectives: [ { type: 'collect', tileType: 4, target: 18 }, { type: 'ice', target: 4 } ] }, // level 2
+            { target: 1900, moves: 34, types: 5, shape: SHAPES.CROSS, ice: [[7,4,1], [6,2,1], [3,4,1], [4,6,1], [4,0,1]],
+              objectives: [ { type: 'collect', tileType: 2, target: 20 }, { type: 'ice', target: 5 } ] }, // level 3
+            { target: 1600, moves: 38, types: 6, shape: SHAPES.TREE, ice: [[0,3,1], [7,4,1], [5,3,1], [1,3,1], [5,4,1]],
+              objectives: [ { type: 'collect', tileType: 5, target: 11 }, { type: 'collect', tileType: 4, target: 11 }, { type: 'ice', target: 5 } ] }, // level 4
+            { target: 1700, moves: 42, types: 6, shape: SHAPES.HOURGLASS, ice: [[6,3,1], [7,0,1], [2,5,1], [6,6,1], [1,2,1], [2,3,1]],
+              objectives: [ { type: 'collect', tileType: 1, target: 13 }, { type: 'collect', tileType: 5, target: 13 }, { type: 'ice', target: 6 }, { type: 'timer', seconds: 150 } ] }, // level 5
+            { target: 750, moves: 46, types: 7, shape: SHAPES.RING, ice: [[0,2,1], [0,1,1], [6,7,1], [7,2,1], [3,0,1], [7,6,1], [0,0,1]],
+              objectives: [ { type: 'collect', tileType: 6, target: 10 }, { type: 'collect', tileType: 5, target: 10 }, { type: 'collect', tileType: 2, target: 10 }, { type: 'ice', target: 7 }, { type: 'timer', seconds: 180 } ] }, // level 6
+            { target: 3000, moves: 48, types: 7, shape: SHAPES.FULL, ice: [[0,6,1], [7,1,1], [3,5,1], [1,4,1], [2,5,1], [1,3,1]],
+              objectives: [ { type: 'collect', tileType: 6, target: 14 }, { type: 'collect', tileType: 5, target: 14 }, { type: 'ice', target: 6 } ] }, // level 7
+            { target: 2400, moves: 49, types: 7, shape: SHAPES.DIAMOND, ice: [[4,3,1], [4,2,1], [2,1,1], [7,4,1], [4,1,1], [3,2,1]],
+              objectives: [ { type: 'collect', tileType: 1, target: 15 }, { type: 'collect', tileType: 3, target: 15 }, { type: 'ice', target: 6 } ] }, // level 8
+            { target: 2700, moves: 50, types: 7, shape: SHAPES.CROSS, ice: [[1,3,1], [3,6,1], [7,4,1], [3,3,1], [0,5,1], [6,5,1], [6,3,1]],
+              objectives: [ { type: 'collect', tileType: 3, target: 10 }, { type: 'collect', tileType: 5, target: 10 }, { type: 'collect', tileType: 2, target: 10 }, { type: 'ice', target: 7 } ] }, // level 9
+            { target: 2050, moves: 52, types: 7, shape: SHAPES.TREE, ice: [[1,4,1], [3,5,2], [5,7,1], [5,5,2], [2,2,1], [2,3,2], [4,4,1]],
+              objectives: [ { type: 'collect', tileType: 2, target: 10 }, { type: 'collect', tileType: 0, target: 10 }, { type: 'collect', tileType: 3, target: 10 }, { type: 'ice', target: 7 }, { type: 'timer', seconds: 170 } ] }, // level 10
+            { target: 2050, moves: 53, types: 7, shape: SHAPES.HOURGLASS, ice: [[2,2,2], [3,3,2], [7,7,2], [6,2,2], [7,2,2], [6,1,2], [2,3,2], [3,4,2]],
+              objectives: [ { type: 'collect', tileType: 0, target: 16 }, { type: 'collect', tileType: 5, target: 16 }, { type: 'ice', target: 8 }, { type: 'timer', seconds: 180 } ] }, // level 11
+            { target: 950, moves: 54, types: 7, shape: SHAPES.RING, ice: [[4,0,2], [0,0,2], [3,0,2], [0,6,2], [0,5,2], [0,1,2], [7,4,2], [7,3,2]],
+              objectives: [ { type: 'collect', tileType: 2, target: 11 }, { type: 'collect', tileType: 3, target: 11 }, { type: 'collect', tileType: 0, target: 11 }, { type: 'ice', target: 8 } ] }, // level 12
+            { target: 3700, moves: 55, types: 7, shape: SHAPES.FULL, ice: [[7,2,2], [6,3,2], [6,6,2], [0,1,2], [1,1,2], [2,7,2], [3,1,2], [7,1,2], [4,2,2]],
+              objectives: [ { type: 'collect', tileType: 2, target: 16 }, { type: 'collect', tileType: 4, target: 16 }, { type: 'ice', target: 9 }, { type: 'timer', seconds: 190 } ] }, // level 13
+            { target: 2850, moves: 56, types: 7, shape: SHAPES.DIAMOND, ice: [[3,7,2], [3,0,2], [7,4,2], [4,7,2], [5,1,2], [3,4,2], [5,3,2], [4,0,2], [6,4,2]],
+              objectives: [ { type: 'collect', tileType: 1, target: 11 }, { type: 'collect', tileType: 3, target: 11 }, { type: 'collect', tileType: 2, target: 11 }, { type: 'ice', target: 9 } ] }, // level 14
+            { target: 3550, moves: 57, types: 7, shape: SHAPES.CROSS, ice: [[4,4,2], [3,0,2], [4,1,2], [0,3,2], [7,4,2], [2,0,2], [7,5,2], [3,2,2], [2,1,2]],
+              objectives: [ { type: 'collect', tileType: 6, target: 17 }, { type: 'collect', tileType: 4, target: 17 }, { type: 'ice', target: 9 }, { type: 'timer', seconds: 190 } ] }, // level 15
+            { target: 2400, moves: 58, types: 7, shape: SHAPES.TREE, ice: [[5,1,2], [7,3,2], [3,2,2], [6,3,2], [5,0,2], [1,4,2], [3,3,2], [5,7,2], [3,1,2], [2,5,2]],
+              objectives: [ { type: 'collect', tileType: 0, target: 12 }, { type: 'collect', tileType: 5, target: 12 }, { type: 'collect', tileType: 1, target: 12 }, { type: 'ice', target: 10 } ] }, // level 16
+            { target: 2300, moves: 58, types: 7, shape: SHAPES.HOURGLASS, ice: [[0,5,2], [7,6,2], [0,3,2], [2,4,2], [2,5,2], [2,3,2], [4,3,2], [6,6,2], [6,5,2], [0,2,2]],
+              objectives: [ { type: 'collect', tileType: 2, target: 17 }, { type: 'collect', tileType: 5, target: 17 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 195 } ] }, // level 17
+            { target: 950, moves: 59, types: 7, shape: SHAPES.RING, ice: [[7,5,2], [2,0,2], [0,0,2], [4,0,2], [7,6,2], [6,7,2], [3,0,2], [0,5,2], [7,4,2], [2,7,2]],
+              objectives: [ { type: 'collect', tileType: 3, target: 12 }, { type: 'collect', tileType: 6, target: 12 }, { type: 'collect', tileType: 2, target: 12 }, { type: 'ice', target: 10 } ] }, // level 18
+            { target: 4000, moves: 60, types: 7, shape: SHAPES.FULL, ice: [[6,2,2], [5,3,3], [6,6,2], [4,3,3], [3,7,2], [0,0,3], [1,1,2], [3,2,3], [0,3,2], [2,2,3]],
+              objectives: [ { type: 'collect', tileType: 2, target: 12 }, { type: 'collect', tileType: 0, target: 12 }, { type: 'collect', tileType: 3, target: 12 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 195 } ] }, // level 19
+            { target: 3050, moves: 60, types: 7, shape: SHAPES.DIAMOND, ice: [[4,2,2], [1,2,3], [7,4,2], [3,1,3], [3,0,2], [2,6,3], [6,4,2], [1,4,3], [4,7,2], [5,4,3]],
+              objectives: [ { type: 'collect', tileType: 5, target: 12 }, { type: 'collect', tileType: 1, target: 12 }, { type: 'collect', tileType: 6, target: 12 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 200 } ] }, // level 20
+            { target: 3250, moves: 60, types: 7, shape: SHAPES.CROSS, ice: [[0,2,2], [4,0,3], [2,3,2], [5,7,3], [2,1,2], [3,6,3], [2,5,2], [1,4,3], [3,2,2], [3,7,3]],
+              objectives: [ { type: 'collect', tileType: 1, target: 12 }, { type: 'collect', tileType: 6, target: 12 }, { type: 'collect', tileType: 5, target: 12 }, { type: 'ice', target: 10 } ] }, // level 21
+            { target: 2500, moves: 60, types: 7, shape: SHAPES.TREE, ice: [[4,1,2], [5,7,3], [6,4,2], [5,0,3], [5,2,2], [7,4,3], [3,2,2], [0,4,3], [4,3,2], [5,1,3]],
+              objectives: [ { type: 'collect', tileType: 3, target: 18 }, { type: 'collect', tileType: 4, target: 18 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 195 } ] }, // level 22
+            { target: 2400, moves: 60, types: 7, shape: SHAPES.HOURGLASS, ice: [[1,5,2], [0,3,3], [7,4,2], [3,3,3], [5,4,2], [1,6,3], [6,6,2], [6,4,3], [6,2,2], [5,2,3]],
+              objectives: [ { type: 'collect', tileType: 4, target: 12 }, { type: 'collect', tileType: 1, target: 12 }, { type: 'collect', tileType: 3, target: 12 }, { type: 'ice', target: 10 } ] }, // level 23
+            { target: 950, moves: 60, types: 7, shape: SHAPES.RING, ice: [[4,0,2], [7,0,3], [0,4,2], [1,0,3], [2,7,2], [7,7,3], [0,3,2], [1,7,3], [0,5,2], [6,0,3]],
+              objectives: [ { type: 'collect', tileType: 3, target: 12 }, { type: 'collect', tileType: 6, target: 12 }, { type: 'collect', tileType: 5, target: 12 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 195 } ] }, // level 24
+            { target: 4200, moves: 60, types: 7, shape: SHAPES.FULL, ice: [[0,1,3], [7,4,3], [6,0,3], [0,6,3], [5,6,3], [3,2,3], [2,2,3], [5,5,3], [1,6,3], [7,5,3]],
+              objectives: [ { type: 'collect', tileType: 6, target: 12 }, { type: 'collect', tileType: 5, target: 12 }, { type: 'collect', tileType: 1, target: 12 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 190 } ] }, // level 25
+            { target: 3200, moves: 60, types: 7, shape: SHAPES.DIAMOND, ice: [[4,6,2], [7,4,3], [3,3,2], [2,3,3], [4,0,2], [2,6,3], [4,7,2], [4,5,3], [3,7,2], [4,4,3]],
+              objectives: [ { type: 'collect', tileType: 2, target: 12 }, { type: 'collect', tileType: 5, target: 12 }, { type: 'collect', tileType: 3, target: 12 }, { type: 'ice', target: 10 } ] }, // level 26
+            { target: 3300, moves: 60, types: 7, shape: SHAPES.CROSS, ice: [[4,5,2], [5,0,3], [2,2,2], [3,6,3], [5,3,2], [2,0,3], [3,0,2], [0,5,3], [7,2,2], [7,3,3]],
+              objectives: [ { type: 'collect', tileType: 3, target: 12 }, { type: 'collect', tileType: 2, target: 12 }, { type: 'collect', tileType: 1, target: 12 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 195 } ] }, // level 27
+            { target: 2600, moves: 60, types: 7, shape: SHAPES.TREE, ice: [[5,0,2], [5,7,3], [3,2,2], [5,2,3], [3,6,2], [7,3,3], [2,4,2], [0,4,3], [1,3,2], [4,4,3]],
+              objectives: [ { type: 'collect', tileType: 2, target: 12 }, { type: 'collect', tileType: 3, target: 12 }, { type: 'collect', tileType: 5, target: 12 }, { type: 'ice', target: 10 } ] }, // level 28
+            { target: 2500, moves: 60, types: 7, shape: SHAPES.HOURGLASS, ice: [[2,4,2], [7,7,3], [1,4,2], [1,2,3], [5,5,2], [4,3,3], [1,1,2], [7,0,3], [2,2,2], [6,2,3]],
+              objectives: [ { type: 'collect', tileType: 6, target: 12 }, { type: 'collect', tileType: 1, target: 12 }, { type: 'collect', tileType: 4, target: 12 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 195 } ] }, // level 29
+            { target: 1100, moves: 60, types: 7, shape: SHAPES.RING, ice: [[7,7,3], [6,0,3], [6,7,3], [7,5,3], [0,7,3], [5,7,3], [4,7,3], [7,6,3], [7,2,3], [4,0,3]],
+              objectives: [ { type: 'collect', tileType: 1, target: 12 }, { type: 'collect', tileType: 0, target: 12 }, { type: 'collect', tileType: 5, target: 12 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 200 } ] }, // level 30
         ];
-
-        // Small seeded PRNG (mulberry32-style) so procedurally generated levels are
-        // stable across reloads instead of re-randomizing every time.
-        function makeRng(seed) {
-            let s = seed >>> 0;
-            return function rand() {
-                s = (s + 0x6D2B79F5) | 0;
-                let t = Math.imul(s ^ (s >>> 15), 1 | s);
-                t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-            };
-        }
-
-        // Deterministic pick of `count` active cells from a shape mask
-        function pickIceCells(shape, count, seed) {
-            const active = [];
-            for (let r = 0; r < BOARD_SIZE; r++) for (let c = 0; c < BOARD_SIZE; c++) if (shape[r][c]) active.push([r, c]);
-            const rand = makeRng(seed);
-            for (let i = active.length - 1; i > 0; i--) {
-                const j = Math.floor(rand() * (i + 1));
-                [active[i], active[j]] = [active[j], active[i]];
-            }
-            return active.slice(0, count);
-        }
-
-        // Deterministic pick of `n` distinct tile-type indices out of `count` types
-        function pickCollectTypes(count, n, seed) {
-            const idxs = Array.from({ length: count }, (_, k) => k);
-            const rand = makeRng(seed);
-            for (let i = idxs.length - 1; i > 0; i--) {
-                const j = Math.floor(rand() * (i + 1));
-                [idxs[i], idxs[j]] = [idxs[j], idxs[i]];
-            }
-            return idxs.slice(0, n);
-        }
-
-        // Procedurally extend the level list up to 30, cycling through the hand-built
-        // shapes and gradually raising the target score, move budget, ice count/toughness,
-        // and the number + size of "collect this toy" objectives — so later levels take
-        // longer and demand more deliberate, targeted play instead of just any matches.
-        const SHAPE_CYCLE = [SHAPES.FULL, SHAPES.DIAMOND, SHAPES.CROSS, SHAPES.TREE, SHAPES.HOURGLASS, SHAPES.RING];
-        const TOTAL_LEVELS = 30;
-        // Star targets for levels 7-30, one per level (index 0 = level 7).
-        // BUG FIX: the old formula (target = prevTarget + 850 + (i-6)*80, uncapped) grew the
-        // score requirement much faster than the score a player can actually earn — moves cap
-        // out at 60 while the target kept climbing past 50,000, so on later levels not even a
-        // flawless run could reach 1 star. These numbers come from simulating lots of playthroughs
-        // of each level's actual board (shape density + toy-type count + move budget all affect
-        // how much score is realistically earnable — e.g. the sparse RING shape scores far less
-        // than the FULL board even with more moves), so a solid clear lands around 1 star and a
-        // very efficient run can reach 2-3 stars. Re-tune if playtesting says a level feels off.
-        const EXTENDED_TARGETS = [3000, 2400, 2700, 2050, 2050, 800, 3700, 2850, 3550, 2400, 2300, 950, 3700, 3250, 3150, 2450, 2400, 950, 4000, 3050, 3250, 2500, 2400, 950];
-        (function extendLevels() {
-            const baseLen = LEVELS.length;
-            let moves = LEVELS[baseLen - 1].moves;
-            for (let i = baseLen; i < TOTAL_LEVELS; i++) {
-                const shape = SHAPE_CYCLE[i % SHAPE_CYCLE.length];
-                const target = EXTENDED_TARGETS[i - baseLen];
-                // Longer move budgets as levels progress, so a full playthrough keeps
-                // landing in the ~2-5 minute range instead of ending in under a minute.
-                moves = Math.min(60, moves + 1);
-                const types = 7;
-                const iceCount = Math.min(10, 4 + Math.floor((i - 6) / 3));
-                const toughHits = i >= 16 ? 2 : 1;
-                const cells = pickIceCells(shape, iceCount, i * 97 + 13);
-                const ice = cells.map(([r, c], idx) => [r, c, idx % 4 === 0 ? Math.min(2, toughHits + 1) : toughHits]);
-
-                // Mix in 1-3 "collect the toy" objectives (varies by level so the run feels varied),
-                // sized against the move budget so they're a real focus without needing every move.
-                const numCollect = (i % 5 === 0) ? 3 : (i % 2 === 0 ? 2 : 1);
-                const collectTypes = pickCollectTypes(types, numCollect, i * 131 + 7);
-                const perTypeTarget = Math.max(10, Math.round((moves * 0.6) / numCollect));
-                const objectives = [];
-                collectTypes.forEach(t => objectives.push({ type: 'collect', tileType: t, target: perTypeTarget }));
-                objectives.push({ type: 'ice', target: cells.length });
-                // From level 11 on, roughly every 4th level also races the clock —
-                // always alongside the collect objectives above, never by itself.
-                if (i >= 10 && i % 4 === 0) {
-                    const seconds = Math.max(90, Math.round(moves * 3.2));
-                    objectives.push({ type: 'timer', seconds });
-                }
-
-                LEVELS.push({ target, moves, types, shape, ice, objectives });
-            }
-        })();
 
         // Progress (unlocked levels + star ratings) persisted to localStorage,
         // same as the music/sfx volume already was — was previously "session-only"
@@ -1350,6 +1314,39 @@
 
         const MAP_DECOR = ['🎄', '❄️', '🎁', '⭐'];
 
+        // ---- Level-map background photo + node coordinates ----
+        // The background photo is MAP_BG_ASPECT_H / MAP_BG_ASPECT_W tall relative to its
+        // width (full 3-world map, native size 352x2848px) — the wrap height below is
+        // locked to this ratio so the photo is never stretched non-uniformly on any screen.
+        const MAP_BG_ASPECT_W = 352;
+        const MAP_BG_ASPECT_H = 2848;
+
+        // One entry per level, in the SAME order as LEVELS (index 0 = level 1, etc).
+        // xPct/yPct are percentages (0-100) of the photo's width/height — 0,0 is the
+        // top-left corner of the image, 100,100 is the bottom-right corner.
+        // Levels 1-10 = Cozy Village (bottom band), 11-20 = Magical Winter Forest
+        // (middle band), 21-30 = Santa's Workshop-Landia (top band, below the castle).
+        // TO ALIGN THE ROAD: open the game, look at screen-levelmap, and nudge these
+        // two numbers per level until the dot sits on the stepping-stone path in the
+        // photo. No other code needs to change.
+        const LEVEL_MAP_POINTS = [
+            // World 1 — Cozy Village
+            { xPct: 54, yPct: 95.5 }, { xPct: 26, yPct: 92.8 }, { xPct: 64, yPct: 90.2 },
+            { xPct: 22, yPct: 87.5 }, { xPct: 58, yPct: 84.8 }, { xPct: 30, yPct: 82.2 },
+            { xPct: 66, yPct: 79.5 }, { xPct: 24, yPct: 76.8 }, { xPct: 52, yPct: 74.2 },
+            { xPct: 28, yPct: 71.5 },
+            // World 2 — Magical Winter Forest
+            { xPct: 58, yPct: 68.5 }, { xPct: 30, yPct: 65.8 }, { xPct: 68, yPct: 63.2 },
+            { xPct: 26, yPct: 60.5 }, { xPct: 62, yPct: 57.8 }, { xPct: 34, yPct: 55.2 },
+            { xPct: 70, yPct: 52.5 }, { xPct: 28, yPct: 49.8 }, { xPct: 56, yPct: 47.2 },
+            { xPct: 32, yPct: 44.5 },
+            // World 3 — Santa's Workshop-Landia
+            { xPct: 62, yPct: 41.5 }, { xPct: 34, yPct: 39.9 }, { xPct: 72, yPct: 38.4 },
+            { xPct: 30, yPct: 36.8 }, { xPct: 66, yPct: 35.3 }, { xPct: 38, yPct: 33.7 },
+            { xPct: 74, yPct: 32.2 }, { xPct: 32, yPct: 30.6 }, { xPct: 60, yPct: 29.1 },
+            { xPct: 36, yPct: 27.5 },
+        ];
+
         function renderLevelMap() {
             updateHeaderStats();
             const viewport = document.getElementById('level-map-viewport');
@@ -1360,11 +1357,12 @@
             svg.innerHTML = '';
             wrap.querySelectorAll('.m3-map-deco').forEach(d => d.remove());
 
-            const nodeSize = 72;
-            const vGap = 116;
-            const topPad = 50, bottomPad = 50;
-            const xPattern = [50, 76, 50, 24]; // % across the path width, zig-zag
-            const mapHeight = topPad + bottomPad + vGap * (LEVELS.length - 1);
+            // Height in px is derived from the CURRENT rendered width of the wrap (which
+            // is fluid — up to 460px on desktop, narrower on phones) times the photo's
+            // own aspect ratio, so the background photo always renders 1:1, never
+            // squashed or stretched differently per screen size.
+            const wrapWidth = wrap.clientWidth || viewport.clientWidth;
+            const mapHeight = Math.round(wrapWidth * (MAP_BG_ASPECT_H / MAP_BG_ASPECT_W));
 
             wrap.style.height = mapHeight + 'px';
             svg.setAttribute('viewBox', `0 0 100 ${mapHeight}`);
@@ -1372,11 +1370,12 @@
             svg.setAttribute('width', '100%');
             svg.setAttribute('height', mapHeight);
 
-            // level 0 starts near the bottom, later levels climb upward
-            const points = LEVELS.map((lvl, i) => ({
-                xPct: xPattern[i % xPattern.length],
-                y: mapHeight - bottomPad - i * vGap,
-            }));
+            // Point coordinates now come straight from LEVEL_MAP_POINTS (fractions of
+            // the photo), converted to this render's actual pixel height.
+            const points = LEVELS.map((lvl, i) => {
+                const p = LEVEL_MAP_POINTS[i % LEVEL_MAP_POINTS.length];
+                return { xPct: p.xPct, y: mapHeight * (p.yPct / 100) };
+            });
 
             let d = `M ${points[0].xPct} ${points[0].y}`;
             for (let i = 1; i < points.length; i++) {
@@ -1457,6 +1456,15 @@
             const maxScroll = Math.max(0, mapHeight - viewport.clientHeight);
             viewport.scrollTop = Math.max(0, Math.min(maxScroll, targetY - viewport.clientHeight / 2));
         }
+
+        // Re-run the layout on resize/orientation-change so the wrap's locked aspect
+        // ratio (and the node positions on it) stay correct if the viewport width changes.
+        let mapResizeTimer = null;
+        window.addEventListener('resize', () => {
+            if (screens.levelmap.classList.contains('hidden')) return;
+            clearTimeout(mapResizeTimer);
+            mapResizeTimer = setTimeout(renderLevelMap, 150);
+        });
 
         // Swipe/drag-to-scroll for the level map (mouse drag or touch swipe), since native
         // touch-action is disabled on the viewport so a finger-drag never fights page scroll.
