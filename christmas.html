@@ -157,7 +157,7 @@
         }
         /* Positioned once at the corner of the game card so it is visible on every
            screen (menu, level map, rules, game) instead of living inside a single screen. */
-        .m3-sound-wrap { position: absolute; top: 16px; right: 16px; z-index: 45; }
+        .m3-sound-wrap { position: absolute; top: 16px; right: 16px; z-index: 45; display: flex; gap: 8px; align-items: flex-start; }
         .m3-sound-btn {
             width: 40px; height: 40px;
             border-radius: 50%;
@@ -171,6 +171,21 @@
         }
         .m3-sound-btn:hover { background: #14231a; transform: scale(1.05); }
         .m3-sound-btn.active { border-color: rgba(232,184,75,0.6); }
+        .m3-sound-btn.is-muted { color: #8a8f89; }
+        .m3-sound-settings-btn {
+            width: 30px; height: 30px;
+            margin-top: 5px;
+            border-radius: 50%;
+            background: #0c1710;
+            border: 1px solid rgba(255,255,255,0.12);
+            display: flex; align-items: center; justify-content: center;
+            color: #9ca3af;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, border-color .2s ease, color .2s ease;
+        }
+        .m3-sound-settings-btn:hover { background: #14231a; color: #e8b84b; transform: scale(1.08) rotate(35deg); }
+        .m3-sound-settings-btn.active { border-color: rgba(232,184,75,0.6); color: #e8b84b; }
         .m3-sound-panel {
             position: absolute;
             top: calc(100% + 10px);
@@ -275,6 +290,33 @@
             touch-action: none;
             overflow: hidden;
             box-shadow: inset 0 0 40px rgba(0,0,0,0.4);
+        }
+
+        /* On mobile, shrink the surrounding chrome (section + card padding) while the
+           game screen is active so the board itself gets as much width as possible
+           and the tiles render noticeably larger, matching the reference layout. */
+        @media (max-width: 640px) {
+            #game.m3-game-active {
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+            #game.m3-game-active .festive-card {
+                padding: 8px 6px 14px;
+                border-radius: 0.9rem;
+            }
+            #game.m3-game-active .m3-board {
+                max-width: none;
+                padding: 5px;
+                border-radius: 0.8rem;
+            }
+            #game.m3-game-active .m3-topbar {
+                padding-left: 2px;
+                padding-right: 2px;
+            }
+            #game.m3-game-active .m3-map-viewport {
+                max-width: none;
+                padding: 5px;
+            }
         }
         .m3-finisher-catcher {
             position: absolute;
@@ -770,8 +812,11 @@
 
     <div id="snow-layer"></div>
 
-    <audio id="bg-music" loop preload="none">
+    <audio id="bg-music" loop preload="auto">
         <source src="Events/Christmas/christmas-music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bg_MapMusic" loop preload="auto">
+        <source src="Events/Christmas/bg_MapMusic.mp3" type="audio/mpeg">
     </audio>
 
     <nav class="fixed w-full z-50 bg-[#050b07]/90 backdrop-blur-md border-b border-white/5">
@@ -799,8 +844,11 @@
 
             <!-- SOUND SETTINGS: fixed at the corner of the card, visible on every screen -->
             <div class="m3-sound-wrap">
-                <button id="m3-sound-btn" class="m3-sound-btn" aria-label="Настройки звука" aria-expanded="false">
-                    <i class="fas fa-volume-up"></i>
+                <button id="m3-sound-btn" class="m3-sound-btn" aria-label="Выключить/включить звук" title="Выключить/включить звук">
+                    <i class="fas fa-volume-high"></i>
+                </button>
+                <button id="m3-sound-settings-btn" class="m3-sound-settings-btn" aria-label="Настройки громкости" aria-expanded="false" title="Настройки громкости">
+                    <i class="fas fa-gear"></i>
                 </button>
                 <div id="m3-sound-panel" class="m3-sound-panel hidden">
                     <label class="m3-sound-row">
@@ -910,7 +958,8 @@
         }
 
         /* ================= Audio: background music + SFX, with % volume controls ================= */
-        const bgMusic = document.getElementById('bg-music');
+        const bgMusic = document.getElementById('bg-music');       // plays only during an actual level/endless run
+        const bgMapMusic = document.getElementById('bg_MapMusic'); // calmer ambient loop for menu / level map / rules
 
         function clamp01(v) { return Math.max(0, Math.min(1, v)); }
         function readSavedVolume(key, fallback) {
@@ -919,16 +968,45 @@
         }
         let musicVolume = readSavedVolume('m3-music-vol', 0.7);
         let sfxVolume = readSavedVolume('m3-sfx-vol', 0.8);
+        let preMuteMusicVolume = musicVolume > 0 ? musicVolume : 0.7;
+        let preMuteSfxVolume = sfxVolume > 0 ? sfxVolume : 0.8;
+        const MAP_MUSIC_LEVEL = 0.6; // ambient track sits a bit under the main soundtrack's volume
         bgMusic.volume = musicVolume;
+        bgMapMusic.volume = musicVolume * MAP_MUSIC_LEVEL;
+        let currentScreenName = 'loading';
 
-        // Background music only plays while an actual level/endless run is on screen.
-        function updateMusicForScreen(name) {
-            if (name === 'game') {
-                bgMusic.volume = musicVolume;
-                if (musicVolume > 0) bgMusic.play().catch(() => {});
-            } else {
-                bgMusic.pause();
+        // Smoothly ramps an <audio> element's volume toward `targetVolume` instead of the old
+        // hard play()/pause() cut, which used to click/cut abruptly when leaving a screen.
+        function fadeTrack(el, targetVolume, duration = 450) {
+            if (el._fadeRAF) { cancelAnimationFrame(el._fadeRAF); el._fadeRAF = null; }
+            const startVolume = el.volume;
+            if (targetVolume > 0.001 && el.paused) el.play().catch(() => {});
+            if (Math.abs(targetVolume - startVolume) < 0.001) {
+                if (targetVolume <= 0.001) el.pause();
+                return;
             }
+            const startTime = performance.now();
+            const step = (now) => {
+                const t = Math.min(1, (now - startTime) / duration);
+                el.volume = startVolume + (targetVolume - startVolume) * t;
+                if (t < 1) {
+                    el._fadeRAF = requestAnimationFrame(step);
+                } else {
+                    el._fadeRAF = null;
+                    if (targetVolume <= 0.001) el.pause();
+                }
+            };
+            el._fadeRAF = requestAnimationFrame(step);
+        }
+
+        // Game screen -> main soundtrack. Menu / level map / rules -> quieter ambient loop.
+        // Loading screen stays silent. Crossfades between tracks instead of cutting instantly.
+        function updateMusicForScreen(name) {
+            currentScreenName = name;
+            const isGame = name === 'game';
+            const isMapLike = name === 'menu' || name === 'rules' || name === 'levelmap';
+            fadeTrack(bgMusic, isGame && musicVolume > 0 ? musicVolume : 0);
+            fadeTrack(bgMapMusic, isMapLike && musicVolume > 0 ? musicVolume * MAP_MUSIC_LEVEL : 0);
         }
 
         /* ================= Sound engine (Web Audio API) ================= */
@@ -1038,7 +1116,31 @@
             },
             bombCreate() { tone({ freq: 200, freqEnd: 700, duration: .3, type: 'sawtooth', gain: .15 }); bellTone({ freq: 220, duration: .5, gain: .18, partials: [1, 1.5, 2] }); },
             iceCrack() { tone({ freq: 2000, freqEnd: 2800, duration: .07, type: 'triangle', gain: .1 }); noiseBurst({ duration: .1, gain: .12, cutoff: 5500 }); },
-            bomb()    { noiseBurst({ duration: .42, gain: .32 }); tone({ freq: 95, freqEnd: 35, duration: .35, type: 'sawtooth', gain: .22 }); },
+            // `epic` = a combined/combo blast (double bomb, bomb+arrow cross, star rain, finisher wave)
+            // gets a bigger, layered version instead of the same size as a lone special going off.
+            bomb(epic = false) {
+                noiseBurst({ duration: epic ? .62 : .42, gain: epic ? .4 : .32 });
+                tone({ freq: epic ? 120 : 95, freqEnd: epic ? 25 : 35, duration: epic ? .55 : .35, type: 'sawtooth', gain: epic ? .28 : .22 });
+                if (epic) {
+                    noiseBurst({ duration: .5, gain: .22, delay: .08, cutoff: 900 });
+                    tone({ freq: 70, freqEnd: 18, duration: .6, type: 'sawtooth', gain: .18, delay: .05 });
+                }
+            },
+            // Arrow: a directional "whoosh" — fast downward sine sweep plus a filtered noise swish.
+            arrow(epic = false) {
+                tone({ freq: 1600, freqEnd: 260, duration: epic ? .4 : .26, type: 'sine', gain: epic ? .22 : .16 });
+                noiseBurst({ duration: epic ? .34 : .2, gain: epic ? .22 : .14, cutoff: 4200 });
+                if (epic) {
+                    tone({ freq: 1900, freqEnd: 320, duration: .4, type: 'sine', gain: .16, delay: .06 });
+                    noiseBurst({ duration: .3, gain: .16, cutoff: 5200, delay: .08 });
+                }
+            },
+            // Star: an ascending sparkle arpeggio plus a shimmer of high, airy noise.
+            star(epic = false) {
+                const notes = epic ? [1046, 1318, 1568, 2093, 2637] : [1046, 1318, 1568];
+                notes.forEach((f, i) => bellTone({ freq: f, duration: .4, gain: epic ? .18 : .15, delay: i * 0.05, partials: [1, 2.4, 3.8, 5.2] }));
+                noiseBurst({ duration: .3, gain: epic ? .16 : .1, cutoff: 9500, delay: .04 });
+            },
             fall()    { tone({ freq: 220, duration: .05, type: 'sine', gain: .04 }); },
             shuffle() { sleighShake({ hits: 8, spread: .07, gain: .16 }); },
             win()     { jingleBellsMotif(0, .22); },
@@ -1048,6 +1150,9 @@
                 noiseBurst({ duration: .3, gain: .14, delay: .02 });
                 noiseBurst({ duration: .3, gain: .14, delay: .32 });
             },
+            // Soft tick used only in a level's final 10 seconds, and a one-shot low-moves nudge.
+            timerTick() { tone({ freq: 1300, duration: .07, type: 'sine', gain: .09 }); },
+            lowMoves()  { tone({ freq: 500, freqEnd: 380, duration: .18, type: 'triangle', gain: .12 }); tone({ freq: 500, freqEnd: 380, duration: .18, type: 'triangle', gain: .1, delay: .16 }); },
         };
         // Unlock audio context on first interaction
         ['pointerdown','keydown'].forEach(ev => document.addEventListener(ev, () => ensureAudio(), { once: true }));
@@ -1060,18 +1165,31 @@
             rules: document.getElementById('screen-rules'),
             game: document.getElementById('screen-game'),
         };
+        const gameSectionEl = document.getElementById('game');
+        const festiveCardEl = gameSectionEl ? gameSectionEl.querySelector('.festive-card') : null;
         function showScreen(name) {
             if (name !== 'game' && typeof stopTimer === 'function') stopTimer();
             Object.values(screens).forEach(s => s.classList.add('hidden'));
             screens[name].classList.remove('hidden');
             updateMusicForScreen(name);
             if (name === 'menu' && typeof updateHeaderStats === 'function') updateHeaderStats();
+            const isWide = name === 'game' || name === 'levelmap';
+            if (gameSectionEl) gameSectionEl.classList.toggle('m3-game-active', isWide);
+            if (festiveCardEl) festiveCardEl.classList.toggle('m3-game-active', isWide);
+            if (isWide) {
+                requestAnimationFrame(() => {
+                    if (name === 'game' && typeof recalcTileSize === 'function') recalcTileSize();
+                    if (name === 'levelmap' && typeof renderLevelMap === 'function') renderLevelMap();
+                });
+            }
         }
 
         /* ---- Mini volume panel (music % / sfx %) ---- */
         (function setupSoundPanel() {
             const btn = document.getElementById('m3-sound-btn');
+            const settingsBtn = document.getElementById('m3-sound-settings-btn');
             const panel = document.getElementById('m3-sound-panel');
+            const icon = btn.querySelector('i');
             const musicSlider = document.getElementById('m3-music-vol');
             const sfxSlider = document.getElementById('m3-sfx-vol');
             const musicLabel = document.getElementById('m3-music-vol-label');
@@ -1082,34 +1200,76 @@
             musicLabel.textContent = musicSlider.value + '%';
             sfxLabel.textContent = sfxSlider.value + '%';
 
+            function updateMuteIcon() {
+                const muted = musicVolume === 0 && sfxVolume === 0;
+                const low = !muted && Math.max(musicVolume, sfxVolume) < 0.34;
+                icon.className = muted ? 'fas fa-volume-xmark' : (low ? 'fas fa-volume-low' : 'fas fa-volume-high');
+                btn.classList.toggle('is-muted', muted);
+            }
+            updateMuteIcon();
+
+            function closePanel() {
+                panel.classList.add('hidden');
+                settingsBtn.classList.remove('active');
+                settingsBtn.setAttribute('aria-expanded', 'false');
+            }
+
+            // Main icon = quick one-tap mute/unmute (remembers the previous levels so
+            // unmuting restores exactly where the player left the sliders).
             btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                ensureAudio();
+                const wasMuted = musicVolume === 0 && sfxVolume === 0;
+                if (wasMuted) {
+                    musicVolume = preMuteMusicVolume || 0.7;
+                    sfxVolume = preMuteSfxVolume || 0.8;
+                } else {
+                    preMuteMusicVolume = musicVolume > 0 ? musicVolume : preMuteMusicVolume;
+                    preMuteSfxVolume = sfxVolume > 0 ? sfxVolume : preMuteSfxVolume;
+                    musicVolume = 0;
+                    sfxVolume = 0;
+                }
+                musicSlider.value = Math.round(musicVolume * 100);
+                sfxSlider.value = Math.round(sfxVolume * 100);
+                musicLabel.textContent = musicSlider.value + '%';
+                sfxLabel.textContent = sfxSlider.value + '%';
+                if (sfxGain) sfxGain.gain.value = sfxVolume;
+                localStorage.setItem('m3-music-vol', String(musicVolume));
+                localStorage.setItem('m3-sfx-vol', String(sfxVolume));
+                updateMusicForScreen(currentScreenName);
+                updateMuteIcon();
+                if (wasMuted && sfxVolume > 0) sfx.click(); // audible confirmation only when unmuting
+            });
+
+            // Gear icon = open/close the detailed volume panel.
+            settingsBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const willOpen = panel.classList.contains('hidden');
                 panel.classList.toggle('hidden', !willOpen);
-                btn.classList.toggle('active', willOpen);
-                btn.setAttribute('aria-expanded', String(willOpen));
+                settingsBtn.classList.toggle('active', willOpen);
+                settingsBtn.setAttribute('aria-expanded', String(willOpen));
             });
             document.addEventListener('click', (e) => {
-                if (!panel.classList.contains('hidden') && !panel.contains(e.target) && e.target !== btn) {
-                    panel.classList.add('hidden');
-                    btn.classList.remove('active');
-                    btn.setAttribute('aria-expanded', 'false');
+                if (!panel.classList.contains('hidden') && !panel.contains(e.target) && e.target !== settingsBtn) {
+                    closePanel();
                 }
             });
 
             musicSlider.addEventListener('input', () => {
                 musicVolume = clamp01(musicSlider.value / 100);
                 musicLabel.textContent = musicSlider.value + '%';
-                bgMusic.volume = musicVolume;
-                if (musicVolume > 0 && !screens.game.classList.contains('hidden')) bgMusic.play().catch(() => {});
-                if (musicVolume === 0) bgMusic.pause();
+                preMuteMusicVolume = musicVolume > 0 ? musicVolume : preMuteMusicVolume;
+                updateMusicForScreen(currentScreenName);
                 localStorage.setItem('m3-music-vol', String(musicVolume));
+                updateMuteIcon();
             });
             sfxSlider.addEventListener('input', () => {
                 sfxVolume = clamp01(sfxSlider.value / 100);
                 sfxLabel.textContent = sfxSlider.value + '%';
+                preMuteSfxVolume = sfxVolume > 0 ? sfxVolume : preMuteSfxVolume;
                 if (sfxGain) sfxGain.gain.value = sfxVolume;
                 localStorage.setItem('m3-sfx-vol', String(sfxVolume));
+                updateMuteIcon();
             });
             sfxSlider.addEventListener('change', () => { ensureAudio(); sfx.click(); });
         })();
@@ -1511,6 +1671,7 @@
         let nextTileId = 1;
         let score = 0;
         let movesLeft = 0;
+        let lowMovesWarned = false; // one-shot flag so the low-moves cue plays only once per attempt
         let busy = false;
         let tileSize = 0;
         let slotEls = [];
@@ -2326,12 +2487,28 @@
             return cellsToClear;
         }
 
+        // Picks which flavor of blast sound plays: whichever special kind dominates the batch
+        // (a lone tile just plays its own sound; a merged combo plays the sound of the kind that
+        // makes up most of the blast). `epic` covers anything bigger than a single plain special:
+        // more than one tile going off together, a widened bomb radius, or a doubled arrow stripe.
+        function playSpecialBlastSound(specials) {
+            const counts = { bomb: 0, star: 0, arrow: 0 };
+            specials.forEach(s => { if (counts[s.kind] !== undefined) counts[s.kind]++; });
+            let primary = 'bomb';
+            if (counts.star >= counts.bomb && counts.star >= counts.arrow) primary = 'star';
+            else if (counts.arrow > counts.bomb) primary = 'arrow';
+            const epic = specials.length > 1 || specials.some(s => (s.radius && s.radius > 1) || s.doubleStripe);
+            if (primary === 'star') sfx.star(epic);
+            else if (primary === 'arrow') sfx.arrow(epic);
+            else sfx.bomb(epic);
+        }
+
         // Handles activation of Bomb (3x3 blast, or bigger via sp.radius), Arrow (clears its row + column,
         // or a thick cross via sp.doubleStripe), and Star (removes every toy of the type it was swapped
         // with from the whole board).
         function detonateSpecials(specials, comboMultiplier) {
             const cellsToClear = computeSpecialClearCells(specials);
-            sfx.bomb();
+            playSpecialBlastSound(specials);
             clearCellsAndCascade(Array.from(cellsToClear.values()), [], comboMultiplier, true);
         }
 
@@ -2740,6 +2917,10 @@
         function updateTopbar() {
             scoreEl.textContent = score;
             movesEl.textContent = movesLeft;
+            if (!lowMovesWarned && movesLeft > 0 && movesLeft <= 3 && !finishing) {
+                lowMovesWarned = true;
+                sfx.lowMoves();
+            }
         }
         function updateProgress() {
             if (gameMode !== 'level') return;
@@ -2798,7 +2979,11 @@
             if (document.hidden) return; // paused — resumed/resynced by the visibilitychange handler below
             const remainingMs = timerDeadline - Date.now();
             const newLeft = Math.max(0, Math.ceil(remainingMs / 1000));
-            if (newLeft !== timerLeft) { timerLeft = newLeft; updateTimerUI(); }
+            if (newLeft !== timerLeft) {
+                timerLeft = newLeft;
+                updateTimerUI();
+                if (timerLeft > 0 && timerLeft <= 10) sfx.timerTick();
+            }
             if (remainingMs <= 0) {
                 stopTimer();
                 if (!objectivesSatisfied()) onLevelLose('time');
@@ -2896,6 +3081,7 @@
             finisherWaveSizes = []; finisherSkip = false; hideFinisherCatcher();
             selectedId = null; busy = false;
             continueUsed = false;
+            lowMovesWarned = false;
             progressWrap.style.display = '';
             progressTarget.textContent = target;
             updateTopbar(); updateProgress();
@@ -2920,6 +3106,7 @@
             finishing = false; finishSettleCallback = null;
             finisherWaveSizes = []; finisherSkip = false; hideFinisherCatcher();
             selectedId = null; busy = false;
+            lowMovesWarned = false;
             progressWrap.style.display = 'none';
             objectivesEl.innerHTML = '';
             stopTimer(); timerWrapEl.classList.add('hidden');
