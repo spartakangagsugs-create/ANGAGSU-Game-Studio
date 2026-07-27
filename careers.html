@@ -57,7 +57,12 @@
         }
 
         .job-card {
-            transition: border-color 0.3s ease, transform 0.3s ease;
+            transition: border-color 0.3s ease, transform 0.35s ease, opacity 0.35s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .job-card.filtered-out {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
         }
         .job-card-btn {
             transition: background-color 0.3s ease;
@@ -188,28 +193,242 @@
             <h1 class="font-display text-6xl md:text-8xl text-white mb-4">Careers</h1>
             <div class="w-32 h-2 bg-purple-600 mb-12"></div>
 
-            <div class="grid gap-6">
+            <div class="flex items-center justify-between gap-4 mb-6 relative">
+                <p class="text-gray-500 text-sm"><span id="results-count">4</span> open positions</p>
 
-                <div class="bg-[#0a0a0e] border border-white/5 p-8 rounded-2xl job-card accent-purple transition-all">
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <button id="filter-toggle" class="relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/5 text-white font-bold uppercase tracking-widest text-xs hover:border-purple-500/50 transition-all duration-300">
+                    <i id="filter-icon" class="fas fa-sliders-h transition-transform duration-300"></i>
+                    Filter
+                    <span id="filter-count" class="hidden items-center justify-center w-5 h-5 bg-purple-600 text-white text-[10px] rounded-full">0</span>
+                </button>
+
+                <div id="filter-panel" class="hidden absolute right-0 top-full mt-3 w-[92vw] sm:w-[560px] lg:w-[640px] max-h-[75vh] overflow-y-auto bg-[#0a0a0e] border border-white/10 rounded-2xl p-6 shadow-2xl shadow-black/50 z-20">
+                    <div class="flex items-center justify-between mb-6">
+                        <h4 class="font-display text-xl text-white tracking-widest">Filters</h4>
+                        <button id="clear-filters" class="text-gray-500 hover:text-white text-xs font-bold uppercase tracking-widest transition-opacity duration-300">Clear all</button>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <p class="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-3">Profession</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2">
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" value="Programming" data-group="profession" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                    <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Programming</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" value="Technical Art" data-group="profession" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                    <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Technical Art</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" value="Game Design" data-group="profession" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                    <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Game Design</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" value="2D/3D Art" data-group="profession" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                    <span class="text-gray-400 group-hover:text-white text-sm transition-colors">2D/3D Art</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" value="Animation" data-group="profession" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                    <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Animation</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" value="VFX" data-group="profession" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                    <span class="text-gray-400 group-hover:text-white text-sm transition-colors">VFX</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" value="UI/UX Design" data-group="profession" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                    <span class="text-gray-400 group-hover:text-white text-sm transition-colors">UI/UX Design</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" value="Narrative & Writing" data-group="profession" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                    <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Narrative & Writing</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" value="Audio & Sound Design" data-group="profession" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                    <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Audio & Sound Design</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" value="QA & Testing" data-group="profession" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                    <span class="text-gray-400 group-hover:text-white text-sm transition-colors">QA & Testing</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" value="Production & PM" data-group="profession" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                    <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Production & PM</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" value="Marketing & Community" data-group="profession" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                    <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Marketing & Community</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-white/5 pt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div>
+                                <p class="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-3">Platform</p>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="PC" data-group="platform" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">PC</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Android" data-group="platform" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Android</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="iOS" data-group="platform" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">iOS</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="VR/AR" data-group="platform" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">VR/AR</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Console" data-group="platform" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Console</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Multiplatform" data-group="platform" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Multiplatform</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Other" data-group="platform" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Other</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p class="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-3">Employment</p>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Remote" data-group="type" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Remote</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Hybrid" data-group="type" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Hybrid</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Full-time" data-group="type" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Full time</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Project-based" data-group="type" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Project based</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p class="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-3">Experience</p>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Internship" data-group="level" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Internship</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Entry-level" data-group="level" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Entry-level</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Mid" data-group="level" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Mid</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Senior" data-group="level" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Senior</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p class="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-3">Game Type</p>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Singleplayer" data-group="gametype" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Singleplayer</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Multiplayer" data-group="gametype" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Multiplayer</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer group">
+                                        <input type="checkbox" value="Co-op" data-group="gametype" class="job-filter accent-purple-600 w-4 h-4 rounded bg-white/5 border-white/20">
+                                        <span class="text-gray-400 group-hover:text-white text-sm transition-colors">Co-op</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p id="no-results" class="hidden text-gray-500 text-lg mb-10">No positions match the selected filters right now.</p>
+
+            <div class="grid gap-6" id="jobs-grid">
+
+                <div class="bg-[#0a0a0e] border border-white/5 p-8 rounded-2xl job-card accent-purple transition-all min-h-[220px] flex items-center" data-profession="Programming" data-platform="Android,iOS,Multiplatform" data-type="Remote,Full-time" data-level="Mid,Senior" data-gametype="Singleplayer">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full">
                         <div>
                             <span class="text-purple-500 font-bold uppercase tracking-widest text-xs mb-2 block">Engineering</span>
-                            <h3 class="text-2xl font-bold text-white mb-1">Unity Game Developer (Mid/Senior)</h3>
-                            <p class="text-gray-500 text-sm">Remote / Full-time</p>
+                            <h3 class="text-2xl font-bold text-white mb-1 md:min-h-[4rem]">Unity Game Developer (Mid/Senior)</h3>
+                            <p class="text-gray-500 text-sm mb-2">Remote / Full-time</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-400 uppercase tracking-widest"><i class="fab fa-android"></i> Android</span>
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-400 uppercase tracking-widest"><i class="fab fa-apple"></i> iOS</span>
+                            </div>
                         </div>
-                        <a href="job-unity-dev.html" class="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-lg job-card-btn transition-all font-bold uppercase tracking-widest text-xs">Job Details</a>
+                        <a href="job-unity-dev.html" class="w-full md:w-auto text-center px-6 py-3 bg-white/5 border border-white/10 text-white rounded-lg job-card-btn transition-all font-bold uppercase tracking-widest text-xs">Job Details</a>
                     </div>
                 </div>
 
 
-                <div class="bg-[#0a0a0e] border border-white/5 p-8 rounded-2xl job-card accent-blue transition-all">
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="bg-[#0a0a0e] border border-white/5 p-8 rounded-2xl job-card accent-blue transition-all min-h-[220px] flex items-center" data-profession="2D/3D Art" data-platform="Android,iOS,PC,Multiplatform" data-type="Hybrid,Project-based" data-level="Mid,Senior" data-gametype="Singleplayer">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full">
                         <div>
                             <span class="text-blue-500 font-bold uppercase tracking-widest text-xs mb-2 block">Art & Design</span>
-                            <h3 class="text-2xl font-bold text-white mb-1">3D Environment Artist</h3>
-                            <p class="text-gray-500 text-sm">Hybrid / Project-based</p>
+                            <h3 class="text-2xl font-bold text-white mb-1 md:min-h-[4rem]">3D Environment Artist</h3>
+                            <p class="text-gray-500 text-sm mb-2">Hybrid / Project-based</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-400 uppercase tracking-widest"><i class="fab fa-android"></i> Android</span>
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-400 uppercase tracking-widest"><i class="fab fa-apple"></i> iOS</span>
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-400 uppercase tracking-widest"><i class="fas fa-desktop"></i> PC</span>
+                            </div>
                         </div>
-                        <a href="job-artist.html" class="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-lg job-card-btn transition-all font-bold uppercase tracking-widest text-xs">Job Details</a>
+                        <a href="job-artist.html" class="w-full md:w-auto text-center px-6 py-3 bg-white/5 border border-white/10 text-white rounded-lg job-card-btn transition-all font-bold uppercase tracking-widest text-xs">Job Details</a>
+                    </div>
+                </div>
+
+
+                <div class="bg-[#0a0a0e] border border-white/5 p-8 rounded-2xl job-card accent-purple transition-all min-h-[220px] flex items-center" data-profession="Game Design" data-platform="Android,iOS,Multiplatform" data-type="Remote" data-level="Internship" data-gametype="Singleplayer">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full">
+                        <div>
+                            <span class="text-emerald-500 font-bold uppercase tracking-widest text-xs mb-2 block">Internship</span>
+                            <h3 class="text-2xl font-bold text-white mb-1 md:min-h-[4rem]">Game Design Intern</h3>
+                            <p class="text-gray-500 text-sm mb-2">Remote / Internship</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-400 uppercase tracking-widest"><i class="fab fa-android"></i> Android</span>
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-400 uppercase tracking-widest"><i class="fab fa-apple"></i> iOS</span>
+                            </div>
+                        </div>
+                        <a href="job-intern-design.html" class="w-full md:w-auto text-center px-6 py-3 bg-white/5 border border-white/10 text-white rounded-lg job-card-btn transition-all font-bold uppercase tracking-widest text-xs">Job Details</a>
+                    </div>
+                </div>
+
+
+                <div class="bg-[#0a0a0e] border border-white/5 p-8 rounded-2xl job-card accent-blue transition-all min-h-[220px] flex items-center" data-profession="2D/3D Art" data-platform="Android,iOS,Multiplatform" data-type="Hybrid" data-level="Internship" data-gametype="Singleplayer">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full">
+                        <div>
+                            <span class="text-emerald-500 font-bold uppercase tracking-widest text-xs mb-2 block">Internship</span>
+                            <h3 class="text-2xl font-bold text-white mb-1 md:min-h-[4rem]">2D/3D Art Intern</h3>
+                            <p class="text-gray-500 text-sm mb-2">Hybrid / Internship</p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-400 uppercase tracking-widest"><i class="fab fa-android"></i> Android</span>
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-400 uppercase tracking-widest"><i class="fab fa-apple"></i> iOS</span>
+                            </div>
+                        </div>
+                        <a href="job-intern-art.html" class="w-full md:w-auto text-center px-6 py-3 bg-white/5 border border-white/10 text-white rounded-lg job-card-btn transition-all font-bold uppercase tracking-widest text-xs">Job Details</a>
                     </div>
                 </div>
 
@@ -336,6 +555,87 @@
         // Close the mobile menu whenever a menu link is tapped
         menu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => closeMobileMenu());
+        });
+
+        // Job filters (icon-triggered panel with multiple facet groups)
+        const filterToggle = document.getElementById('filter-toggle');
+        const filterIcon = document.getElementById('filter-icon');
+        const filterPanel = document.getElementById('filter-panel');
+        const filterCheckboxes = document.querySelectorAll('.job-filter');
+        const filterCount = document.getElementById('filter-count');
+        const clearBtn = document.getElementById('clear-filters');
+        const noResults = document.getElementById('no-results');
+        const resultsCount = document.getElementById('results-count');
+        const jobCards = document.querySelectorAll('#jobs-grid .job-card');
+
+        function openPanel() {
+            filterPanel.classList.remove('hidden');
+            filterIcon.style.transform = 'rotate(90deg)';
+        }
+        function closePanel() {
+            filterPanel.classList.add('hidden');
+            filterIcon.style.transform = 'rotate(0deg)';
+        }
+        filterToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            filterPanel.classList.contains('hidden') ? openPanel() : closePanel();
+        });
+        filterPanel.addEventListener('click', (e) => e.stopPropagation());
+        document.addEventListener('click', () => {
+            if (!filterPanel.classList.contains('hidden')) closePanel();
+        });
+
+        function applyFilters() {
+            const groups = { profession: [], platform: [], type: [], level: [], gametype: [] };
+            let activeTotal = 0;
+            filterCheckboxes.forEach(cb => {
+                if (cb.checked) {
+                    groups[cb.dataset.group].push(cb.value);
+                    activeTotal++;
+                }
+            });
+
+            filterCount.classList.toggle('hidden', activeTotal === 0);
+            filterCount.classList.toggle('flex', activeTotal > 0);
+            filterCount.textContent = activeTotal;
+            clearBtn.classList.toggle('opacity-0', activeTotal === 0);
+            clearBtn.classList.toggle('pointer-events-none', activeTotal === 0);
+
+            let visibleCount = 0;
+            jobCards.forEach(card => {
+                const matchesGroup = (group, attr) => {
+                    if (groups[group].length === 0) return true;
+                    const cardValues = (card.dataset[attr] || '').split(',');
+                    return groups[group].some(v => cardValues.includes(v));
+                };
+
+                const match = matchesGroup('profession', 'profession') &&
+                              matchesGroup('platform', 'platform') &&
+                              matchesGroup('type', 'type') &&
+                              matchesGroup('level', 'level') &&
+                              matchesGroup('gametype', 'gametype');
+
+                if (match) {
+                    visibleCount++;
+                    card.style.display = '';
+                    requestAnimationFrame(() => card.classList.remove('filtered-out'));
+                } else {
+                    card.classList.add('filtered-out');
+                    setTimeout(() => {
+                        if (card.classList.contains('filtered-out')) card.style.display = 'none';
+                    }, 350);
+                }
+            });
+
+            resultsCount.textContent = visibleCount;
+            noResults.classList.toggle('hidden', visibleCount !== 0);
+        }
+
+        filterCheckboxes.forEach(cb => cb.addEventListener('change', applyFilters));
+        clearBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            filterCheckboxes.forEach(cb => cb.checked = false);
+            applyFilters();
         });
     </script>
 

@@ -74,27 +74,6 @@
 
         .gold-text { color: #e8b84b; }
 
-        .music-toggle {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            background: #0c1710;
-            border: 1px solid rgba(255,255,255,0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #e8b84b;
-            font-size: 1.2rem;
-            transition: transform 0.2s ease, background 0.2s ease;
-        }
-        .music-toggle:hover { background: #14231a; transform: scale(1.05); }
-        .music-toggle.playing i { animation: ring 1.4s ease-in-out infinite; }
-        @keyframes ring {
-            0%, 100% { transform: rotate(0); }
-            25%      { transform: rotate(-15deg); }
-            75%      { transform: rotate(15deg); }
-        }
-
         .app-screen { animation: screen-in .35s ease; }
         .app-screen.hidden { display: none; }
         @keyframes screen-in { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
@@ -151,6 +130,83 @@
         .m3-progress-wrap {
             max-width: 460px;
             margin: 0 auto 0.9rem;
+            position: relative;
+            padding-top: 22px;
+        }
+        .m3-progress-stars {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 20px;
+        }
+        .m3-progress-stars i {
+            position: absolute;
+            top: 0;
+            transform: translateX(-50%);
+            font-size: 1.15rem;
+            color: rgba(255,255,255,0.18);
+            transition: color .35s ease, text-shadow .35s ease;
+        }
+        .m3-progress-stars i:nth-child(1) { left: 62.5%; }
+        .m3-progress-stars i:nth-child(2) { left: 81.25%; }
+        .m3-progress-stars i:nth-child(3) { left: 97%; }
+        .m3-progress-stars i.earned {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255,215,0,.75);
+            animation: star-pop .45s cubic-bezier(.34,1.56,.64,1) both;
+        }
+        /* Positioned once at the corner of the game card so it is visible on every
+           screen (menu, level map, rules, game) instead of living inside a single screen. */
+        .m3-sound-wrap { position: absolute; top: 16px; right: 16px; z-index: 45; }
+        .m3-sound-btn {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: #0c1710;
+            border: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            color: #e8b84b;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, border-color .2s ease;
+        }
+        .m3-sound-btn:hover { background: #14231a; transform: scale(1.05); }
+        .m3-sound-btn.active { border-color: rgba(232,184,75,0.6); }
+        .m3-sound-panel {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 220px;
+            background: #0c1710;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.9rem;
+            padding: 14px 16px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.5);
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .m3-sound-panel.hidden { display: none; }
+        .m3-sound-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #f1f5e9;
+        }
+        .m3-sound-row i { width: 16px; text-align: center; color: #e8b84b; flex-shrink: 0; }
+        .m3-sound-row input[type="range"] {
+            flex: 1;
+            accent-color: #b91c1c;
+            cursor: pointer;
+        }
+        .m3-sound-pct {
+            width: 34px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            color: #9ca3af;
+            font-size: 0.78rem;
+            flex-shrink: 0;
         }
         .m3-progress-track {
             height: 8px;
@@ -165,6 +221,40 @@
             width: 0%;
             transition: width .4s ease;
         }
+        /* ---- Extra per-level objectives: collect N of a toy type, or clear the ice ---- */
+        .m3-objectives {
+            max-width: 500px;
+            margin: 0 auto 0.9rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .m3-objective {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #0c1710;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 999px;
+            padding: 9px 18px 9px 9px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #f1f5e9;
+            transition: border-color .2s ease, background .2s ease;
+        }
+        .m3-objective img { width: 32px; height: 32px; object-fit: contain; }
+        .m3-objective i.fa-snowflake { width: 32px; text-align: center; color: #9fd8ff; font-size: 1.4rem; }
+        .m3-objective .m3-obj-count { font-variant-numeric: tabular-nums; color: #9ca3af; }
+        .m3-objective.done {
+            border-color: rgba(139,255,145,0.5);
+            background: #0f1f13;
+        }
+        .m3-objective.done .m3-obj-count { color: #8bff91; }
+        .m3-objective.done .m3-obj-count::after { content: ' ✓'; }
+        .m3-recap-badge img { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; }
+        .m3-recap-badge i.fa-snowflake { color: #9fd8ff; font-size: .85rem; }
+        .m3-recap-badge i.fa-hourglass-half { font-size: .85rem; }
         .m3-progress-label {
             display:flex; justify-content:space-between;
             font-size: .68rem; text-transform:uppercase; letter-spacing:.1em; color:#9ca3af; margin-top:4px;
@@ -185,6 +275,14 @@
             overflow: hidden;
             box-shadow: inset 0 0 40px rgba(0,0,0,0.4);
         }
+        .m3-finisher-catcher {
+            position: absolute;
+            inset: 0;
+            z-index: 50;
+            cursor: not-allowed;
+            background: rgba(0,0,0,0.02);
+        }
+        .m3-finisher-catcher.hidden { display: none; }
         .m3-slot {
             position: absolute;
             top: 0; left: 0;
@@ -316,6 +414,15 @@
             to { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
         }
 
+        #m3-timer-wrap {
+            color: #ffd27a;
+            font-weight: 600;
+        }
+        #m3-timer-wrap.m3-timer-low {
+            color: #ff6b6b;
+            animation: timer-pulse .8s ease-in-out infinite;
+        }
+        @keyframes timer-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
         .m3-score-popup {
             position: absolute;
             pointer-events: none;
@@ -349,6 +456,28 @@
             0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
             25%  { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
             70%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.05) translateY(-14px); }
+        }
+
+        .m3-objective-banner {
+            position: absolute;
+            top: 44%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.6);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.1rem;
+            text-align: center;
+            color: #fff8e0;
+            text-shadow: 0 0 22px #e8b84b, 0 0 8px #ffd700;
+            pointer-events: none;
+            z-index: 60;
+            opacity: 0;
+            animation: objective-pop 1s ease forwards;
+        }
+        @keyframes objective-pop {
+            0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            18%  { opacity: 1; transform: translate(-50%, -50%) scale(1.18); }
+            80%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
             100% { opacity: 0; transform: translate(-50%, -50%) scale(1.05) translateY(-14px); }
         }
 
@@ -389,9 +518,30 @@
         @keyframes star-pop { 0% { transform: scale(0) rotate(-40deg); } 70% { transform: scale(1.25) rotate(8deg); } 100% { transform: scale(1) rotate(0); } }
 
         /* Level map — winding animated path, like a real game map */
+        /* Fixed-size viewport (same footprint as the game board) with internal scrolling,
+           so opening the map doesn't stretch the whole page — you scroll the map, not the page. */
+        .m3-map-viewport {
+            position: relative;
+            max-width: 460px;
+            height: min(460px, 70vh);
+            margin: 0 auto;
+            overflow-y: auto;
+            overflow-x: hidden;
+            touch-action: none;
+            -webkit-overflow-scrolling: touch;
+            padding: 8px;
+            cursor: grab;
+            scrollbar-width: none;      /* Firefox: keep scrolling, hide the bar */
+            -ms-overflow-style: none;   /* old Edge/IE */
+        }
+        .m3-map-viewport.dragging { cursor: grabbing; }
+        /* Scrolling still works fully — the bar itself is just invisible now */
+        .m3-map-viewport::-webkit-scrollbar { width: 0; height: 0; background: transparent; }
+        .m3-map-viewport::-webkit-scrollbar-track { background: transparent; }
+        .m3-map-viewport::-webkit-scrollbar-thumb { background: transparent; }
         .m3-map-wrap {
             position: relative;
-            max-width: 420px;
+            max-width: 100%;
             margin: 0 auto;
             overflow: visible;
         }
@@ -505,10 +655,6 @@
         <source src="Events/Christmas/christmas-music.mp3" type="audio/mpeg">
     </audio>
 
-    <button id="music-toggle" class="music-toggle fixed bottom-6 right-6 z-50" aria-label="Toggle holiday music">
-        <i class="fas fa-bell"></i>
-    </button>
-
     <nav class="fixed w-full z-50 bg-[#050b07]/90 backdrop-blur-md border-b border-white/5">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-3">
@@ -532,6 +678,25 @@
     <section id="game" class="py-24 px-6">
         <div class="max-w-3xl mx-auto festive-card p-6 md:p-10 relative">
 
+            <!-- SOUND SETTINGS: fixed at the corner of the card, visible on every screen -->
+            <div class="m3-sound-wrap">
+                <button id="m3-sound-btn" class="m3-sound-btn" aria-label="Настройки звука" aria-expanded="false">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+                <div id="m3-sound-panel" class="m3-sound-panel hidden">
+                    <label class="m3-sound-row">
+                        <i class="fas fa-music"></i>
+                        <input type="range" id="m3-music-vol" min="0" max="100" step="1" value="70">
+                        <span id="m3-music-vol-label" class="m3-sound-pct">70%</span>
+                    </label>
+                    <label class="m3-sound-row">
+                        <i class="fas fa-drum"></i>
+                        <input type="range" id="m3-sfx-vol" min="0" max="100" step="1" value="80">
+                        <span id="m3-sfx-vol-label" class="m3-sound-pct">80%</span>
+                    </label>
+                </div>
+            </div>
+
             <!-- LOADING -->
             <div id="screen-loading" class="app-screen hidden text-center flex flex-col items-center justify-center" style="min-height:340px;">
                 <div class="m3-loader-icon"><i class="fas fa-snowflake"></i></div>
@@ -551,9 +716,11 @@
             <div id="screen-levelmap" class="app-screen hidden">
                 <button class="m3-back mb-6" data-nav="menu"><i class="fas fa-arrow-left"></i> В меню</button>
                 <h2 class="font-display text-4xl md:text-5xl mb-6 text-center">Карта <span class="gold-text">уровней</span></h2>
-                <div id="level-map-wrap" class="m3-map-wrap">
-                    <svg id="level-map-svg" class="m3-map-svg"></svg>
-                    <div id="level-grid" class="m3-map-nodes"></div>
+                <div id="level-map-viewport" class="m3-map-viewport">
+                    <div id="level-map-wrap" class="m3-map-wrap">
+                        <svg id="level-map-svg" class="m3-map-svg"></svg>
+                        <div id="level-grid" class="m3-map-nodes"></div>
+                    </div>
                 </div>
             </div>
 
@@ -566,7 +733,8 @@
                     <p>Совпадение из 4 фишек создаёт <span class="gold-text">бомбу</span> 💣 — поменяйте её местами с любой соседней фишкой, чтобы взорвать область вокруг неё.</p>
                     <p>Совпавшие элементы приносят очки и исчезают, а на их место падают новые — цепочки подряд идущих совпадений дают бонусный множитель очков.</p>
                     <p>Если ход не создаёт совпадения, элементы просто вернутся на место — ход не будет потрачен.</p>
-                    <p>В режиме «Уровни» нужно набрать целевой счёт до того, как закончатся ходы. Чем выше счёт над целью — тем больше звёзд.</p>
+                    <p>В режиме «Уровни» нужно выполнить задания: собрать нужное количество определённых игрушек, разбить лёд, а иногда — уложиться в таймер. Очки за победу не нужны, они лишь определяют количество звёзд (1-3) в конце.</p>
+                    <p>Как только все задания выполнены, а ходы ещё остались — начинается бонусный раунд: сначала срабатывают оставшиеся на поле звёзды, потом бомбы и стрелки, а затем оставшиеся ходы автоматически превращают игрушки в бомбы и стрелки, взрывая их ради дополнительных очков. Очки не ограничены.</p>
                     <p>Если на поле не осталось возможных ходов, оно автоматически перемешается.</p>
                 </div>
             </div>
@@ -577,12 +745,19 @@
                     <button class="m3-back" data-nav="menu"><i class="fas fa-arrow-left"></i> Меню</button>
                     <span>Очки: <span id="m3-score" class="gold-text">0</span></span>
                     <span>Ходы: <span id="m3-moves" class="text-red-400">20</span></span>
+                    <span id="m3-timer-wrap" class="hidden"><i class="fas fa-hourglass-half"></i> <span id="m3-timer">0:00</span></span>
                 </div>
                 <div id="m3-progress" class="m3-progress-wrap">
+                    <div class="m3-progress-stars" id="m3-progress-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
                     <div class="m3-progress-track"><div id="m3-progress-fill" class="m3-progress-fill"></div></div>
                     <div class="m3-progress-label"><span id="m3-progress-cur">0</span><span>Цель: <span id="m3-progress-target">0</span></span></div>
                 </div>
-                <div id="m3-board" class="m3-board"></div>
+                <div id="m3-objectives" class="m3-objectives"></div>
+                <div id="m3-board" class="m3-board"><div id="m3-finisher-catcher" class="m3-finisher-catcher hidden"></div></div>
             </div>
 
         </div>
@@ -608,29 +783,38 @@
             snowLayer.appendChild(flake);
         }
 
-        /* ================= Background music ================= */
+        /* ================= Audio: background music + SFX, with % volume controls ================= */
         const bgMusic = document.getElementById('bg-music');
-        const musicToggle = document.getElementById('music-toggle');
-        let musicPlaying = false;
 
-        musicToggle.addEventListener('click', () => {
-            if (musicPlaying) {
-                bgMusic.pause();
-                musicPlaying = false;
-                musicToggle.classList.remove('playing');
-                musicToggle.querySelector('i').className = 'fas fa-bell';
+        function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+        function readSavedVolume(key, fallback) {
+            const raw = parseFloat(localStorage.getItem(key));
+            return Number.isFinite(raw) ? clamp01(raw) : fallback;
+        }
+        let musicVolume = readSavedVolume('m3-music-vol', 0.7);
+        let sfxVolume = readSavedVolume('m3-sfx-vol', 0.8);
+        bgMusic.volume = musicVolume;
+
+        // Background music only plays while an actual level/endless run is on screen.
+        function updateMusicForScreen(name) {
+            if (name === 'game') {
+                bgMusic.volume = musicVolume;
+                if (musicVolume > 0) bgMusic.play().catch(() => {});
             } else {
-                bgMusic.play().catch(() => {});
-                musicPlaying = true;
-                musicToggle.classList.add('playing');
-                musicToggle.querySelector('i').className = 'fas fa-bell-slash';
+                bgMusic.pause();
             }
-        });
+        }
 
         /* ================= Sound engine (Web Audio API) ================= */
         let audioCtx = null;
+        let sfxGain = null;
         function ensureAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                sfxGain = audioCtx.createGain();
+                sfxGain.gain.value = sfxVolume;
+                sfxGain.connect(audioCtx.destination);
+            }
             if (audioCtx.state === 'suspended') audioCtx.resume();
             return audioCtx;
         }
@@ -646,7 +830,7 @@
                 gainNode.gain.setValueAtTime(0.0001, t0);
                 gainNode.gain.linearRampToValueAtTime(gain, t0 + attack);
                 gainNode.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
-                osc.connect(gainNode); gainNode.connect(ctx.destination);
+                osc.connect(gainNode); gainNode.connect(sfxGain);
                 osc.start(t0); osc.stop(t0 + duration + 0.03);
             } catch (e) {}
         }
@@ -665,7 +849,7 @@
                 const t0 = ctx.currentTime + delay;
                 gainNode.gain.setValueAtTime(gain, t0);
                 gainNode.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
-                noise.connect(filter); filter.connect(gainNode); gainNode.connect(ctx.destination);
+                noise.connect(filter); filter.connect(gainNode); gainNode.connect(sfxGain);
                 noise.start(t0); noise.stop(t0 + duration + 0.03);
             } catch (e) {}
         }
@@ -679,7 +863,7 @@
                 const t0 = ctx.currentTime + delay;
                 const master = ctx.createGain();
                 master.gain.value = gain;
-                master.connect(ctx.destination);
+                master.connect(sfxGain);
                 partials.forEach((mult, i) => {
                     const osc = ctx.createOscillator();
                     osc.type = warmth ? 'triangle' : 'sine';
@@ -732,6 +916,11 @@
             shuffle() { sleighShake({ hits: 8, spread: .07, gain: .16 }); },
             win()     { jingleBellsMotif(0, .22); },
             lose()    { [392, 349, 294].forEach((f, i) => bellTone({ freq: f, duration: .5, gain: .16, delay: i * 0.18, partials: [1, 2.2, 3.1] })); },
+            fireworks() {
+                [660, 880, 1046, 1318].forEach((f, i) => bellTone({ freq: f, duration: .4, gain: .17, delay: i * 0.1, partials: [1, 2.4, 3.6] }));
+                noiseBurst({ duration: .3, gain: .14, delay: .02 });
+                noiseBurst({ duration: .3, gain: .14, delay: .32 });
+            },
         };
         // Unlock audio context on first interaction
         ['pointerdown','keydown'].forEach(ev => document.addEventListener(ev, () => ensureAudio(), { once: true }));
@@ -745,9 +934,57 @@
             game: document.getElementById('screen-game'),
         };
         function showScreen(name) {
+            if (name !== 'game' && typeof stopTimer === 'function') stopTimer();
             Object.values(screens).forEach(s => s.classList.add('hidden'));
             screens[name].classList.remove('hidden');
+            updateMusicForScreen(name);
         }
+
+        /* ---- Mini volume panel (music % / sfx %) ---- */
+        (function setupSoundPanel() {
+            const btn = document.getElementById('m3-sound-btn');
+            const panel = document.getElementById('m3-sound-panel');
+            const musicSlider = document.getElementById('m3-music-vol');
+            const sfxSlider = document.getElementById('m3-sfx-vol');
+            const musicLabel = document.getElementById('m3-music-vol-label');
+            const sfxLabel = document.getElementById('m3-sfx-vol-label');
+
+            musicSlider.value = Math.round(musicVolume * 100);
+            sfxSlider.value = Math.round(sfxVolume * 100);
+            musicLabel.textContent = musicSlider.value + '%';
+            sfxLabel.textContent = sfxSlider.value + '%';
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const willOpen = panel.classList.contains('hidden');
+                panel.classList.toggle('hidden', !willOpen);
+                btn.classList.toggle('active', willOpen);
+                btn.setAttribute('aria-expanded', String(willOpen));
+            });
+            document.addEventListener('click', (e) => {
+                if (!panel.classList.contains('hidden') && !panel.contains(e.target) && e.target !== btn) {
+                    panel.classList.add('hidden');
+                    btn.classList.remove('active');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            musicSlider.addEventListener('input', () => {
+                musicVolume = clamp01(musicSlider.value / 100);
+                musicLabel.textContent = musicSlider.value + '%';
+                bgMusic.volume = musicVolume;
+                if (musicVolume > 0 && !screens.game.classList.contains('hidden')) bgMusic.play().catch(() => {});
+                if (musicVolume === 0) bgMusic.pause();
+                localStorage.setItem('m3-music-vol', String(musicVolume));
+            });
+            sfxSlider.addEventListener('input', () => {
+                sfxVolume = clamp01(sfxSlider.value / 100);
+                sfxLabel.textContent = sfxSlider.value + '%';
+                if (sfxGain) sfxGain.gain.value = sfxVolume;
+                localStorage.setItem('m3-sfx-vol', String(sfxVolume));
+            });
+            sfxSlider.addEventListener('change', () => { ensureAudio(); sfx.click(); });
+        })();
 
         document.getElementById('btn-play').addEventListener('click', () => { sfx.click(); showScreen('levelmap'); renderLevelMap(); });
         document.querySelectorAll('[data-nav="menu"]').forEach(btn => {
@@ -800,27 +1037,51 @@
 
         // ice[i] = [row, col, hitsToBreak] — a frozen cell that must be matched
         // (or matched next to) that many times before it clears, on top of the shape mask
+        //
+        // objectives[i] — the level's win conditions (score is NOT one of them anymore —
+        // it only feeds the post-level star rating, see computeStars):
+        //   { type:'collect', tileType: <index into TILE_DEFS>, target: <count> }  — clear that many of a specific toy
+        //   { type:'ice', target: <count> }                                        — destroy that many ice-covered cells
+        //   { type:'timer', seconds: <count> }                                     — finish every other objective before
+        //                                                                             this real-time countdown hits zero
+        // Rules: every level needs at least one 'collect' objective. 'ice' and 'timer'
+        // are never used alone — they only ever appear alongside 'collect'.
+        // Once every non-timer objective's count is met, a "finisher" runs automatically:
+        // any stars left on the board go off first, then bombs, then arrows, and finally
+        // whatever moves remain get spent converting toys into bombs/arrows for bonus
+        // score (uncapped) before the level actually ends and stars are tallied.
         const LEVELS = [
-            { target: 600,  moves: 22, types: 4, shape: SHAPES.FULL,      ice: [] },
-            { target: 1200, moves: 22, types: 5, shape: SHAPES.DIAMOND,   ice: [[3,2,1],[4,5,1],[2,3,1]] },
-            { target: 2000, moves: 22, types: 5, shape: SHAPES.CROSS,     ice: [[2,1,1],[3,6,1],[5,2,2],[2,6,1]] },
-            { target: 3000, moves: 24, types: 6, shape: SHAPES.TREE,      ice: [[3,2,1],[4,5,1],[5,1,1],[5,6,2]] },
-            { target: 4200, moves: 24, types: 6, shape: SHAPES.HOURGLASS, ice: [[0,1,1],[0,6,1],[7,1,1],[7,6,2],[1,2,1]] },
-            { target: 6000, moves: 26, types: 7, shape: SHAPES.RING,      ice: [[0,3,1],[0,4,2],[7,3,1],[7,4,2],[3,0,1],[4,7,1]] },
+            { target: 18400, moves: 26, types: 4, shape: SHAPES.FULL,      ice: [],
+              objectives: [ { type: 'collect', tileType: 0, target: 16 } ] },
+            { target: 4100, moves: 30, types: 5, shape: SHAPES.DIAMOND,   ice: [[3,2,1],[4,5,1],[2,3,1],[5,4,1]],
+              objectives: [ { type: 'collect', tileType: 1, target: 18 }, { type: 'ice', target: 4 } ] },
+            { target: 5800, moves: 34, types: 5, shape: SHAPES.CROSS,     ice: [[2,1,1],[3,6,1],[5,2,2],[2,6,1],[4,1,1]],
+              objectives: [ { type: 'collect', tileType: 0, target: 20 }, { type: 'ice', target: 5 } ] },
+            { target: 2100, moves: 38, types: 6, shape: SHAPES.TREE,      ice: [[3,2,1],[4,5,1],[5,1,1],[5,6,2],[2,4,1]],
+              objectives: [ { type: 'collect', tileType: 1, target: 22 }, { type: 'collect', tileType: 4, target: 18 }, { type: 'ice', target: 5 } ] },
+            { target: 2200, moves: 42, types: 6, shape: SHAPES.HOURGLASS, ice: [[0,1,1],[0,6,1],[7,1,1],[7,6,2],[1,2,1],[6,5,1]],
+              objectives: [ { type: 'collect', tileType: 2, target: 24 }, { type: 'collect', tileType: 5, target: 20 }, { type: 'ice', target: 6 }, { type: 'timer', seconds: 150 } ] },
+            { target: 750, moves: 46, types: 7, shape: SHAPES.RING,      ice: [[0,3,1],[0,4,2],[7,3,1],[7,4,2],[3,0,1],[4,7,1],[3,7,1]],
+              objectives: [ { type: 'collect', tileType: 0, target: 18 }, { type: 'collect', tileType: 3, target: 16 }, { type: 'collect', tileType: 6, target: 14 }, { type: 'ice', target: 7 }, { type: 'timer', seconds: 180 } ] },
         ];
 
-        // Deterministic pick of `count` active cells from a shape mask (seeded, so the
-        // layout is stable across reloads instead of re-randomizing every time)
-        function pickIceCells(shape, count, seed) {
-            const active = [];
-            for (let r = 0; r < BOARD_SIZE; r++) for (let c = 0; c < BOARD_SIZE; c++) if (shape[r][c]) active.push([r, c]);
+        // Small seeded PRNG (mulberry32-style) so procedurally generated levels are
+        // stable across reloads instead of re-randomizing every time.
+        function makeRng(seed) {
             let s = seed >>> 0;
-            function rand() {
+            return function rand() {
                 s = (s + 0x6D2B79F5) | 0;
                 let t = Math.imul(s ^ (s >>> 15), 1 | s);
                 t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
                 return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-            }
+            };
+        }
+
+        // Deterministic pick of `count` active cells from a shape mask
+        function pickIceCells(shape, count, seed) {
+            const active = [];
+            for (let r = 0; r < BOARD_SIZE; r++) for (let c = 0; c < BOARD_SIZE; c++) if (shape[r][c]) active.push([r, c]);
+            const rand = makeRng(seed);
             for (let i = active.length - 1; i > 0; i--) {
                 const j = Math.floor(rand() * (i + 1));
                 [active[i], active[j]] = [active[j], active[i]];
@@ -828,23 +1089,64 @@
             return active.slice(0, count);
         }
 
+        // Deterministic pick of `n` distinct tile-type indices out of `count` types
+        function pickCollectTypes(count, n, seed) {
+            const idxs = Array.from({ length: count }, (_, k) => k);
+            const rand = makeRng(seed);
+            for (let i = idxs.length - 1; i > 0; i--) {
+                const j = Math.floor(rand() * (i + 1));
+                [idxs[i], idxs[j]] = [idxs[j], idxs[i]];
+            }
+            return idxs.slice(0, n);
+        }
+
         // Procedurally extend the level list up to 30, cycling through the hand-built
-        // shapes and gradually raising the target score, ice count, and ice toughness
+        // shapes and gradually raising the target score, move budget, ice count/toughness,
+        // and the number + size of "collect this toy" objectives — so later levels take
+        // longer and demand more deliberate, targeted play instead of just any matches.
         const SHAPE_CYCLE = [SHAPES.FULL, SHAPES.DIAMOND, SHAPES.CROSS, SHAPES.TREE, SHAPES.HOURGLASS, SHAPES.RING];
         const TOTAL_LEVELS = 30;
+        // Star targets for levels 7-30, one per level (index 0 = level 7).
+        // BUG FIX: the old formula (target = prevTarget + 850 + (i-6)*80, uncapped) grew the
+        // score requirement much faster than the score a player can actually earn — moves cap
+        // out at 60 while the target kept climbing past 50,000, so on later levels not even a
+        // flawless run could reach 1 star. These numbers come from simulating lots of playthroughs
+        // of each level's actual board (shape density + toy-type count + move budget all affect
+        // how much score is realistically earnable — e.g. the sparse RING shape scores far less
+        // than the FULL board even with more moves), so a solid clear lands around 1 star and a
+        // very efficient run can reach 2-3 stars. Re-tune if playtesting says a level feels off.
+        const EXTENDED_TARGETS = [3000, 2400, 2700, 2050, 2050, 800, 3700, 2850, 3550, 2400, 2300, 950, 3700, 3250, 3150, 2450, 2400, 950, 4000, 3050, 3250, 2500, 2400, 950];
         (function extendLevels() {
-            let target = LEVELS[LEVELS.length - 1].target;
-            let moves = LEVELS[LEVELS.length - 1].moves;
-            for (let i = LEVELS.length; i < TOTAL_LEVELS; i++) {
+            const baseLen = LEVELS.length;
+            let moves = LEVELS[baseLen - 1].moves;
+            for (let i = baseLen; i < TOTAL_LEVELS; i++) {
                 const shape = SHAPE_CYCLE[i % SHAPE_CYCLE.length];
-                target = Math.round((target + 700 + (i - 6) * 65) / 50) * 50;
-                if (i % 3 === 0) moves = Math.min(30, moves + 1);
+                const target = EXTENDED_TARGETS[i - baseLen];
+                // Longer move budgets as levels progress, so a full playthrough keeps
+                // landing in the ~2-5 minute range instead of ending in under a minute.
+                moves = Math.min(60, moves + 1);
                 const types = 7;
-                const iceCount = Math.min(9, 3 + Math.floor((i - 6) / 3));
-                const toughHits = i >= 20 ? 2 : 1;
+                const iceCount = Math.min(10, 4 + Math.floor((i - 6) / 3));
+                const toughHits = i >= 16 ? 2 : 1;
                 const cells = pickIceCells(shape, iceCount, i * 97 + 13);
                 const ice = cells.map(([r, c], idx) => [r, c, idx % 4 === 0 ? Math.min(2, toughHits + 1) : toughHits]);
-                LEVELS.push({ target, moves, types, shape, ice });
+
+                // Mix in 1-3 "collect the toy" objectives (varies by level so the run feels varied),
+                // sized against the move budget so they're a real focus without needing every move.
+                const numCollect = (i % 5 === 0) ? 3 : (i % 2 === 0 ? 2 : 1);
+                const collectTypes = pickCollectTypes(types, numCollect, i * 131 + 7);
+                const perTypeTarget = Math.max(10, Math.round((moves * 0.6) / numCollect));
+                const objectives = [];
+                collectTypes.forEach(t => objectives.push({ type: 'collect', tileType: t, target: perTypeTarget }));
+                objectives.push({ type: 'ice', target: cells.length });
+                // From level 11 on, roughly every 4th level also races the clock —
+                // always alongside the collect objectives above, never by itself.
+                if (i >= 10 && i % 4 === 0) {
+                    const seconds = Math.max(90, Math.round(moves * 3.2));
+                    objectives.push({ type: 'timer', seconds });
+                }
+
+                LEVELS.push({ target, moves, types, shape, ice, objectives });
             }
         })();
 
@@ -855,6 +1157,7 @@
         const MAP_DECOR = ['🎄', '❄️', '🎁', '⭐'];
 
         function renderLevelMap() {
+            const viewport = document.getElementById('level-map-viewport');
             const wrap = document.getElementById('level-map-wrap');
             const nodesLayer = document.getElementById('level-grid');
             const svg = document.getElementById('level-map-svg');
@@ -949,7 +1252,54 @@
             requestAnimationFrame(() => {
                 progressPath.style.strokeDashoffset = String(totalLen * (1 - fraction));
             });
+
+            // Scroll the viewport so the furthest-unlocked (current) level is centered,
+            // instead of always opening at the top of this (now tall, internally-scrollable) map.
+            const currentIndex = Math.max(0, Math.min(unlockedCount - 1, LEVELS.length - 1));
+            const targetY = points[currentIndex].y;
+            const maxScroll = Math.max(0, mapHeight - viewport.clientHeight);
+            viewport.scrollTop = Math.max(0, Math.min(maxScroll, targetY - viewport.clientHeight / 2));
         }
+
+        // Swipe/drag-to-scroll for the level map (mouse drag or touch swipe), since native
+        // touch-action is disabled on the viewport so a finger-drag never fights page scroll.
+        (function setupMapSwipeScroll() {
+            const viewport = document.getElementById('level-map-viewport');
+            let dragging = false, moved = false, startY = 0, startScroll = 0;
+
+            viewport.addEventListener('pointerdown', (e) => {
+                dragging = true; moved = false;
+                startY = e.clientY;
+                startScroll = viewport.scrollTop;
+                viewport.classList.add('dragging');
+                // NOTE: intentionally NOT calling setPointerCapture here — capturing the
+                // pointer on the viewport re-targets the resulting "click" event to the
+                // viewport itself instead of the level-node the user actually pressed,
+                // which was silently breaking "click a level -> enter the game".
+            });
+            // Listen on document (not the viewport) for move/up so a drag that ends
+            // outside the viewport still resolves correctly without needing capture.
+            document.addEventListener('pointermove', (e) => {
+                if (!dragging) return;
+                const dy = e.clientY - startY;
+                if (Math.abs(dy) > 4) moved = true;
+                viewport.scrollTop = startScroll - dy;
+            });
+            function endDrag() {
+                if (!dragging) return;
+                dragging = false;
+                viewport.classList.remove('dragging');
+                if (moved) {
+                    // A drag just happened — swallow the click it would otherwise produce
+                    // on a level node, so dragging the map never accidentally starts a level.
+                    const swallow = (ev) => { ev.stopPropagation(); ev.preventDefault(); };
+                    viewport.addEventListener('click', swallow, { capture: true, once: true });
+                    setTimeout(() => viewport.removeEventListener('click', swallow, true), 0);
+                }
+            }
+            document.addEventListener('pointerup', endDrag);
+            document.addEventListener('pointercancel', endDrag);
+        })();
 
         let grid = [];              // grid[r][c] = tileId | null
         let tiles = {};              // id -> {id,row,col,kind,type,el}
@@ -967,6 +1317,22 @@
         let currentShape = SHAPES.FULL;   // 8x8 boolean mask — active/playable cells
         let frozenCells = {};             // 'r_c' -> hits remaining to break the ice
 
+        /* ---- Per-level objectives: collect specific toys / clear ice / beat the clock ---- */
+        let activeObjectives = [];        // this level's objectives (collect/ice/timer)
+        let collectedCounts = {};         // tileType index -> how many cleared this level
+        let iceDestroyedCount = 0;        // how many ice cells fully cleared this level
+
+        /* ---- Finisher: once objectives are met, remaining specials/moves auto-detonate for bonus score ---- */
+        let finishing = false;            // true while the automatic end-of-level sequence is running
+        let finishSettleCallback = null;  // called (instead of checkEndConditions) the next time the board fully settles
+
+        /* ---- Level countdown timer (only present when the level has a 'timer' objective) ---- */
+        let timerInterval = null;
+        let timerLeft = 0;
+        let timerTotal = 0;
+        const timerWrapEl = document.getElementById('m3-timer-wrap');
+        const timerEl = document.getElementById('m3-timer');
+
         const boardEl = document.getElementById('m3-board');
         const scoreEl = document.getElementById('m3-score');
         const movesEl = document.getElementById('m3-moves');
@@ -974,6 +1340,7 @@
         const progressFill = document.getElementById('m3-progress-fill');
         const progressCur = document.getElementById('m3-progress-cur');
         const progressTarget = document.getElementById('m3-progress-target');
+        const progressStarEls = Array.from(document.querySelectorAll('#m3-progress-stars i'));
 
         function randType(count) { return Math.floor(Math.random() * count); }
         function typeAt(id) {
@@ -1053,7 +1420,8 @@
                         t = randType(typesCount);
                     } while (
                         (c >= 2 && b[r][c - 1] === t && b[r][c - 2] === t) ||
-                        (r >= 2 && b[r - 1][c] === t && b[r - 2][c] === t)
+                        (r >= 2 && b[r - 1][c] === t && b[r - 2][c] === t) ||
+                        (r >= 1 && c >= 1 && b[r - 1][c] === t && b[r][c - 1] === t && b[r - 1][c - 1] === t)
                     );
                     b[r].push(t);
                 }
@@ -1077,6 +1445,7 @@
 
         function buildFreshBoard(shape, ice) {
             boardEl.innerHTML = '';
+            boardEl.appendChild(finisherCatcherEl); // preserve it — innerHTML='' would otherwise delete it for good
             tiles = {};
             grid = [];
             currentShape = shape || SHAPES.FULL;
@@ -1140,7 +1509,8 @@
         }
 
         /* ---- Match detection ---- */
-        function findMatchRuns() {
+        // Finds every straight-line run (length >= 3) of the same normal type, horizontally and vertically.
+        function findLineRuns() {
             const runs = [];
             for (let r = 0; r < BOARD_SIZE; r++) {
                 let runStart = 0;
@@ -1151,7 +1521,7 @@
                         if (len >= 3) {
                             const cells = [];
                             for (let k = runStart; k < c; k++) cells.push({ r, c: k, id: grid[r][k] });
-                            runs.push({ cells, len });
+                            runs.push({ dir: 'h', cells, len });
                         }
                         runStart = c;
                     }
@@ -1166,7 +1536,7 @@
                         if (len >= 3) {
                             const cells = [];
                             for (let k = runStart; k < r; k++) cells.push({ r: k, c, id: grid[k][c] });
-                            runs.push({ cells, len });
+                            runs.push({ dir: 'v', cells, len });
                         }
                         runStart = r;
                     }
@@ -1175,18 +1545,147 @@
             return runs;
         }
 
+        /*
+         * Full match detector for the current live board. Classifies every match into a shape:
+         *  - plain 3-in-a-row / 3-in-a-column  -> nothing special, just clears
+         *  - straight run of exactly 4         -> Arrow (spawned at the middle cell)
+         *  - straight run of 5+                -> Star (spawned at the middle cell)
+         *  - two perpendicular runs sharing a cell (L/T shape, e.g. 3+3 = 5 tiles) -> Bomb
+         *    (spawned at the intersection cell)
+         *  - 2x2 square of the same type (not already part of a line match)        -> Bomb
+         * Returns { plainCells: [...], specialSpawns: [{r,c,id,kind}, ...] }
+         */
+        function detectMatches() {
+            const runs = findLineRuns();
+            const usedCells = new Set();
+            const plainMap = new Map();
+            const specialSpawns = [];
+
+            // Map each matched cell to the run(s) that contain it, so we can find intersections.
+            const cellToRuns = new Map();
+            runs.forEach(run => {
+                run.cells.forEach(cell => {
+                    const key = cell.r + '_' + cell.c;
+                    if (!cellToRuns.has(key)) cellToRuns.set(key, []);
+                    cellToRuns.get(key).push(run);
+                });
+            });
+
+            // Cluster runs that share a cell together (handles L, T and plus shapes).
+            const visited = new Set();
+            runs.forEach(startRun => {
+                if (visited.has(startRun)) return;
+                const clusterRuns = [];
+                const stack = [startRun];
+                const seen = new Set();
+                while (stack.length) {
+                    const run = stack.pop();
+                    if (seen.has(run)) continue;
+                    seen.add(run);
+                    clusterRuns.push(run);
+                    run.cells.forEach(cell => {
+                        cellToRuns.get(cell.r + '_' + cell.c).forEach(r2 => { if (!seen.has(r2)) stack.push(r2); });
+                    });
+                }
+                clusterRuns.forEach(r => visited.add(r));
+
+                const cellMap = new Map();
+                clusterRuns.forEach(run => run.cells.forEach(cell => {
+                    const key = cell.r + '_' + cell.c;
+                    cellMap.set(key, cell);
+                    usedCells.add(key);
+                }));
+                const cells = Array.from(cellMap.values());
+
+                let spawnKind = null;
+                if (clusterRuns.length > 1) {
+                    spawnKind = 'bomb'; // intersecting lines = L/T shape
+                } else if (clusterRuns[0].len === 4) {
+                    spawnKind = 'arrow';
+                } else if (clusterRuns[0].len >= 5) {
+                    spawnKind = 'star';
+                }
+
+                let pivot = null;
+                if (spawnKind) {
+                    if (clusterRuns.length > 1) {
+                        pivot = cells.find(cell => cellToRuns.get(cell.r + '_' + cell.c).length > 1) || cells[Math.floor(cells.length / 2)];
+                    } else {
+                        pivot = clusterRuns[0].cells[Math.floor(clusterRuns[0].cells.length / 2)];
+                    }
+                }
+                cells.forEach(cell => {
+                    const key = cell.r + '_' + cell.c;
+                    if (pivot && cell.r === pivot.r && cell.c === pivot.c) {
+                        specialSpawns.push({ ...cell, kind: spawnKind });
+                    } else {
+                        plainMap.set(key, cell);
+                    }
+                });
+            });
+
+            // 2x2 squares, skipping cells already consumed by a line match this step.
+            for (let r = 0; r < BOARD_SIZE - 1; r++) {
+                for (let c = 0; c < BOARD_SIZE - 1; c++) {
+                    const ids = [grid[r][c], grid[r][c + 1], grid[r + 1][c], grid[r + 1][c + 1]];
+                    if (ids.some(id => !id)) continue;
+                    const types = ids.map(id => typeAt(id));
+                    if (types.some(t => SPECIAL_TYPES.has(t))) continue;
+                    if (types[0] !== types[1] || types[1] !== types[2] || types[2] !== types[3]) continue;
+                    const keys = [r + '_' + c, r + '_' + (c + 1), (r + 1) + '_' + c, (r + 1) + '_' + (c + 1)];
+                    if (keys.some(k => usedCells.has(k))) continue;
+                    keys.forEach(k => usedCells.add(k));
+                    const squareCells = [
+                        { r, c, id: grid[r][c] },
+                        { r, c: c + 1, id: grid[r][c + 1] },
+                        { r: r + 1, c, id: grid[r + 1][c] },
+                        { r: r + 1, c: c + 1, id: grid[r + 1][c + 1] },
+                    ];
+                    const pivot = squareCells[0];
+                    squareCells.forEach(cell => {
+                        const key = cell.r + '_' + cell.c;
+                        if (cell.r === pivot.r && cell.c === pivot.c) {
+                            specialSpawns.push({ ...cell, kind: 'bomb' });
+                        } else {
+                            plainMap.set(key, cell);
+                        }
+                    });
+                }
+            }
+
+            return { plainCells: Array.from(plainMap.values()), specialSpawns };
+        }
+
+        // Cheap boolean-only check (used for "any move available?" scans) — same shapes as detectMatches
+        // but skips all the classification work since we only need a yes/no answer.
+        function quickMatchExists() {
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    const id = grid[r][c];
+                    if (!id) continue;
+                    const t = typeAt(id);
+                    if (SPECIAL_TYPES.has(t)) continue;
+                    if (c + 2 < BOARD_SIZE && grid[r][c + 1] && grid[r][c + 2] && typeAt(grid[r][c + 1]) === t && typeAt(grid[r][c + 2]) === t) return true;
+                    if (r + 2 < BOARD_SIZE && grid[r + 1][c] && grid[r + 2][c] && typeAt(grid[r + 1][c]) === t && typeAt(grid[r + 2][c]) === t) return true;
+                    if (r + 1 < BOARD_SIZE && c + 1 < BOARD_SIZE && grid[r][c + 1] && grid[r + 1][c] && grid[r + 1][c + 1] &&
+                        typeAt(grid[r][c + 1]) === t && typeAt(grid[r + 1][c]) === t && typeAt(grid[r + 1][c + 1]) === t) return true;
+                }
+            }
+            return false;
+        }
+
         function hasPossibleMove() {
             for (let r = 0; r < BOARD_SIZE; r++) {
                 for (let c = 0; c < BOARD_SIZE; c++) {
                     if (c < BOARD_SIZE - 1) {
                         [grid[r][c], grid[r][c + 1]] = [grid[r][c + 1], grid[r][c]];
-                        const found = findMatchRuns().length > 0;
+                        const found = quickMatchExists();
                         [grid[r][c], grid[r][c + 1]] = [grid[r][c + 1], grid[r][c]];
                         if (found) return true;
                     }
                     if (r < BOARD_SIZE - 1) {
                         [grid[r][c], grid[r + 1][c]] = [grid[r + 1][c], grid[r][c]];
-                        const found = findMatchRuns().length > 0;
+                        const found = quickMatchExists();
                         [grid[r][c], grid[r + 1][c]] = [grid[r + 1][c], grid[r][c]];
                         if (found) return true;
                     }
@@ -1259,6 +1758,11 @@
                 for (let r = 1; r <= BOARD_SIZE; r++) {
                     const same = r < BOARD_SIZE && tg[r][c] === tg[r - 1][c];
                     if (same) { run++; if (run >= 3) return true; } else run = 1;
+                }
+            }
+            for (let r = 0; r < BOARD_SIZE - 1; r++) {
+                for (let c = 0; c < BOARD_SIZE - 1; c++) {
+                    if (tg[r][c] === tg[r][c + 1] && tg[r][c + 1] === tg[r + 1][c] && tg[r + 1][c] === tg[r + 1][c + 1]) return true;
                 }
             }
             return false;
@@ -1394,21 +1898,18 @@
             setTimeout(() => {
                 if (a.kind !== 'normal' || b.kind !== 'normal') {
                     movesLeft--; updateTopbar();
-                    const specials = [];
-                    if (a.kind !== 'normal') specials.push({ r: a.row, c: a.col, kind: a.kind, partnerType: b.kind === 'normal' ? b.type : null });
-                    if (b.kind !== 'normal') specials.push({ r: b.row, c: b.col, kind: b.kind, partnerType: a.kind === 'normal' ? a.type : null });
-                    detonateSpecials(specials, 1);
+                    handleSpecialSwapCombo(a, b);
                     return;
                 }
-                const runs = findMatchRuns();
-                if (runs.length === 0) {
+                const matches = detectMatches();
+                if (matches.plainCells.length === 0 && matches.specialSpawns.length === 0) {
                     sfx.invalid();
                     swapGridAndAnimate(idA, idB, true);
                     setTimeout(() => { busy = false; }, 240);
                     return;
                 }
                 movesLeft--; updateTopbar();
-                resolveRuns(runs, 1);
+                clearCellsAndCascade(matches.plainCells, matches.specialSpawns, 1, false);
             }, 200);
         }
 
@@ -1425,27 +1926,38 @@
             return arr.length ? arr[Math.floor(Math.random() * arr.length)] : null;
         }
 
-        // Handles activation of Bomb (3x3 blast), Arrow (clears its full row + column),
-        // and Star (removes every toy of the type it was swapped with from the whole board)
-        function detonateSpecials(specials, comboMultiplier) {
+        // Builds the set of cells a group of special tiles would clear, without touching the DOM/score yet.
+        // sp.radius overrides the Bomb's blast radius (default 1 = 3x3). sp.doubleStripe widens the Arrow's
+        // row+column clear to a thick 3-wide cross instead of a single row/column.
+        function computeSpecialClearCells(specials) {
             const cellsToClear = new Map();
             specials.forEach(sp => {
                 if (sp.kind === 'bomb') {
-                    for (let dr = -1; dr <= 1; dr++) {
-                        for (let dc = -1; dc <= 1; dc++) {
+                    const radius = sp.radius || 1;
+                    for (let dr = -radius; dr <= radius; dr++) {
+                        for (let dc = -radius; dc <= radius; dc++) {
                             const rr = sp.r + dr, cc = sp.c + dc;
-                            if (rr >= 0 && rr < BOARD_SIZE && cc >= 0 && cc < BOARD_SIZE && grid[rr][cc]) {
+                            if (rr >= 0 && rr < BOARD_SIZE && cc >= 0 && cc < BOARD_SIZE && currentShape[rr][cc] && grid[rr][cc]) {
                                 cellsToClear.set(rr + '_' + cc, { r: rr, c: cc, id: grid[rr][cc] });
                             }
                         }
                     }
                     spawnParticles(sp.r, sp.c, 0);
                 } else if (sp.kind === 'arrow') {
-                    for (let c = 0; c < BOARD_SIZE; c++) {
-                        if (currentShape[sp.r][c] && grid[sp.r][c]) cellsToClear.set(sp.r + '_' + c, { r: sp.r, c, id: grid[sp.r][c] });
+                    const band = sp.doubleStripe ? 1 : 0;
+                    for (let db = -band; db <= band; db++) {
+                        const rr = sp.r + db;
+                        if (rr < 0 || rr >= BOARD_SIZE) continue;
+                        for (let c = 0; c < BOARD_SIZE; c++) {
+                            if (currentShape[rr][c] && grid[rr][c]) cellsToClear.set(rr + '_' + c, { r: rr, c, id: grid[rr][c] });
+                        }
                     }
-                    for (let r = 0; r < BOARD_SIZE; r++) {
-                        if (currentShape[r][sp.c] && grid[r][sp.c]) cellsToClear.set(r + '_' + sp.c, { r, c: sp.c, id: grid[r][sp.c] });
+                    for (let db = -band; db <= band; db++) {
+                        const cc = sp.c + db;
+                        if (cc < 0 || cc >= BOARD_SIZE) continue;
+                        for (let r = 0; r < BOARD_SIZE; r++) {
+                            if (currentShape[r][cc] && grid[r][cc]) cellsToClear.set(r + '_' + cc, { r, c: cc, id: grid[r][cc] });
+                        }
                     }
                     spawnParticles(sp.r, sp.c, 2);
                 } else if (sp.kind === 'star') {
@@ -1465,57 +1977,125 @@
                     spawnParticles(sp.r, sp.c, 4);
                 }
             });
+            return cellsToClear;
+        }
+
+        // Handles activation of Bomb (3x3 blast, or bigger via sp.radius), Arrow (clears its row + column,
+        // or a thick cross via sp.doubleStripe), and Star (removes every toy of the type it was swapped
+        // with from the whole board).
+        function detonateSpecials(specials, comboMultiplier) {
+            const cellsToClear = computeSpecialClearCells(specials);
             sfx.bomb();
             clearCellsAndCascade(Array.from(cellsToClear.values()), [], comboMultiplier, true);
         }
 
-        // Chance that a plain 3-in-a-row spawns an Arrow instead of just clearing normally
-        const ARROW_SPAWN_CHANCE = 0.18;
+        /* ---- Combos: swapping two special tiles directly into each other ---- */
 
-        function resolveRuns(runs, comboMultiplier) {
-            const matchedMap = new Map();
-            const specialSpawns = [];
-            runs.forEach(run => {
-                let spawnKind = null;
-                if (run.len >= 5) spawnKind = 'star';
-                else if (run.len === 4) spawnKind = 'bomb';
-                else if (run.len === 3 && Math.random() < ARROW_SPAWN_CHANCE) spawnKind = 'arrow';
-                const pivot = spawnKind ? run.cells[Math.floor(run.cells.length / 2)] : null;
-                run.cells.forEach(cell => {
-                    const key = cell.r + '_' + cell.c;
-                    if (pivot && cell.r === pivot.r && cell.c === pivot.c) {
-                        specialSpawns.push({ ...cell, kind: spawnKind });
-                    } else {
-                        matchedMap.set(key, cell);
+        // Two Bombs swapped together: one combined blast with double the radius (3x3 -> 5x5 per tile).
+        function comboDoubleBomb(a, b) {
+            showComboBanner('Двойная бомба!');
+            detonateSpecials([
+                { r: a.row, c: a.col, kind: 'bomb', radius: 2 },
+                { r: b.row, c: b.col, kind: 'bomb', radius: 2 },
+            ], 1);
+        }
+
+        // Bomb + Arrow swapped together: the Arrow fires in two stripes (a thick 3-row + 3-column cross)
+        // instead of a single row/column — same idea as the classic "striped + wrapped" combo.
+        function comboBombArrow(bombTile, arrowTile) {
+            showComboBanner('Двойная стрела!');
+            detonateSpecials([
+                { r: bombTile.row, c: bombTile.col, kind: 'arrow', doubleStripe: true },
+            ], 1);
+        }
+
+        // Star + Bomb/Arrow swapped together: every normal toy of one (random) color currently on the
+        // board instantly turns into that special and detonates — a screen-wide chain of bombs or arrows.
+        function comboStarWithSpecial(starTile, otherTile) {
+            showComboBanner(otherTile.kind === 'bomb' ? 'Дождь бомб!' : 'Дождь стрел!');
+            const targetType = pickRandomTypeOnBoard();
+            const specials = [{ r: starTile.row, c: starTile.col, kind: 'star', partnerType: targetType }];
+            if (targetType !== null) {
+                for (let r = 0; r < BOARD_SIZE; r++) {
+                    for (let c = 0; c < BOARD_SIZE; c++) {
+                        const id = grid[r][c];
+                        if (id && tiles[id] && tiles[id].kind === 'normal' && tiles[id].type === targetType) {
+                            specials.push({ r, c, kind: otherTile.kind });
+                        }
                     }
-                });
-            });
-            clearCellsAndCascade(Array.from(matchedMap.values()), specialSpawns, comboMultiplier, false);
+                }
+            }
+            detonateSpecials(specials, 1);
+        }
+
+        // Entry point when the player swaps two non-normal (special) tiles into each other.
+        function handleSpecialSwapCombo(a, b) {
+            const aKind = a.kind, bKind = b.kind;
+            if (aKind !== 'normal' && bKind !== 'normal') {
+                if (aKind === 'bomb' && bKind === 'bomb') { comboDoubleBomb(a, b); return; }
+                if ((aKind === 'bomb' && bKind === 'arrow') || (aKind === 'arrow' && bKind === 'bomb')) {
+                    const bombTile = aKind === 'bomb' ? a : b;
+                    const arrowTile = aKind === 'arrow' ? a : b;
+                    comboBombArrow(bombTile, arrowTile);
+                    return;
+                }
+                if ((aKind === 'star' && (bKind === 'bomb' || bKind === 'arrow')) || (bKind === 'star' && (aKind === 'bomb' || aKind === 'arrow'))) {
+                    const starTile = aKind === 'star' ? a : b;
+                    const otherTile = aKind === 'star' ? b : a;
+                    comboStarWithSpecial(starTile, otherTile);
+                    return;
+                }
+            }
+            // Fallback (e.g. special + normal, or two of the same non-bomb kind): detonate independently.
+            const specials = [];
+            if (aKind !== 'normal') specials.push({ r: a.row, c: a.col, kind: aKind, partnerType: bKind === 'normal' ? b.type : null });
+            if (bKind !== 'normal') specials.push({ r: b.row, c: b.col, kind: bKind, partnerType: aKind === 'normal' ? a.type : null });
+            detonateSpecials(specials, 1);
+        }
+
+        function settleBoard() {
+            if (finishSettleCallback) {
+                const cb = finishSettleCallback;
+                finishSettleCallback = null;
+                cb();
+            } else {
+                checkEndConditions();
+            }
         }
 
         function clearCellsAndCascade(cellsToClear, specialSpawns, comboMultiplier, skipMatchSound) {
             if (cellsToClear.length === 0 && specialSpawns.length === 0) {
                 busy = false;
-                checkEndConditions();
+                settleBoard();
                 return;
             }
-            // crack ice at cleared cells and at their direct neighbours
+            // crack ice at cleared cells and at their direct neighbours; count every cell
+            // that fully melts this turn towards the level's "clear the ice" objective
             cellsToClear.concat(specialSpawns).forEach(cell => {
-                delete frozenCells[cell.r + '_' + cell.c];
+                const key = cell.r + '_' + cell.c;
+                if (frozenCells[key]) { iceDestroyedCount++; delete frozenCells[key]; }
                 [[cell.r - 1, cell.c], [cell.r + 1, cell.c], [cell.r, cell.c - 1], [cell.r, cell.c + 1]].forEach(([nr, nc]) => {
-                    const key = nr + '_' + nc;
-                    if (frozenCells[key]) {
-                        frozenCells[key]--;
-                        if (frozenCells[key] <= 0) delete frozenCells[key];
+                    const nkey = nr + '_' + nc;
+                    if (frozenCells[nkey]) {
+                        frozenCells[nkey]--;
+                        if (frozenCells[nkey] <= 0) { iceDestroyedCount++; delete frozenCells[nkey]; }
                         else updateIceVisual(nr, nc);
                     }
                 });
+            });
+            // tally cleared toys of each type towards "collect this toy" objectives
+            // (only plain matched/detonated cells count — a tile converted into a
+            // bomb/star/arrow via specialSpawns is not actually removed from the board)
+            cellsToClear.forEach(cell => {
+                const t = tiles[cell.id];
+                if (t && t.kind === 'normal') collectedCounts[t.type] = (collectedCounts[t.type] || 0) + 1;
             });
             const pointsPerCell = 10 * comboMultiplier;
             let gained = cellsToClear.length * pointsPerCell + specialSpawns.length * 25 * comboMultiplier;
             score += gained;
             scoreEl.textContent = score;
             updateProgress();
+            updateObjectivesUI();
 
             if (!skipMatchSound) sfx.match(comboMultiplier);
             if (specialSpawns.length) sfx.bombCreate();
@@ -1600,23 +2180,206 @@
         }
 
         function processCascadeStep(comboMultiplier) {
-            const runs = findMatchRuns();
-            if (runs.length === 0) {
+            const matches = detectMatches();
+            if (matches.plainCells.length === 0 && matches.specialSpawns.length === 0) {
                 busy = false;
-                checkEndConditions();
+                settleBoard();
                 return;
             }
-            resolveRuns(runs, comboMultiplier);
+            clearCellsAndCascade(matches.plainCells, matches.specialSpawns, comboMultiplier, false);
+        }
+
+        function objectivesSatisfied() {
+            // Timer objectives are a deadline, not a count to fill — they're checked
+            // separately by the countdown itself (see stopTimerIfExpired).
+            return activeObjectives.every(obj => obj.type === 'timer' || getObjectiveCurrent(obj) >= obj.target);
+        }
+        function getObjectiveCurrent(obj) {
+            if (obj.type === 'ice') return iceDestroyedCount;
+            if (obj.type === 'timer') return 0;
+            return collectedCounts[obj.tileType] || 0;
         }
 
         function checkEndConditions() {
+            if (finishing) return; // the finisher sequence drives its own flow to completion
             if (gameMode === 'level') {
-                if (score >= target) { onLevelWin(); return; }
+                if (objectivesSatisfied()) { runFinisherSequence(); return; }
                 if (movesLeft <= 0) { onLevelLose(); return; }
             } else {
                 if (movesLeft <= 0) { onEndlessOver(); return; }
             }
             if (!hasPossibleMove()) reshuffleBoard();
+        }
+
+        /* ---- Finisher sequence: runs once every objective is met but moves are still left ---- */
+        const FINISHER_ORDER = { star: 0, bomb: 1, arrow: 2 };
+        const FINISHER_LABEL = { star: 'Звезда!', bomb: 'Бомба!', arrow: 'Стрела!' };
+        const FINISHER_MAX_WAVES = 3;
+
+        const finisherCatcherEl = document.getElementById('m3-finisher-catcher');
+        let finisherWaveSizes = [];   // how many moves each remaining wave will consume
+        let finisherSkip = false;     // true once the player double-taps to fast-forward
+        let finisherTapCount = 0;
+        let finisherTapTimer = null;
+
+        function showFinisherCatcher() {
+            finisherCatcherEl.classList.remove('hidden');
+            finisherTapCount = 0;
+        }
+        function hideFinisherCatcher() {
+            finisherCatcherEl.classList.add('hidden');
+            finisherTapCount = 0;
+            if (finisherTapTimer) { clearTimeout(finisherTapTimer); finisherTapTimer = null; }
+        }
+        // Also acts as the "mouse is off" lock: it sits above every tile and swallows all input
+        // while the finisher runs. A quick double-tap on it fast-forwards the remaining bonus.
+        finisherCatcherEl.addEventListener('pointerdown', () => {
+            if (!finishing) return;
+            finisherTapCount++;
+            if (finisherTapTimer) clearTimeout(finisherTapTimer);
+            if (finisherTapCount >= 2) {
+                finisherTapCount = 0;
+                finisherSkip = true;
+            } else {
+                finisherTapTimer = setTimeout(() => { finisherTapCount = 0; }, 550);
+            }
+        });
+
+        // A one-second fireworks beat (visual + sfx) that tells the player "objective done!"
+        // before the finisher takes over. Board stays locked (finishing/catcher already active).
+        function playObjectiveCelebration(callback) {
+            sfx.fireworks();
+            const banner = document.createElement('div');
+            banner.className = 'm3-objective-banner';
+            banner.innerHTML = '🎉 Задание выполнено! 🎉';
+            boardEl.appendChild(banner);
+            let bursts = 0;
+            const burstInterval = setInterval(() => {
+                const r = Math.floor(Math.random() * BOARD_SIZE);
+                const c = Math.floor(Math.random() * BOARD_SIZE);
+                if (currentShape[r] && currentShape[r][c]) spawnParticles(r, c, Math.floor(Math.random() * TILE_COLORS.length));
+                bursts++;
+                if (bursts >= 6) clearInterval(burstInterval);
+            }, 150);
+            setTimeout(() => { banner.remove(); callback(); }, 1000);
+        }
+
+        function runFinisherSequence() {
+            finishing = true;
+            busy = true;
+            finisherSkip = false;
+            finisherWaveSizes = [];
+            stopTimer();
+            clearSelectionVisual();
+            showFinisherCatcher();
+            const queue = [];
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    const id = grid[r][c];
+                    if (id && tiles[id] && FINISHER_ORDER.hasOwnProperty(tiles[id].kind)) queue.push(id);
+                }
+            }
+            queue.sort((a, b) => FINISHER_ORDER[tiles[a].kind] - FINISHER_ORDER[tiles[b].kind]);
+            playObjectiveCelebration(() => finisherSpecialStep(queue));
+        }
+
+        // Detonates leftover star/bomb/arrow tiles already on the board, in that priority order.
+        // Normally one at a time; if the player has asked to skip ahead, whatever's left in the
+        // queue goes off together in a single combined blast.
+        function finisherSpecialStep(queue) {
+            while (queue.length) {
+                const id = queue[0];
+                const t = tiles[id];
+                if (t && grid[t.row] && grid[t.row][t.col] === id) break; // still a valid, un-cleared special
+                queue.shift(); // was already swept up by an earlier detonation's blast/cascade
+            }
+            if (!queue.length) { finisherConsumeMoves(); return; }
+            if (finisherSkip) {
+                const specials = queue.map(id => { const t = tiles[id]; return { r: t.row, c: t.col, kind: t.kind }; });
+                queue.length = 0;
+                finishSettleCallback = finisherConsumeMoves;
+                detonateSpecials(specials, 1);
+                return;
+            }
+            const id = queue.shift();
+            const t = tiles[id];
+            showComboBanner(FINISHER_LABEL[t.kind] || 'Бонус!');
+            finishSettleCallback = () => finisherSpecialStep(queue);
+            detonateSpecials([{ r: t.row, c: t.col, kind: t.kind }], 1);
+        }
+
+        // excludeIds lets a single wave grab several distinct tiles without repeats.
+        function pickRandomNormalTileId(excludeIds) {
+            const ids = [];
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    const id = grid[r][c];
+                    if (id && tiles[id] && tiles[id].kind === 'normal' && !(excludeIds && excludeIds.has(id))) ids.push(id);
+                }
+            }
+            return ids.length ? ids[Math.floor(Math.random() * ids.length)] : null;
+        }
+
+        // Splits `total` moves into up to FINISHER_MAX_WAVES roughly-even batches.
+        function distributeFinisherWaves(total) {
+            const waves = Math.min(FINISHER_MAX_WAVES, Math.max(1, total));
+            const base = Math.floor(total / waves);
+            let rem = total % waves;
+            const sizes = [];
+            for (let i = 0; i < waves; i++) {
+                sizes.push(base + (rem > 0 ? 1 : 0));
+                if (rem > 0) rem--;
+            }
+            return sizes;
+        }
+
+        // Spends whatever moves remain in a handful of waves (2-3 max): every move in a wave turns
+        // a toy into a bomb or arrow at once, then the whole wave detonates together for bonus
+        // score (uncapped). Double-tapping the catcher merges every remaining wave into one.
+        function finisherConsumeMoves() {
+            if (movesLeft <= 0) { finishFinisher(); return; }
+            if (!finisherWaveSizes.length) finisherWaveSizes = distributeFinisherWaves(movesLeft);
+            if (finisherSkip && finisherWaveSizes.length > 1) {
+                finisherWaveSizes = [finisherWaveSizes.reduce((a, b) => a + b, 0)];
+            }
+            finisherRunWave();
+        }
+
+        function finisherRunWave() {
+            if (!finisherWaveSizes.length || movesLeft <= 0) { finishFinisher(); return; }
+            const waveSize = Math.min(finisherWaveSizes.shift(), movesLeft);
+            const excluded = new Set();
+            for (let i = 0; i < waveSize; i++) {
+                const id = pickRandomNormalTileId(excluded);
+                if (!id) break;
+                excluded.add(id);
+            }
+            const ids = Array.from(excluded);
+            if (!ids.length) { finishFinisher(); return; }
+            movesLeft -= ids.length; updateTopbar();
+            const specials = ids.map(id => {
+                const t = tiles[id];
+                const kind = Math.random() < 0.5 ? 'bomb' : 'arrow';
+                t.kind = kind;
+                t.el.classList.add(kind);
+                renderTileVisual(t.el.querySelector('.m3-tile-img'), kind, t.type);
+                return { r: t.row, c: t.col, kind };
+            });
+            sfx.bombCreate();
+            showComboBanner('Волна бонусов!');
+            const delay = finisherSkip ? 40 : 320;
+            setTimeout(() => {
+                finishSettleCallback = finisherConsumeMoves;
+                detonateSpecials(specials, 1);
+            }, delay);
+        }
+
+        function finishFinisher() {
+            finishing = false;
+            busy = false;
+            finisherSkip = false;
+            hideFinisherCatcher();
+            onLevelWin();
         }
 
         function updateTopbar() {
@@ -1625,9 +2388,69 @@
         }
         function updateProgress() {
             if (gameMode !== 'level') return;
-            const pct = Math.min(100, (score / target) * 100);
+            const maxBar = target * 1.6 || 1;
+            const pct = Math.min(100, (score / maxBar) * 100);
             progressFill.style.width = pct + '%';
             progressCur.textContent = score;
+            const thresholds = [target * 1, target * 1.3, target * 1.6];
+            progressStarEls.forEach((el, i) => el.classList.toggle('earned', score >= thresholds[i]));
+        }
+
+        /* ---- Objectives panel: "collect this toy" / "clear the ice" badges ---- */
+        const objectivesEl = document.getElementById('m3-objectives');
+        function objectiveIconHtml(obj) {
+            if (obj.type === 'ice') return `<i class="fas fa-snowflake"></i>`;
+            const def = TILE_DEFS[obj.tileType];
+            return `<img src="${def.img}" alt="${def.id}">`;
+        }
+        function renderObjectivesUI() {
+            const countObjectives = activeObjectives.filter(obj => obj.type !== 'timer');
+            if (!countObjectives.length) { objectivesEl.innerHTML = ''; return; }
+            objectivesEl.innerHTML = countObjectives.map((obj) => `
+                <div class="m3-objective" data-obj-idx="${activeObjectives.indexOf(obj)}">
+                    ${objectiveIconHtml(obj)}
+                    <span class="m3-obj-count">0/${obj.target}</span>
+                </div>
+            `).join('');
+        }
+        function updateObjectivesUI() {
+            activeObjectives.forEach((obj, i) => {
+                if (obj.type === 'timer') return;
+                const el = objectivesEl.querySelector(`[data-obj-idx="${i}"]`);
+                if (!el) return;
+                const cur = Math.min(obj.target, getObjectiveCurrent(obj));
+                el.querySelector('.m3-obj-count').textContent = cur + '/' + obj.target;
+                el.classList.toggle('done', cur >= obj.target);
+            });
+        }
+
+        /* ---- Level countdown timer (only when the level has a 'timer' objective) ---- */
+        function formatTime(sec) {
+            sec = Math.max(0, sec);
+            const m = Math.floor(sec / 60), s = sec % 60;
+            return m + ':' + String(s).padStart(2, '0');
+        }
+        function updateTimerUI() {
+            timerEl.textContent = formatTime(timerLeft);
+            timerWrapEl.classList.toggle('m3-timer-low', timerLeft <= 10);
+        }
+        function stopTimer() {
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+        }
+        function startTimer(seconds) {
+            stopTimer();
+            timerTotal = timerLeft = seconds;
+            timerWrapEl.classList.remove('hidden');
+            updateTimerUI();
+            timerInterval = setInterval(() => {
+                if (finishing || gameMode !== 'level') return;
+                timerLeft--;
+                updateTimerUI();
+                if (timerLeft <= 0) {
+                    stopTimer();
+                    if (!objectivesSatisfied()) onLevelLose('time');
+                }
+            }, 1000);
         }
 
         /* ---- Level / endless flow ---- */
@@ -1639,10 +2462,19 @@
             movesLeft = lvl.moves;
             target = lvl.target;
             score = 0;
+            activeObjectives = lvl.objectives || [];
+            collectedCounts = {};
+            iceDestroyedCount = 0;
+            finishing = false; finishSettleCallback = null;
+            finisherWaveSizes = []; finisherSkip = false; hideFinisherCatcher();
             selectedId = null; busy = false;
             progressWrap.style.display = '';
             progressTarget.textContent = target;
             updateTopbar(); updateProgress();
+            renderObjectivesUI(); updateObjectivesUI();
+            const timerObj = activeObjectives.find(o => o.type === 'timer');
+            if (timerObj) startTimer(timerObj.seconds);
+            else { stopTimer(); timerWrapEl.classList.add('hidden'); }
             showScreen('game');
             buildFreshBoard(lvl.shape, lvl.ice);
         }
@@ -1653,8 +2485,15 @@
             movesLeft = 20;
             target = 0;
             score = 0;
+            activeObjectives = [];
+            collectedCounts = {};
+            iceDestroyedCount = 0;
+            finishing = false; finishSettleCallback = null;
+            finisherWaveSizes = []; finisherSkip = false; hideFinisherCatcher();
             selectedId = null; busy = false;
             progressWrap.style.display = 'none';
+            objectivesEl.innerHTML = '';
+            stopTimer(); timerWrapEl.classList.add('hidden');
             updateTopbar();
             showScreen('game');
             buildFreshBoard(SHAPES.FULL, []);
@@ -1675,7 +2514,24 @@
             return overlay;
         }
 
+        function objectivesRecapHtml() {
+            if (!activeObjectives.length) return '';
+            const rows = activeObjectives.map(obj => {
+                if (obj.type === 'timer') {
+                    const done = timerLeft > 0 || !activeObjectives.some(o => o.type !== 'timer' && getObjectiveCurrent(o) < o.target);
+                    return `<span class="m3-recap-badge inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full ${done ? 'text-green-400 border border-green-400/40' : 'text-gray-400 border border-white/10'}"><i class="fas fa-hourglass-half"></i> ${done ? '✓' : '✕'}</span>`;
+                }
+                const cur = Math.min(obj.target, getObjectiveCurrent(obj));
+                const done = cur >= obj.target;
+                return `<span class="m3-recap-badge inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full ${done ? 'text-green-400 border border-green-400/40' : 'text-gray-400 border border-white/10'}">${objectiveIconHtml(obj)} ${cur}/${obj.target}</span>`;
+            }).join(' ');
+            return `<div class="flex gap-2 flex-wrap justify-center mb-4">${rows}</div>`;
+        }
+
         function onLevelWin() {
+            stopTimer();
+            finishing = false;
+            hideFinisherCatcher();
             sfx.win();
             const stars = computeStars(score, target);
             levelStars[currentLevelIndex] = Math.max(levelStars[currentLevelIndex] || 0, stars);
@@ -1686,7 +2542,8 @@
             const overlay = overlayShell(`
                 <h3 class="font-display text-3xl md:text-4xl gold-text mb-2">Уровень пройден!</h3>
                 <div class="m3-stars">${starsHtml}</div>
-                <p class="text-gray-300 mb-6">Счёт: <span class="gold-text">${score}</span> / Цель: ${target}</p>
+                <p class="text-gray-300 mb-3">Счёт: <span class="gold-text">${score}</span> / Цель: ${target}</p>
+                ${objectivesRecapHtml()}
                 <div class="flex gap-3 flex-wrap justify-center">
                     ${hasNext ? '<button id="overlay-next" class="santa-btn">Следующий уровень <i class="fas fa-forward"></i></button>' : ''}
                     <button id="overlay-map" class="menu-btn">Карта уровней <i class="fas fa-map"></i></button>
@@ -1698,11 +2555,16 @@
             overlay.querySelector('#overlay-menu').addEventListener('click', () => { sfx.click(); overlay.remove(); showScreen('menu'); });
         }
 
-        function onLevelLose() {
+        function onLevelLose(reason) {
+            stopTimer();
+            finishing = false;
+            hideFinisherCatcher();
             sfx.lose();
+            const heading = reason === 'time' ? 'Время вышло!' : 'Ходы закончились!';
             const overlay = overlayShell(`
-                <h3 class="font-display text-3xl md:text-4xl text-red-400 mb-3">Ходы закончились!</h3>
-                <p class="text-gray-300 mb-6">Счёт: <span class="gold-text">${score}</span> / Цель: ${target}</p>
+                <h3 class="font-display text-3xl md:text-4xl text-red-400 mb-3">${heading}</h3>
+                <p class="text-gray-300 mb-3">Счёт: <span class="gold-text">${score}</span> / Цель: ${target}</p>
+                ${objectivesRecapHtml()}
                 <div class="flex gap-3 flex-wrap justify-center">
                     <button id="overlay-again" class="santa-btn">Попробовать снова <i class="fas fa-redo"></i></button>
                     <button id="overlay-menu" class="menu-btn">В меню <i class="fas fa-house"></i></button>
