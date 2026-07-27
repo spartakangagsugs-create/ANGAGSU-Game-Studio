@@ -456,6 +456,9 @@
         .m3-booster-opt:hover { border-color: rgba(232,184,75,0.5); transform: translateY(-2px); background: #14231a; }
         .m3-booster-opt.primary { background: #b91c1c; border-color: #b91c1c; }
         .m3-booster-opt.primary:hover { background: #991b1b; }
+        .m3-booster-opt.disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
+        .m3-booster-opt.disabled:hover { border-color: rgba(255,255,255,0.1); background: #0f1a12; }
+        .m3-booster-cost { font-size: .7rem; color: #e8b84b; display: flex; align-items: center; gap: 4px; }
         .m3-booster-icon {
             width: 42px; height: 42px;
             border-radius: 50%;
@@ -819,7 +822,7 @@
         <source src="Events/Christmas/bg_MapMusic.mp3" type="audio/mpeg">
     </audio>
 
-    <nav class="fixed w-full z-50 bg-[#050b07]/90 backdrop-blur-md border-b border-white/5">
+    <nav class="fixed top-0 left-0 w-full z-50 bg-[#050b07]/90 backdrop-blur-md border-b border-white/5">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-3">
                 <img src="public/Icon_transparent.png" alt="ANGAGSU Icon" class="h-10 w-10 block">
@@ -876,7 +879,8 @@
             <div id="screen-menu" class="app-screen hidden text-center flex flex-col items-center justify-center" style="min-height:340px;">
                 <h2 class="font-display text-4xl md:text-5xl mb-1">Новогодний <span class="gold-text">Match-3</span></h2>
                 <p class="text-gray-400 text-sm mb-1">Собирайте цепочки лакомств, проходите уровни и открывайте звёзды.</p>
-                <p id="m3-total-stars" class="text-xs gold-text mb-6 tracking-widest uppercase"><i class="fas fa-star"></i> 0/90</p>
+                <p id="m3-total-stars" class="text-xs gold-text mb-1 tracking-widest uppercase"><i class="fas fa-star"></i> 0/90</p>
+                <p id="m3-coins" class="text-xs gold-text mb-6 tracking-widest uppercase"><i class="fas fa-coins"></i> 0</p>
                 <div class="flex flex-col gap-3 items-center">
                     <button id="btn-play" class="santa-btn text-lg">Играть <i class="fas fa-play"></i></button>
                     <button id="btn-continue" class="menu-btn hidden">Продолжить с уровня <span id="m3-continue-lvl">1</span> <i class="fas fa-forward"></i></button>
@@ -904,6 +908,7 @@
                 <div class="max-w-xl mx-auto text-gray-300 text-sm leading-relaxed space-y-3">
                     <p>Свайпните или дважды кликните по двум соседним фишкам, чтобы поменять их местами и выстроить в ряд или столбец три и более одинаковых.</p>
                     <p>Совпадение из 4 фишек создаёт <span class="gold-text">бомбу</span> 💣 — поменяйте её местами с любой соседней фишкой, чтобы взорвать область вокруг неё.</p>
+                    <p>Совпадение из 5+ фишек в ряд создаёт <span class="gold-text">звезду</span> ⭐, а совпадение уголком/буквой Т — <span class="gold-text">стрелу</span> ➤. Две звезды, поменянные местами друг с другом, взрывают <span class="gold-text">всю доску целиком</span>! Две стрелы, поменянные местами — огромный крест сразу из двух точек, сметающий половину поля.</p>
                     <p>Совпавшие элементы приносят очки и исчезают, а на их место падают новые — цепочки подряд идущих совпадений дают бонусный множитель очков.</p>
                     <p>Если ход не создаёт совпадения, элементы просто вернутся на место — ход не будет потрачен.</p>
                     <p>В режиме «Уровни» нужно выполнить задания: собрать нужное количество определённых игрушек, разбить лёд, а иногда — уложиться в таймер. Очки за победу не нужны, они лишь определяют количество звёзд (1-3) в конце.</p>
@@ -915,7 +920,7 @@
             <!-- GAME -->
             <div id="screen-game" class="app-screen hidden">
                 <div class="m3-topbar">
-                    <button class="m3-back" data-nav="menu"><i class="fas fa-arrow-left"></i> Меню</button>
+                    <button id="btn-game-pause" class="m3-back"><i class="fas fa-pause"></i> Пауза</button>
                     <span>Очки: <span id="m3-score" class="gold-text">0</span></span>
                     <span>Ходы: <span id="m3-moves" class="text-red-400">20</span></span>
                     <span id="m3-timer-wrap" class="hidden"><i class="fas fa-hourglass-half"></i> <span id="m3-timer">0:00</span></span>
@@ -958,7 +963,7 @@
         }
 
         /* ================= Audio: background music + SFX, with % volume controls ================= */
-        const bgMusic = document.getElementById('bg-music');       // plays only during an actual level/endless run
+        const bgMusic = document.getElementById('bg-music');       // plays only during an actual level run
         const bgMapMusic = document.getElementById('bg_MapMusic'); // calmer ambient loop for menu / level map / rules
 
         function clamp01(v) { return Math.max(0, Math.min(1, v)); }
@@ -1284,6 +1289,8 @@
             const mapEl = document.getElementById('m3-total-stars-map');
             if (menuEl) menuEl.innerHTML = label;
             if (mapEl) mapEl.innerHTML = label;
+            const coinsEl = document.getElementById('m3-coins');
+            if (coinsEl) coinsEl.innerHTML = `<i class="fas fa-coins"></i> ${coins}`;
             const continueBtn = document.getElementById('btn-continue');
             if (continueBtn) {
                 const hasProgress = unlockedCount > 1 || (levelStars[0] || 0) > 0;
@@ -1444,8 +1451,10 @@
         // same as the music/sfx volume already was — was previously "session-only"
         // (lost on refresh/close) which was inconsistent with the saved volume.
         const PROGRESS_KEY = 'm3-progress-v1';
+        const COINS_PER_STAR = 10; // awarded once per level, only for a NEW personal-best star rating
         let unlockedCount = 1;
         let levelStars = {};
+        let coins = 0;
         function loadProgress() {
             try {
                 const raw = localStorage.getItem(PROGRESS_KEY);
@@ -1457,16 +1466,20 @@
                 if (data.levelStars && typeof data.levelStars === 'object') {
                     levelStars = data.levelStars;
                 }
+                if (Number.isFinite(data.coins)) {
+                    coins = Math.max(0, Math.floor(data.coins));
+                }
             } catch (e) { /* corrupt/blocked storage — just start fresh */ }
         }
         function saveProgress() {
             try {
-                localStorage.setItem(PROGRESS_KEY, JSON.stringify({ unlockedCount, levelStars }));
+                localStorage.setItem(PROGRESS_KEY, JSON.stringify({ unlockedCount, levelStars, coins }));
             } catch (e) { /* storage full/blocked — progress just won't persist */ }
         }
         function resetProgress() {
             unlockedCount = 1;
             levelStars = {};
+            coins = 0;
             try { localStorage.removeItem(PROGRESS_KEY); } catch (e) {}
         }
         loadProgress();
@@ -1676,7 +1689,6 @@
         let tileSize = 0;
         let slotEls = [];
         let currentTypesCount = TILE_DEFS.length;
-        let gameMode = 'endless';    // 'endless' | 'level'
         let currentLevelIndex = 0;
         let target = 0;
         let dragState = null;
@@ -2468,19 +2480,29 @@
                     }
                     spawnParticles(sp.r, sp.c, 2);
                 } else if (sp.kind === 'star') {
-                    let targetType = sp.partnerType;
-                    if (targetType === null || targetType === undefined) targetType = pickRandomTypeOnBoard();
-                    if (targetType !== null) {
+                    if (sp.clearAll) {
+                        // Star + Star combo: wipes every single tile on the board, of any color/kind.
                         for (let r = 0; r < BOARD_SIZE; r++) {
                             for (let c = 0; c < BOARD_SIZE; c++) {
                                 const id = grid[r][c];
-                                if (id && tiles[id] && tiles[id].kind === 'normal' && tiles[id].type === targetType) {
-                                    cellsToClear.set(r + '_' + c, { r, c, id });
+                                if (id) cellsToClear.set(r + '_' + c, { r, c, id });
+                            }
+                        }
+                    } else {
+                        let targetType = sp.partnerType;
+                        if (targetType === null || targetType === undefined) targetType = pickRandomTypeOnBoard();
+                        if (targetType !== null) {
+                            for (let r = 0; r < BOARD_SIZE; r++) {
+                                for (let c = 0; c < BOARD_SIZE; c++) {
+                                    const id = grid[r][c];
+                                    if (id && tiles[id] && tiles[id].kind === 'normal' && tiles[id].type === targetType) {
+                                        cellsToClear.set(r + '_' + c, { r, c, id });
+                                    }
                                 }
                             }
                         }
+                        if (grid[sp.r][sp.c]) cellsToClear.set(sp.r + '_' + sp.c, { r: sp.r, c: sp.c, id: grid[sp.r][sp.c] });
                     }
-                    if (grid[sp.r][sp.c]) cellsToClear.set(sp.r + '_' + sp.c, { r: sp.r, c: sp.c, id: grid[sp.r][sp.c] });
                     spawnParticles(sp.r, sp.c, 4);
                 }
             });
@@ -2532,6 +2554,24 @@
             ], 1);
         }
 
+        // Two Stars swapped together: wipes the entire board clean in one shot, regardless of color.
+        function comboDoubleStar(a, b) {
+            showComboBanner('Взрыв всей доски!');
+            detonateSpecials([
+                { r: a.row, c: a.col, kind: 'star', clearAll: true },
+            ], 1);
+        }
+
+        // Two Arrows swapped together: a massive cross fires from both positions at once, clearing
+        // a thick band of rows and columns through the whole board.
+        function comboDoubleArrow(a, b) {
+            showComboBanner('Огромный крест!');
+            detonateSpecials([
+                { r: a.row, c: a.col, kind: 'arrow', doubleStripe: true },
+                { r: b.row, c: b.col, kind: 'arrow', doubleStripe: true },
+            ], 1);
+        }
+
         // Star + Bomb/Arrow swapped together: every normal toy of one (random) color currently on the
         // board instantly turns into that special and detonates — a screen-wide chain of bombs or arrows.
         function comboStarWithSpecial(starTile, otherTile) {
@@ -2556,6 +2596,8 @@
             const aKind = a.kind, bKind = b.kind;
             if (aKind !== 'normal' && bKind !== 'normal') {
                 if (aKind === 'bomb' && bKind === 'bomb') { comboDoubleBomb(a, b); return; }
+                if (aKind === 'star' && bKind === 'star') { comboDoubleStar(a, b); return; }
+                if (aKind === 'arrow' && bKind === 'arrow') { comboDoubleArrow(a, b); return; }
                 if ((aKind === 'bomb' && bKind === 'arrow') || (aKind === 'arrow' && bKind === 'bomb')) {
                     const bombTile = aKind === 'bomb' ? a : b;
                     const arrowTile = aKind === 'arrow' ? a : b;
@@ -2734,12 +2776,8 @@
 
         function checkEndConditions() {
             if (finishing) return; // the finisher sequence drives its own flow to completion
-            if (gameMode === 'level') {
-                if (objectivesSatisfied()) { runFinisherSequence(); return; }
-                if (movesLeft <= 0) { onLevelLose(); return; }
-            } else {
-                if (movesLeft <= 0) { onEndlessOver(); return; }
-            }
+            if (objectivesSatisfied()) { runFinisherSequence(); return; }
+            if (movesLeft <= 0) { onLevelLose(); return; }
             if (!hasPossibleMove()) reshuffleBoard();
         }
 
@@ -2923,7 +2961,6 @@
             }
         }
         function updateProgress() {
-            if (gameMode !== 'level') return;
             const maxBar = target * 1.6 || 1;
             const pct = Math.min(100, (score / maxBar) * 100);
             progressFill.style.width = pct + '%';
@@ -2975,7 +3012,7 @@
             timerHiddenAt = null;
         }
         function tickTimer() {
-            if (finishing || gameMode !== 'level') return;
+            if (finishing) return;
             if (document.hidden) return; // paused — resumed/resynced by the visibilitychange handler below
             const remainingMs = timerDeadline - Date.now();
             const newLeft = Math.max(0, Math.ceil(remainingMs / 1000));
@@ -3013,27 +3050,90 @@
             }
         });
 
-        /* ---- Pre-level booster choice ---- */
-        function openBoosterModal(index) {
+        /* ---- Pause menu: reachable any time during a level via the topbar Пауза button ---- */
+        // Freezes the countdown (same deadline-shift trick as the tab-hidden handler above)
+        // without touching timerLeft/timerTotal, so resuming picks up exactly where it left off.
+        function pauseTimerForModal() {
+            if (!timerInterval) return false;
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerHiddenAt = Date.now();
+            return true;
+        }
+        function resumeTimerForModal() {
+            if (timerHiddenAt == null) return;
+            timerDeadline += Date.now() - timerHiddenAt;
+            timerHiddenAt = null;
+            timerInterval = setInterval(tickTimer, 250);
+            tickTimer();
+        }
+        function openPauseModal() {
+            if (screens.game.classList.contains('hidden')) return;
+            if (finishing) return; // don't allow pausing mid-finisher sequence
+            if (document.querySelector('.m3-modal-backdrop') || document.getElementById('game-overlay')) return;
+            sfx.click();
+            const timerWasRunning = pauseTimerForModal();
             const modal = document.createElement('div');
             modal.className = 'm3-modal-backdrop';
             modal.innerHTML = `
                 <div class="m3-modal-card">
+                    <h3 class="font-display text-3xl gold-text mb-4">Пауза</h3>
+                    <div class="flex flex-col gap-3 items-stretch">
+                        <button id="pause-resume" class="menu-btn primary">Продолжить <i class="fas fa-play"></i></button>
+                        <button id="pause-restart" class="menu-btn">Начать заново <i class="fas fa-redo"></i></button>
+                        <button id="pause-exit" class="menu-btn">Выйти в меню <i class="fas fa-house"></i></button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            function resume() {
+                modal.remove();
+                if (timerWasRunning) resumeTimerForModal();
+            }
+            modal.addEventListener('click', (e) => { if (e.target === modal) { sfx.click(); resume(); } });
+            modal.querySelector('#pause-resume').addEventListener('click', () => { sfx.click(); resume(); });
+            modal.querySelector('#pause-restart').addEventListener('click', () => {
+                sfx.click();
+                modal.remove();
+                startLevel(currentLevelIndex);
+            });
+            modal.querySelector('#pause-exit').addEventListener('click', () => {
+                sfx.click();
+                if (!confirm('Выйти в меню? Прогресс текущей попытки уровня будет потерян.')) return;
+                modal.remove();
+                stopTimer();
+                showScreen('menu');
+            });
+        }
+        document.getElementById('btn-game-pause').addEventListener('click', openPauseModal);
+
+        /* ---- Pre-level booster choice ---- */
+        // Coin cost of each pre-level booster (0 = free). Paid for out of `coins`,
+        // which are earned from onLevelWin whenever a level's star rating improves.
+        const BOOSTER_COSTS = { none: 0, moves: 15, bomb: 25 };
+        function openBoosterModal(index) {
+            const modal = document.createElement('div');
+            modal.className = 'm3-modal-backdrop';
+            const optHtml = (booster, icon, label) => {
+                const cost = BOOSTER_COSTS[booster];
+                const affordable = cost === 0 || coins >= cost;
+                const costHtml = cost > 0 ? `<span class="m3-booster-cost"><i class="fas fa-coins"></i> ${cost}</span>` : '';
+                return `
+                        <button data-booster="${booster}" class="m3-booster-opt${booster === 'none' ? ' primary' : ''}${affordable ? '' : ' disabled'}" ${affordable ? '' : 'disabled'}>
+                            <span class="m3-booster-icon"><i class="fas fa-${icon}"></i></span>
+                            <span class="m3-booster-label">${label}</span>
+                            ${costHtml}
+                        </button>`;
+            };
+            modal.innerHTML = `
+                <div class="m3-modal-card">
                     <h3 class="font-display text-3xl gold-text mb-1">Уровень ${index + 1}</h3>
-                    <p class="text-gray-400 text-sm mb-4">Бустер перед стартом (необязательно):</p>
+                    <p class="text-gray-400 text-sm mb-1">Бустер перед стартом (необязательно):</p>
+                    <p class="text-xs gold-text mb-4 tracking-widest uppercase"><i class="fas fa-coins"></i> ${coins}</p>
                     <div class="m3-booster-grid">
-                        <button data-booster="none" class="m3-booster-opt primary">
-                            <span class="m3-booster-icon"><i class="fas fa-play"></i></span>
-                            <span class="m3-booster-label">Старт</span>
-                        </button>
-                        <button data-booster="moves" class="m3-booster-opt">
-                            <span class="m3-booster-icon"><i class="fas fa-forward"></i></span>
-                            <span class="m3-booster-label">+5 ходов</span>
-                        </button>
-                        <button data-booster="bomb" class="m3-booster-opt">
-                            <span class="m3-booster-icon"><i class="fas fa-bomb"></i></span>
-                            <span class="m3-booster-label">Стартовая бомба</span>
-                        </button>
+                        ${optHtml('none', 'play', 'Старт')}
+                        ${optHtml('moves', 'forward', '+5 ходов')}
+                        ${optHtml('bomb', 'bomb', 'Стартовая бомба')}
                     </div>
                 </div>
             `;
@@ -3041,10 +3141,18 @@
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) { modal.remove(); return; }
                 const btn = e.target.closest('[data-booster]');
-                if (!btn) return;
+                if (!btn || btn.disabled) return;
+                const booster = btn.dataset.booster;
+                const cost = BOOSTER_COSTS[booster] || 0;
+                if (cost > 0) {
+                    if (coins < cost) return; // shouldn't happen (button would be disabled), but stay safe
+                    coins -= cost;
+                    saveProgress();
+                    updateHeaderStats();
+                }
                 sfx.click();
                 modal.remove();
-                startLevel(index, btn.dataset.booster);
+                startLevel(index, booster);
             });
         }
         // Converts one random normal tile already on the board into a starting bomb —
@@ -3065,9 +3173,8 @@
             renderTileVisual(t.el.querySelector('.m3-tile-img'), 'bomb', t.type);
         }
 
-        /* ---- Level / endless flow ---- */
+        /* ---- Level flow ---- */
         function startLevel(index, booster) {
-            gameMode = 'level';
             currentLevelIndex = index;
             const lvl = LEVELS[index];
             currentTypesCount = lvl.types;
@@ -3092,27 +3199,6 @@
             showScreen('game');
             buildFreshBoard(lvl.shape, lvl.ice);
             if (booster === 'bomb') placeStartingBomb();
-        }
-
-        function startEndless() {
-            gameMode = 'endless';
-            currentTypesCount = TILE_DEFS.length;
-            movesLeft = 20;
-            target = 0;
-            score = 0;
-            activeObjectives = [];
-            collectedCounts = {};
-            iceDestroyedCount = 0;
-            finishing = false; finishSettleCallback = null;
-            finisherWaveSizes = []; finisherSkip = false; hideFinisherCatcher();
-            selectedId = null; busy = false;
-            lowMovesWarned = false;
-            progressWrap.style.display = 'none';
-            objectivesEl.innerHTML = '';
-            stopTimer(); timerWrapEl.classList.add('hidden');
-            updateTopbar();
-            showScreen('game');
-            buildFreshBoard(SHAPES.FULL, []);
         }
 
         function computeStars(sc, tgt) {
@@ -3150,7 +3236,10 @@
             hideFinisherCatcher();
             sfx.win();
             const stars = computeStars(score, target);
-            levelStars[currentLevelIndex] = Math.max(levelStars[currentLevelIndex] || 0, stars);
+            const prevStars = levelStars[currentLevelIndex] || 0;
+            levelStars[currentLevelIndex] = Math.max(prevStars, stars);
+            const starGain = levelStars[currentLevelIndex] - prevStars;
+            if (starGain > 0) coins += starGain * COINS_PER_STAR;
             if (currentLevelIndex + 1 >= unlockedCount) unlockedCount = Math.min(LEVELS.length, currentLevelIndex + 2);
             saveProgress();
             updateHeaderStats();
@@ -3161,6 +3250,7 @@
                 <h3 class="font-display text-3xl md:text-4xl gold-text mb-2">Уровень пройден!</h3>
                 <div class="m3-stars">${starsHtml}</div>
                 <p class="text-gray-300 mb-3">Счёт: <span class="gold-text">${score}</span> / Цель: ${target}</p>
+                ${starGain > 0 ? `<p class="text-xs gold-text mb-3"><i class="fas fa-coins"></i> +${starGain * COINS_PER_STAR} монет!</p>` : ''}
                 ${objectivesRecapHtml()}
                 <div class="flex gap-3 flex-wrap justify-center">
                     ${hasNext ? '<button id="overlay-next" class="santa-btn">Следующий уровень <i class="fas fa-forward"></i></button>' : ''}
@@ -3205,20 +3295,6 @@
                 });
             }
             overlay.querySelector('#overlay-again').addEventListener('click', () => { sfx.click(); overlay.remove(); startLevel(currentLevelIndex); });
-            overlay.querySelector('#overlay-menu').addEventListener('click', () => { sfx.click(); overlay.remove(); showScreen('menu'); });
-        }
-
-        function onEndlessOver() {
-            sfx.lose();
-            const overlay = overlayShell(`
-                <h3 class="font-display text-3xl md:text-4xl gold-text mb-3">Ходы закончились!</h3>
-                <p class="text-gray-300 mb-6">Счёт: <span class="gold-text">${score}</span></p>
-                <div class="flex gap-3 flex-wrap justify-center">
-                    <button id="overlay-again" class="santa-btn">Играть снова <i class="fas fa-redo"></i></button>
-                    <button id="overlay-menu" class="menu-btn">В меню <i class="fas fa-house"></i></button>
-                </div>
-            `);
-            overlay.querySelector('#overlay-again').addEventListener('click', () => { sfx.click(); overlay.remove(); startEndless(); });
             overlay.querySelector('#overlay-menu').addEventListener('click', () => { sfx.click(); overlay.remove(); showScreen('menu'); });
         }
 

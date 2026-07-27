@@ -329,7 +329,7 @@
         </div>
     </div>
 
-    <nav class="fixed w-full z-50 transition-all duration-300 bg-[#050507]/90 backdrop-blur-md border-b border-white/5" id="navbar">
+    <nav class="fixed top-0 left-0 w-full z-50 transition-all duration-300 bg-[#050507]/90 backdrop-blur-md border-b border-white/5" id="navbar">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-2 z-50">
                 <a href="index.html" class="flex items-center gap-3">
@@ -613,15 +613,22 @@
 
         function openMobileMenu() {
             mobileMenuScrollY = window.scrollY;
-            menu.classList.remove('hidden');
-            menu.classList.add('flex');
-            btnIcon.classList.remove('fa-bars');
-            btnIcon.classList.add('fa-times');
+            // Lock the page scroll FIRST, before revealing the fixed-position
+            // menu. Showing the menu before the scroll lock is applied causes
+            // mobile Safari/Chrome to briefly paint the menu offset by the
+            // current scroll amount (the bug where it opens higher/lower
+            // depending on how far down the page you had scrolled).
             document.body.style.position = 'fixed';
             document.body.style.top = `-${mobileMenuScrollY}px`;
             document.body.style.left = '0';
             document.body.style.right = '0';
             document.body.style.width = '100%';
+            // Force a layout flush so the scroll lock is committed before unhiding the menu.
+            void document.body.offsetHeight;
+            menu.classList.remove('hidden');
+            menu.classList.add('flex');
+            btnIcon.classList.remove('fa-bars');
+            btnIcon.classList.add('fa-times');
         }
 
         function closeMobileMenu() {
