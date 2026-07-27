@@ -373,7 +373,7 @@
         .m3-tile.matched .m3-tile-inner {
             transform: scale(0) rotate(35deg);
             opacity: 0;
-            transition: transform .2s ease-in, opacity .2s ease-in;
+            transition: transform .3s cubic-bezier(.55,0,.85,.35), opacity .3s ease-in;
         }
         .m3-tile.bomb .m3-tile-inner {
             background: rgba(185,28,28,0.22);
@@ -484,6 +484,19 @@
         }
         .m3-tile.frozen .m3-tile-img { animation-play-state: paused; }
 
+        /* No-move auto-reshuffle: each tile does a quick flip-scale as its type
+           changes, staggered outward from the board's center so the whole grid
+           reads as a ripple/wave instead of every icon popping at once. */
+        .m3-tile-inner.m3-reshuffling {
+            animation: m3-reshuffle-flip .48s cubic-bezier(.45,0,.55,1);
+        }
+        @keyframes m3-reshuffle-flip {
+            0%   { transform: scale(1) rotate(0deg); opacity: 1; }
+            42%  { transform: scale(0.12) rotate(190deg); opacity: .5; }
+            58%  { transform: scale(0.12) rotate(190deg); opacity: .5; }
+            100% { transform: scale(1) rotate(360deg); opacity: 1; }
+        }
+
         .m3-tile.frozen .m3-tile-inner { filter: saturate(0.55) brightness(0.92); }
         .m3-tile.frozen { cursor: not-allowed; }
         .m3-ice-overlay {
@@ -560,6 +573,49 @@
         @keyframes particle-fly {
             to { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
         }
+        /* Bigger, brighter burst used for bomb/star/arrow detonations (vs. the small
+           particles of a plain 3-in-a-row match) so a blast actually reads as one. */
+        .m3-particle-big {
+            z-index: 16;
+            box-shadow: 0 0 10px currentColor;
+            animation: particle-fly .75s ease-out forwards;
+        }
+        .m3-blast-flash {
+            position: absolute;
+            width: 14px; height: 14px;
+            margin-left: -7px; margin-top: -7px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 15;
+            animation: blast-flash .4s ease-out forwards;
+        }
+        @keyframes blast-flash {
+            0%   { transform: scale(0.3); opacity: 1; }
+            100% { transform: scale(8); opacity: 0; }
+        }
+        .m3-shockwave {
+            position: absolute;
+            width: 14px; height: 14px;
+            margin-left: -7px; margin-top: -7px;
+            border-radius: 50%;
+            border: 3px solid;
+            pointer-events: none;
+            z-index: 14;
+            animation: shockwave-ring .5s ease-out forwards;
+        }
+        @keyframes shockwave-ring {
+            0%   { transform: scale(0.4); opacity: .9; }
+            100% { transform: scale(6.5); opacity: 0; }
+        }
+        .m3-board-shake { animation: board-shake .32s ease-out; }
+        @keyframes board-shake {
+            0%   { transform: translate(0, 0); }
+            20%  { transform: translate(-6px, 3px); }
+            40%  { transform: translate(5px, -4px); }
+            60%  { transform: translate(-4px, -2px); }
+            80%  { transform: translate(3px, 2px); }
+            100% { transform: translate(0, 0); }
+        }
 
         #m3-timer-wrap {
             color: #ffd27a;
@@ -590,8 +646,12 @@
             top: 46%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.6);
+            width: 90%;
+            max-width: 340px;
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 2.4rem;
+            font-size: 2rem;
+            line-height: 1.15;
+            text-align: center;
             color: #fff;
             text-shadow: 0 0 20px #b91c1c, 0 0 6px #e8b84b;
             pointer-events: none;
@@ -611,8 +671,11 @@
             top: 44%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.6);
+            width: 90%;
+            max-width: 340px;
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 2.1rem;
+            font-size: 2rem;
+            line-height: 1.15;
             text-align: center;
             color: #fff8e0;
             text-shadow: 0 0 22px #e8b84b, 0 0 8px #ffd700;
@@ -924,7 +987,6 @@
                     <span>Очки: <span id="m3-score" class="gold-text">0</span></span>
                     <span>Ходы: <span id="m3-moves" class="text-red-400">20</span></span>
                     <span id="m3-timer-wrap" class="hidden"><i class="fas fa-hourglass-half"></i> <span id="m3-timer">0:00</span></span>
-                    <button id="m3-hint-btn" class="m3-hint-btn" title="Показать возможный ход"><i class="fas fa-lightbulb"></i></button>
                 </div>
                 <div id="m3-progress" class="m3-progress-wrap">
                     <div class="m3-progress-stars" id="m3-progress-stars">
@@ -980,16 +1042,38 @@
         bgMapMusic.volume = musicVolume * MAP_MUSIC_LEVEL;
         let currentScreenName = 'loading';
 
+        // Some mobile/embedded browsers won't reliably start an <audio> element's
+        // playback from a later play() call unless a play() has already *succeeded*
+        // once during a real user gesture — without this, players could see the
+        // sound icon showing "on" while the level's background track just never
+        // actually starts. We prime both tracks on the very first tap/click/key
+        // anywhere on the page: force them silent, start them playing (this
+        // succeeds because it runs inside a genuine user gesture), and leave them
+        // running. From then on updateMusicForScreen()/fadeTrack() only ever need
+        // to ramp .volume on an already-playing element, so the real track is
+        // guaranteed to be audible the moment a level actually starts.
+        function primeAudioOnce() {
+            [bgMusic, bgMapMusic].forEach(el => {
+                el.volume = 0;
+                el.play().catch(() => {});
+            });
+        }
+        ['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
+            document.addEventListener(evt, primeAudioOnce, { once: true, capture: true });
+        });
+
         // Smoothly ramps an <audio> element's volume toward `targetVolume` instead of the old
         // hard play()/pause() cut, which used to click/cut abruptly when leaving a screen.
+        // Deliberately never pauses the element once it's playing: a paused track needs a
+        // fresh play() to resume, and that call can silently get blocked outside a direct
+        // user gesture (the exact bug where the sound icon shows "on" but the level's music
+        // never actually starts). Idling silently at 0 volume costs nothing noticeable and
+        // guarantees the next fade-in is just a volume ramp, never a new play() attempt.
         function fadeTrack(el, targetVolume, duration = 450) {
             if (el._fadeRAF) { cancelAnimationFrame(el._fadeRAF); el._fadeRAF = null; }
             const startVolume = el.volume;
             if (targetVolume > 0.001 && el.paused) el.play().catch(() => {});
-            if (Math.abs(targetVolume - startVolume) < 0.001) {
-                if (targetVolume <= 0.001) el.pause();
-                return;
-            }
+            if (Math.abs(targetVolume - startVolume) < 0.001) return;
             const startTime = performance.now();
             const step = (now) => {
                 const t = Math.min(1, (now - startTime) / duration);
@@ -998,7 +1082,6 @@
                     el._fadeRAF = requestAnimationFrame(step);
                 } else {
                     el._fadeRAF = null;
-                    if (targetVolume <= 0.001) el.pause();
                 }
             };
             el._fadeRAF = requestAnimationFrame(step);
@@ -1355,7 +1438,8 @@
             CROSS:     parseShape(['00111100','00111100','11111111','11111111','11111111','11111111','00111100','00111100']),
             TREE:      parseShape(['00011000','00011000','00111100','01111110','01111110','11111111','00011000','00011000']),
             HOURGLASS: parseShape(['11111111','01111110','00111100','00011000','00011000','00111100','01111110','11111111']),
-            RING:      parseShape(['11111111','10000001','10000001','10000001','10000001','10000001','10000001','11111111']),
+            ARROW:     parseShape(['00011000','00111100','01111110','11111111','00011000','00011000','00011000','00011000']),
+            HEART:     parseShape(['01100110','11111111','11111111','11111111','01111110','00111100','00011000','00000000']),
         };
 
         // ice[i] = [row, col, hitsToBreak] — a frozen cell that must be matched
@@ -1377,8 +1461,8 @@
         // (1 star at target, 2 at 1.3x, 3 at 1.6x — see computeStars). It should scale with
         // `moves` at roughly the same score-per-move rate for a given board `shape` — otherwise
         // stars become wildly easier or harder to earn from one level to the next for no reason
-        // the player can see (a FULL board realistically supports ~66 score/move; a sparse
-        // board like RING scores far less per move even with more moves allotted).
+        // board realistically supports ~66 score/move; a sparse non-FULL board scores far
+        // less per move even with more moves allotted).
         //
         // All 30 levels are hand-authored below across 3 worlds (Cozy Village 1-10,
         // Magical Winter Forest 11-20, Santa's Workshop-Landia 21-30): ice count/toughness
@@ -1395,7 +1479,7 @@
               objectives: [ { type: 'collect', tileType: 5, target: 11 }, { type: 'collect', tileType: 4, target: 11 }, { type: 'ice', target: 5 } ] }, // level 4
             { target: 1700, moves: 42, types: 6, shape: SHAPES.HOURGLASS, ice: [[6,3,1], [7,0,1], [2,5,1], [6,6,1], [1,2,1], [2,3,1]],
               objectives: [ { type: 'collect', tileType: 1, target: 13 }, { type: 'collect', tileType: 5, target: 13 }, { type: 'ice', target: 6 }, { type: 'timer', seconds: 150 } ] }, // level 5
-            { target: 750, moves: 46, types: 7, shape: SHAPES.RING, ice: [[0,2,1], [0,1,1], [6,7,1], [7,2,1], [3,0,1], [7,6,1], [0,0,1]],
+            { target: 750, moves: 46, types: 7, shape: SHAPES.ARROW, ice: [[0,3,1], [1,2,1], [1,5,1], [3,0,1], [3,7,1], [7,3,1], [7,4,1]],
               objectives: [ { type: 'collect', tileType: 6, target: 10 }, { type: 'collect', tileType: 5, target: 10 }, { type: 'collect', tileType: 2, target: 10 }, { type: 'ice', target: 7 }, { type: 'timer', seconds: 180 } ] }, // level 6
             { target: 3000, moves: 48, types: 7, shape: SHAPES.FULL, ice: [[0,6,1], [7,1,1], [3,5,1], [1,4,1], [2,5,1], [1,3,1]],
               objectives: [ { type: 'collect', tileType: 6, target: 14 }, { type: 'collect', tileType: 5, target: 14 }, { type: 'ice', target: 6 } ] }, // level 7
@@ -1407,7 +1491,7 @@
               objectives: [ { type: 'collect', tileType: 2, target: 10 }, { type: 'collect', tileType: 0, target: 10 }, { type: 'collect', tileType: 3, target: 10 }, { type: 'ice', target: 7 }, { type: 'timer', seconds: 170 } ] }, // level 10
             { target: 2050, moves: 53, types: 7, shape: SHAPES.HOURGLASS, ice: [[2,2,2], [3,3,2], [7,7,2], [6,2,2], [7,2,2], [6,1,2], [2,3,2], [3,4,2]],
               objectives: [ { type: 'collect', tileType: 0, target: 16 }, { type: 'collect', tileType: 5, target: 16 }, { type: 'ice', target: 8 }, { type: 'timer', seconds: 180 } ] }, // level 11
-            { target: 950, moves: 54, types: 7, shape: SHAPES.RING, ice: [[4,0,2], [0,0,2], [3,0,2], [0,6,2], [0,5,2], [0,1,2], [7,4,2], [7,3,2]],
+            { target: 950, moves: 54, types: 7, shape: SHAPES.HEART, ice: [[0,1,2], [0,6,2], [1,0,2], [1,7,2], [3,0,2], [3,7,2], [6,3,2], [6,4,2]],
               objectives: [ { type: 'collect', tileType: 2, target: 11 }, { type: 'collect', tileType: 3, target: 11 }, { type: 'collect', tileType: 0, target: 11 }, { type: 'ice', target: 8 } ] }, // level 12
             { target: 3700, moves: 55, types: 7, shape: SHAPES.FULL, ice: [[7,2,2], [6,3,2], [6,6,2], [0,1,2], [1,1,2], [2,7,2], [3,1,2], [7,1,2], [4,2,2]],
               objectives: [ { type: 'collect', tileType: 2, target: 16 }, { type: 'collect', tileType: 4, target: 16 }, { type: 'ice', target: 9 }, { type: 'timer', seconds: 190 } ] }, // level 13
@@ -1419,7 +1503,7 @@
               objectives: [ { type: 'collect', tileType: 0, target: 12 }, { type: 'collect', tileType: 5, target: 12 }, { type: 'collect', tileType: 1, target: 12 }, { type: 'ice', target: 10 } ] }, // level 16
             { target: 2300, moves: 58, types: 7, shape: SHAPES.HOURGLASS, ice: [[0,5,2], [7,6,2], [0,3,2], [2,4,2], [2,5,2], [2,3,2], [4,3,2], [6,6,2], [6,5,2], [0,2,2]],
               objectives: [ { type: 'collect', tileType: 2, target: 17 }, { type: 'collect', tileType: 5, target: 17 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 195 } ] }, // level 17
-            { target: 950, moves: 59, types: 7, shape: SHAPES.RING, ice: [[7,5,2], [2,0,2], [0,0,2], [4,0,2], [7,6,2], [6,7,2], [3,0,2], [0,5,2], [7,4,2], [2,7,2]],
+            { target: 950, moves: 59, types: 7, shape: SHAPES.ARROW, ice: [[0,3,2], [0,4,2], [2,1,2], [2,6,2], [3,0,2], [3,7,2], [4,3,2], [4,4,2], [6,3,2], [6,4,2]],
               objectives: [ { type: 'collect', tileType: 3, target: 12 }, { type: 'collect', tileType: 6, target: 12 }, { type: 'collect', tileType: 2, target: 12 }, { type: 'ice', target: 10 } ] }, // level 18
             { target: 4000, moves: 60, types: 7, shape: SHAPES.FULL, ice: [[6,2,2], [5,3,3], [6,6,2], [4,3,3], [3,7,2], [0,0,3], [1,1,2], [3,2,3], [0,3,2], [2,2,3]],
               objectives: [ { type: 'collect', tileType: 2, target: 12 }, { type: 'collect', tileType: 0, target: 12 }, { type: 'collect', tileType: 3, target: 12 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 195 } ] }, // level 19
@@ -1431,7 +1515,7 @@
               objectives: [ { type: 'collect', tileType: 3, target: 18 }, { type: 'collect', tileType: 4, target: 18 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 195 } ] }, // level 22
             { target: 2400, moves: 60, types: 7, shape: SHAPES.HOURGLASS, ice: [[1,5,2], [0,3,3], [7,4,2], [3,3,3], [5,4,2], [1,6,3], [6,6,2], [6,4,3], [6,2,2], [5,2,3]],
               objectives: [ { type: 'collect', tileType: 4, target: 12 }, { type: 'collect', tileType: 1, target: 12 }, { type: 'collect', tileType: 3, target: 12 }, { type: 'ice', target: 10 } ] }, // level 23
-            { target: 950, moves: 60, types: 7, shape: SHAPES.RING, ice: [[4,0,2], [7,0,3], [0,4,2], [1,0,3], [2,7,2], [7,7,3], [0,3,2], [1,7,3], [0,5,2], [6,0,3]],
+            { target: 950, moves: 60, types: 7, shape: SHAPES.HEART, ice: [[0,2,2], [0,5,3], [1,0,2], [1,7,3], [2,0,2], [2,7,3], [3,0,2], [3,7,3], [5,2,2], [5,5,3]],
               objectives: [ { type: 'collect', tileType: 3, target: 12 }, { type: 'collect', tileType: 6, target: 12 }, { type: 'collect', tileType: 5, target: 12 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 195 } ] }, // level 24
             { target: 4200, moves: 60, types: 7, shape: SHAPES.FULL, ice: [[0,1,3], [7,4,3], [6,0,3], [0,6,3], [5,6,3], [3,2,3], [2,2,3], [5,5,3], [1,6,3], [7,5,3]],
               objectives: [ { type: 'collect', tileType: 6, target: 12 }, { type: 'collect', tileType: 5, target: 12 }, { type: 'collect', tileType: 1, target: 12 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 190 } ] }, // level 25
@@ -1443,7 +1527,7 @@
               objectives: [ { type: 'collect', tileType: 2, target: 12 }, { type: 'collect', tileType: 3, target: 12 }, { type: 'collect', tileType: 5, target: 12 }, { type: 'ice', target: 10 } ] }, // level 28
             { target: 2500, moves: 60, types: 7, shape: SHAPES.HOURGLASS, ice: [[2,4,2], [7,7,3], [1,4,2], [1,2,3], [5,5,2], [4,3,3], [1,1,2], [7,0,3], [2,2,2], [6,2,3]],
               objectives: [ { type: 'collect', tileType: 6, target: 12 }, { type: 'collect', tileType: 1, target: 12 }, { type: 'collect', tileType: 4, target: 12 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 195 } ] }, // level 29
-            { target: 1100, moves: 60, types: 7, shape: SHAPES.RING, ice: [[7,7,3], [6,0,3], [6,7,3], [7,5,3], [0,7,3], [5,7,3], [4,7,3], [7,6,3], [7,2,3], [4,0,3]],
+            { target: 1100, moves: 60, types: 7, shape: SHAPES.ARROW, ice: [[0,3,3], [0,4,3], [1,2,3], [1,5,3], [2,1,3], [2,6,3], [3,0,3], [3,7,3], [7,3,3], [7,4,3]],
               objectives: [ { type: 'collect', tileType: 1, target: 12 }, { type: 'collect', tileType: 0, target: 12 }, { type: 'collect', tileType: 5, target: 12 }, { type: 'ice', target: 10 }, { type: 'timer', seconds: 200 } ] }, // level 30
         ];
 
@@ -1832,7 +1916,26 @@
             currentShape = shape || SHAPES.FULL;
             createSlots(currentShape);
             recalcTileSize();
-            const typeGrid = generateBoard(currentTypesCount, currentShape);
+
+            // Populate frozenCells *before* the move-check loop below, so ice-locked
+            // cells are correctly excluded from it (same rule the mid-game checks use).
+            // The visuals can't be painted yet since no tiles exist — initIce() is
+            // called again at the end once they do.
+            initIce(ice);
+
+            // Guarantee the level never opens on a dead board. Previously this just
+            // generated one random layout and used it as-is — if it happened to have
+            // zero valid moves (easy to hit on narrow non-FULL shapes), the level
+            // would start stuck: the auto-reshuffle only ever runs after a real move
+            // settles, and the hint has nothing to highlight, so nothing ever rescues
+            // the board.
+            let typeGrid;
+            let attempts = 0;
+            do {
+                typeGrid = generateBoard(currentTypesCount, currentShape);
+                attempts++;
+            } while (attempts < 20 && !gridHasMove(typeGrid));
+
             for (let r = 0; r < BOARD_SIZE; r++) {
                 grid.push([]);
                 for (let c = 0; c < BOARD_SIZE; c++) {
@@ -1841,7 +1944,7 @@
                     grid[r].push(id);
                 }
             }
-            initIce(ice);
+            initIce(ice); // now paint the ice overlays, since the tiles exist
         }
 
         /* ---- Ice obstacles ---- */
@@ -2137,14 +2240,19 @@
         function hasPossibleMove() {
             for (let r = 0; r < BOARD_SIZE; r++) {
                 for (let c = 0; c < BOARD_SIZE; c++) {
-                    if (frozenCells[r + '_' + c]) continue;
-                    if (c < BOARD_SIZE - 1 && !frozenCells[r + '_' + (c + 1)]) {
+                    // Skip cells outside the level's shape (holes) — grid[r][c] is null there.
+                    // Without this check, swapping a real tile into/out of a hole can produce
+                    // a phantom match that no real player move could ever create, making this
+                    // wrongly report a move exists on shapes with empty cells (e.g. ARROW) and
+                    // silently skipping the reshuffle that should rescue a genuinely stuck board.
+                    if (!currentShape[r][c] || frozenCells[r + '_' + c]) continue;
+                    if (c < BOARD_SIZE - 1 && currentShape[r][c + 1] && !frozenCells[r + '_' + (c + 1)]) {
                         [grid[r][c], grid[r][c + 1]] = [grid[r][c + 1], grid[r][c]];
                         const found = quickMatchExists();
                         [grid[r][c], grid[r][c + 1]] = [grid[r][c + 1], grid[r][c]];
                         if (found) return true;
                     }
-                    if (r < BOARD_SIZE - 1 && !frozenCells[(r + 1) + '_' + c]) {
+                    if (r < BOARD_SIZE - 1 && currentShape[r + 1][c] && !frozenCells[(r + 1) + '_' + c]) {
                         [grid[r][c], grid[r + 1][c]] = [grid[r + 1][c], grid[r][c]];
                         const found = quickMatchExists();
                         [grid[r][c], grid[r + 1][c]] = [grid[r + 1][c], grid[r][c]];
@@ -2189,8 +2297,6 @@
                 setTimeout(() => t.el.classList.remove('hint'), 1700);
             });
         }
-        document.getElementById('m3-hint-btn').addEventListener('click', () => { sfx.click(); showHint(); });
-
         // ---- Idle auto-hint: if the player does nothing for 3s while a level is in
         // progress, highlight a valid move for them, same visual as the manual hint
         // button. Any pointer interaction anywhere resets the idle clock; the check
@@ -2211,6 +2317,7 @@
 
         function reshuffleBoard() {
             sfx.shuffle();
+            busy = true; // lock input for the duration of the flip wave below
             const toast = document.createElement('div');
             toast.className = 'm3-shuffle-toast';
             toast.textContent = 'Нет ходов — перемешиваем';
@@ -2224,6 +2331,14 @@
                 attempts++;
             } while (attempts < 20 && !gridHasMove(typeGrid));
 
+            // Animate the swap as an outward ripple: each tile flips (scale+rotate)
+            // and the new icon is swapped in right at the middle of the flip, when
+            // the tile is scaled down to a sliver — so the change reads as a magic
+            // "flip to a new card" rather than an instant, jarring icon pop.
+            const FLIP_DURATION = 480; // ms — must match the CSS animation duration
+            const centerR = (BOARD_SIZE - 1) / 2, centerC = (BOARD_SIZE - 1) / 2;
+            let maxDelay = 0;
+
             for (let r = 0; r < BOARD_SIZE; r++) {
                 for (let c = 0; c < BOARD_SIZE; c++) {
                     const id = grid[r][c];
@@ -2234,27 +2349,40 @@
                     // tile back to 'normal', silently deleting any bomb/star/arrow a
                     // player had waiting on the board when an auto-shuffle kicked in.
                     if (t.kind !== 'normal') continue;
-                    t.type = typeGrid[r][c];
-                    renderTileVisual(t.el.querySelector('.m3-tile-img'), 'normal', t.type);
+                    const newType = typeGrid[r][c];
+                    const dist = Math.hypot(r - centerR, c - centerC);
+                    const delay = dist * 55; // ripple speed, outward from the board's center
+                    maxDelay = Math.max(maxDelay, delay);
+                    const inner = t.el.querySelector('.m3-tile-inner');
+                    setTimeout(() => {
+                        inner.classList.add('m3-reshuffling');
+                        setTimeout(() => {
+                            t.type = newType;
+                            renderTileVisual(t.el.querySelector('.m3-tile-img'), 'normal', t.type);
+                        }, FLIP_DURATION * 0.48);
+                        setTimeout(() => inner.classList.remove('m3-reshuffling'), FLIP_DURATION);
+                    }, delay);
                 }
             }
+
+            setTimeout(() => { busy = false; }, maxDelay + FLIP_DURATION + 40);
         }
         function gridHasMove(typeGrid) {
             const backup = grid;
             grid = typeGrid.map(row => row.slice());
-            const savedTypeAt = typeAt;
-            // temp typeAt uses raw numbers since backup swap trick relies on tiles map; instead do simple check on typeGrid directly
-            function tAt(v) { return v; }
             let found = false;
             for (let r = 0; r < BOARD_SIZE && !found; r++) {
                 for (let c = 0; c < BOARD_SIZE && !found; c++) {
-                    if (frozenCells[r + '_' + c]) continue;
-                    if (c < BOARD_SIZE - 1 && !frozenCells[r + '_' + (c + 1)]) {
+                    // Skip cells outside the level's shape entirely — swapping a blocked
+                    // (-1) cell into a real one and re-checking rawHasRun() can otherwise
+                    // register a "move" that isn't actually playable.
+                    if (!currentShape[r][c] || frozenCells[r + '_' + c]) continue;
+                    if (c < BOARD_SIZE - 1 && currentShape[r][c + 1] && !frozenCells[r + '_' + (c + 1)]) {
                         [typeGrid[r][c], typeGrid[r][c + 1]] = [typeGrid[r][c + 1], typeGrid[r][c]];
                         if (rawHasRun(typeGrid)) found = true;
                         [typeGrid[r][c], typeGrid[r][c + 1]] = [typeGrid[r][c + 1], typeGrid[r][c]];
                     }
-                    if (!found && r < BOARD_SIZE - 1 && !frozenCells[(r + 1) + '_' + c]) {
+                    if (!found && r < BOARD_SIZE - 1 && currentShape[r + 1][c] && !frozenCells[(r + 1) + '_' + c]) {
                         [typeGrid[r][c], typeGrid[r + 1][c]] = [typeGrid[r + 1][c], typeGrid[r][c]];
                         if (rawHasRun(typeGrid)) found = true;
                         [typeGrid[r][c], typeGrid[r + 1][c]] = [typeGrid[r + 1][c], typeGrid[r][c]];
@@ -2265,23 +2393,29 @@
             return found;
         }
         function rawHasRun(tg) {
+            // -1 marks a blocked/off-shape cell (see generateBoard). It must never count
+            // as a "match" — for non-FULL shapes (DIAMOND, CROSS, TREE, HOURGLASS)
+            // the blocked area is a huge contiguous block of -1s, which used to satisfy
+            // the 3-in-a-row check on its own and made this function return true almost
+            // unconditionally, regardless of whether the actual playable cells had any
+            // real move. That's what let boards with zero valid moves slip through.
             for (let r = 0; r < BOARD_SIZE; r++) {
                 let run = 1;
                 for (let c = 1; c <= BOARD_SIZE; c++) {
-                    const same = c < BOARD_SIZE && tg[r][c] === tg[r][c - 1];
+                    const same = c < BOARD_SIZE && tg[r][c] !== -1 && tg[r][c] === tg[r][c - 1];
                     if (same) { run++; if (run >= 3) return true; } else run = 1;
                 }
             }
             for (let c = 0; c < BOARD_SIZE; c++) {
                 let run = 1;
                 for (let r = 1; r <= BOARD_SIZE; r++) {
-                    const same = r < BOARD_SIZE && tg[r][c] === tg[r - 1][c];
+                    const same = r < BOARD_SIZE && tg[r][c] !== -1 && tg[r][c] === tg[r - 1][c];
                     if (same) { run++; if (run >= 3) return true; } else run = 1;
                 }
             }
             for (let r = 0; r < BOARD_SIZE - 1; r++) {
                 for (let c = 0; c < BOARD_SIZE - 1; c++) {
-                    if (tg[r][c] === tg[r][c + 1] && tg[r][c + 1] === tg[r + 1][c] && tg[r + 1][c] === tg[r + 1][c + 1]) return true;
+                    if (tg[r][c] !== -1 && tg[r][c] === tg[r][c + 1] && tg[r][c + 1] === tg[r + 1][c] && tg[r + 1][c] === tg[r + 1][c + 1]) return true;
                 }
             }
             return false;
@@ -2311,6 +2445,67 @@
                 boardEl.appendChild(p);
                 setTimeout(() => p.remove(), 600);
             }
+        }
+
+        // A punchier, more visible detonation effect for bomb/star/arrow specials — a bright
+        // flash + an expanding shockwave ring right at the blast origin, plus a wider/bigger
+        // burst of particles than a plain 3-in-a-row match uses, and a quick board shake so
+        // the explosion actually reads as an explosion instead of a slightly bigger sparkle.
+        const BLAST_THEME = {
+            bomb: { core: '#ffb347', ring: '#ff6a00' },
+            arrow: { core: '#9fd7ff', ring: '#3b82f6' },
+            star: { core: '#fff2b0', ring: '#e8b84b' },
+        };
+        function spawnBlastEffect(row, col, kind) {
+            const { x, y } = cellCenter(row, col);
+            const theme = BLAST_THEME[kind] || BLAST_THEME.bomb;
+
+            const flash = document.createElement('div');
+            flash.className = 'm3-blast-flash';
+            flash.style.left = x + 'px';
+            flash.style.top = y + 'px';
+            flash.style.background = `radial-gradient(circle, ${theme.core} 0%, transparent 72%)`;
+            boardEl.appendChild(flash);
+            setTimeout(() => flash.remove(), 420);
+
+            const ring = document.createElement('div');
+            ring.className = 'm3-shockwave';
+            ring.style.left = x + 'px';
+            ring.style.top = y + 'px';
+            ring.style.borderColor = theme.ring;
+            boardEl.appendChild(ring);
+            setTimeout(() => ring.remove(), 500);
+
+            const count = 16;
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'm3-particle m3-particle-big';
+                const size = 6 + Math.random() * 8;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+                const c = Math.random() < 0.5 ? theme.core : theme.ring;
+                p.style.background = c;
+                p.style.color = c; // feeds the box-shadow glow (currentColor) in .m3-particle-big
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 40 + Math.random() * 60;
+                p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+                p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+                boardEl.appendChild(p);
+                setTimeout(() => p.remove(), 780);
+            }
+
+            shakeBoard();
+        }
+
+        let shakeResetTimer = null;
+        function shakeBoard() {
+            boardEl.classList.remove('m3-board-shake');
+            void boardEl.offsetWidth; // restart the CSS animation even if one is already mid-play
+            boardEl.classList.add('m3-board-shake');
+            if (shakeResetTimer) clearTimeout(shakeResetTimer);
+            shakeResetTimer = setTimeout(() => boardEl.classList.remove('m3-board-shake'), 340);
         }
 
         function spawnScorePopup(row, col, text) {
@@ -2448,8 +2643,15 @@
         // Builds the set of cells a group of special tiles would clear, without touching the DOM/score yet.
         // sp.radius overrides the Bomb's blast radius (default 1 = 3x3). sp.doubleStripe widens the Arrow's
         // row+column clear to a thick 3-wide cross instead of a single row/column.
+        // Each cell also records `dist`: its distance from the special that cleared it, used later to
+        // stagger the clear animation into a visible outward wave instead of an instant flat pop.
         function computeSpecialClearCells(specials) {
             const cellsToClear = new Map();
+            const setClearCell = (r, c, id, dist) => {
+                const key = r + '_' + c;
+                const existing = cellsToClear.get(key);
+                if (!existing || dist < existing.dist) cellsToClear.set(key, { r, c, id, dist });
+            };
             specials.forEach(sp => {
                 if (sp.kind === 'bomb') {
                     const radius = sp.radius || 1;
@@ -2457,35 +2659,35 @@
                         for (let dc = -radius; dc <= radius; dc++) {
                             const rr = sp.r + dr, cc = sp.c + dc;
                             if (rr >= 0 && rr < BOARD_SIZE && cc >= 0 && cc < BOARD_SIZE && currentShape[rr][cc] && grid[rr][cc]) {
-                                cellsToClear.set(rr + '_' + cc, { r: rr, c: cc, id: grid[rr][cc] });
+                                setClearCell(rr, cc, grid[rr][cc], Math.hypot(dr, dc));
                             }
                         }
                     }
-                    spawnParticles(sp.r, sp.c, 0);
+                    spawnBlastEffect(sp.r, sp.c, 'bomb');
                 } else if (sp.kind === 'arrow') {
                     const band = sp.doubleStripe ? 1 : 0;
                     for (let db = -band; db <= band; db++) {
                         const rr = sp.r + db;
                         if (rr < 0 || rr >= BOARD_SIZE) continue;
                         for (let c = 0; c < BOARD_SIZE; c++) {
-                            if (currentShape[rr][c] && grid[rr][c]) cellsToClear.set(rr + '_' + c, { r: rr, c, id: grid[rr][c] });
+                            if (currentShape[rr][c] && grid[rr][c]) setClearCell(rr, c, grid[rr][c], Math.hypot(c - sp.c, db));
                         }
                     }
                     for (let db = -band; db <= band; db++) {
                         const cc = sp.c + db;
                         if (cc < 0 || cc >= BOARD_SIZE) continue;
                         for (let r = 0; r < BOARD_SIZE; r++) {
-                            if (currentShape[r][cc] && grid[r][cc]) cellsToClear.set(r + '_' + cc, { r, c: cc, id: grid[r][cc] });
+                            if (currentShape[r][cc] && grid[r][cc]) setClearCell(r, cc, grid[r][cc], Math.hypot(r - sp.r, db));
                         }
                     }
-                    spawnParticles(sp.r, sp.c, 2);
+                    spawnBlastEffect(sp.r, sp.c, 'arrow');
                 } else if (sp.kind === 'star') {
                     if (sp.clearAll) {
                         // Star + Star combo: wipes every single tile on the board, of any color/kind.
                         for (let r = 0; r < BOARD_SIZE; r++) {
                             for (let c = 0; c < BOARD_SIZE; c++) {
                                 const id = grid[r][c];
-                                if (id) cellsToClear.set(r + '_' + c, { r, c, id });
+                                if (id) setClearCell(r, c, id, Math.hypot(r - sp.r, c - sp.c));
                             }
                         }
                     } else {
@@ -2496,14 +2698,14 @@
                                 for (let c = 0; c < BOARD_SIZE; c++) {
                                     const id = grid[r][c];
                                     if (id && tiles[id] && tiles[id].kind === 'normal' && tiles[id].type === targetType) {
-                                        cellsToClear.set(r + '_' + c, { r, c, id });
+                                        setClearCell(r, c, id, Math.hypot(r - sp.r, c - sp.c));
                                     }
                                 }
                             }
                         }
-                        if (grid[sp.r][sp.c]) cellsToClear.set(sp.r + '_' + sp.c, { r: sp.r, c: sp.c, id: grid[sp.r][sp.c] });
+                        if (grid[sp.r][sp.c]) setClearCell(sp.r, sp.c, grid[sp.r][sp.c], 0);
                     }
-                    spawnParticles(sp.r, sp.c, 4);
+                    spawnBlastEffect(sp.r, sp.c, 'star');
                 }
             });
             return cellsToClear;
@@ -2675,20 +2877,38 @@
             if (specialSpawns.length) sfx.bombCreate();
             if (comboMultiplier >= 2) showComboBanner(`Комбо x${comboMultiplier}!`);
 
-            // particles + popup + fade-out
+            // particles + popup + fade-out — cells cleared by a special blast (bomb/star/arrow)
+            // carry a `dist` recorded in computeSpecialClearCells: how far they are from the
+            // blast's origin. We stagger each cell's particle burst + fade-out by that distance
+            // so a big blast reads as a wave rippling outward, instead of the whole area
+            // vanishing in one synchronous flat pop. Plain 3-in-a-row cells have no `dist`
+            // (defaults to 0), so ordinary matches still clear instantly, same as before.
             const allCells = cellsToClear.concat(specialSpawns);
             let cx = 0, cy = 0;
             allCells.forEach(cell => {
                 const t = tiles[cell.id];
                 if (t) {
-                    spawnParticles(cell.r, cell.c, t.kind === 'bomb' ? 0 : t.type);
                     const ctr = cellCenter(cell.r, cell.c);
                     cx += ctr.x; cy += ctr.y;
                 }
             });
             if (allCells.length) spawnScorePopupAt(cx / allCells.length, cy / allCells.length, '+' + gained);
 
-            cellsToClear.forEach(cell => { const t = tiles[cell.id]; if (t) t.el.classList.add('matched'); });
+            const WAVE_STEP_MS = 55;   // stagger per unit of distance from a blast's origin
+            const WAVE_CAP_MS = 420;   // cap so a full-board blast doesn't take forever to clear
+            const MATCH_FADE_MS = 300; // must match the .matched CSS fade-out transition
+
+            let maxWaveDelay = 0;
+            cellsToClear.forEach(cell => {
+                const t = tiles[cell.id];
+                if (!t) return;
+                const delay = Math.min((cell.dist || 0) * WAVE_STEP_MS, WAVE_CAP_MS);
+                maxWaveDelay = Math.max(maxWaveDelay, delay);
+                setTimeout(() => {
+                    spawnParticles(cell.r, cell.c, t.kind === 'bomb' ? 0 : t.type);
+                    t.el.classList.add('matched');
+                }, delay);
+            });
 
             setTimeout(() => {
                 // convert special spawns (bomb/star/arrow) in place
@@ -2698,6 +2918,7 @@
                     t.kind = cell.kind;
                     t.el.classList.add(cell.kind);
                     renderTileVisual(t.el.querySelector('.m3-tile-img'), cell.kind, t.type);
+                    spawnParticles(cell.r, cell.c, cell.kind === 'bomb' ? 0 : t.type);
                 });
                 // remove cleared tiles
                 cellsToClear.forEach(cell => {
@@ -2706,7 +2927,7 @@
                     grid[cell.r][cell.c] = null;
                 });
                 collapseAndFill(comboMultiplier);
-            }, 210);
+            }, maxWaveDelay + MATCH_FADE_MS);
         }
 
         function spawnScorePopupAt(x, y, text) {
@@ -2821,7 +3042,7 @@
             sfx.fireworks();
             const banner = document.createElement('div');
             banner.className = 'm3-objective-banner';
-            banner.innerHTML = '🎉 Задание выполнено! 🎉';
+            banner.textContent = 'Задание выполнено!';
             boardEl.appendChild(banner);
             let bursts = 0;
             const burstInterval = setInterval(() => {
