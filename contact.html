@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact ANGAGSU Game Studio — Yerevan, Armenia.">
+    <link rel="icon" type="image/png" href="public/Icon_transparent.png">
+    <title>Contact | ANGAGSU Game Studio</title>
+    <link rel="canonical" href="https://spartakangagsugs-create.github.io/ANGAGSU-Game-Studio/contact.html">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;700&display=swap');
+        body { font-family:'Montserrat',sans-serif; background:#050507; color:#e2e8f0; min-height:100dvh; }
+        .font-display { font-family:'Bebas Neue',sans-serif; letter-spacing:.05em; }
+        .glow { position:fixed; inset:0; z-index:-1;
+            background:radial-gradient(ellipse 70% 45% at 50% 0%,rgba(109,40,217,.28),transparent 70%),
+                       radial-gradient(ellipse 60% 30% at 50% 100%,rgba(109,40,217,.12),transparent 70%); }
+        .row { display:flex; align-items:center; gap:16px; padding:16px 18px; border-radius:14px;
+            background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); transition:background .2s,border-color .2s; }
+        a.row:hover { background:rgba(109,40,217,.18); border-color:#7c3aed; }
+        .row i { width:20px; text-align:center; color:#a78bfa; }
+        .k { display:block; font-size:.62rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:#64748b; }
+        .btn { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:15px 20px; border-radius:12px;
+            font-size:.8rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+        .btn-primary { background:#6d28d9; border:1px solid #7c3aed; color:#fff; }
+        .btn-primary:hover { background:#7c3aed; }
+        .btn-ghost { background:transparent; border:1px solid #333; color:#e2e8f0; }
+        .btn-ghost:hover { border-color:#7c3aed; color:#a78bfa; }
+        :focus-visible { outline:2px solid #a78bfa; outline-offset:2px; }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="glow"></div>
+
+    <main class="max-w-md mx-auto px-6 py-14 flex flex-col items-center">
+        <img src="public/Icon_transparent.png" alt="ANGAGSU Game Studio logo" class="h-24 w-24 object-contain mb-5">
+        <h1 class="font-display text-5xl text-white tracking-widest uppercase text-center leading-none">ANGAGSU</h1>
+        <p class="text-gray-400 text-sm tracking-[.25em] uppercase font-bold mt-2">Game Studio</p>
+        <p class="text-gray-500 text-center text-sm mt-5 max-w-xs">Forging next-generation gaming experiences with passion, innovation, and a touch of magic.</p>
+
+        <div class="w-full space-y-3 mt-10">
+            <a class="row" href="mailto:gagbalabekyan@gmail.com">
+                <i class="fas fa-envelope"></i>
+                <span><span class="k">Email</span><span class="text-white break-all">gagbalabekyan@gmail.com</span></span>
+            </a>
+            <a class="row" href="tel:+37477123456">
+                <i class="fas fa-phone"></i>
+                <span><span class="k">Phone</span><span class="text-white">+374 77 123456</span></span>
+            </a>
+            <a class="row" href="https://spartakangagsugs-create.github.io/ANGAGSU-Game-Studio/index.html" target="_blank" rel="noopener">
+                <i class="fas fa-globe"></i>
+                <span><span class="k">Website</span><span class="text-white tracking-widest">ANGAGSU</span></span>
+            </a>
+            <a class="row" href="https://www.google.com/maps/search/?api=1&amp;query=Yerevan%2C+Armenia" target="_blank" rel="noopener">
+                <i class="fas fa-map-marker-alt"></i>
+                <span><span class="k">Location</span><span class="text-white">Yerevan, Armenia</span></span>
+            </a>
+        </div>
+
+        <div class="w-full space-y-3 mt-8">
+            <button type="button" class="btn btn-primary" id="save-contact"><i class="fas fa-address-card"></i> Save contact</button>
+            <a class="btn btn-ghost" href="index.html#games"><i class="fas fa-gamepad"></i> Our games</a>
+        </div>
+
+        <p class="text-gray-600 text-[10px] uppercase font-bold tracking-[.2em] mt-12 text-center">&copy; 2026 ANGAGSU Game Studio</p>
+    </main>
+
+    <script>
+        // "Save contact" downloads a vCard so the studio can be added to a phone's address book in one tap.
+        document.getElementById('save-contact').addEventListener('click', function () {
+            var vcf = [
+                'BEGIN:VCARD',
+                'VERSION:3.0',
+                'FN:ANGAGSU Game Studio',
+                'ORG:ANGAGSU Game Studio',
+                'EMAIL;TYPE=INTERNET,WORK:gagbalabekyan@gmail.com',
+                'TEL;TYPE=WORK,VOICE:+37477123456',
+                'URL:https://spartakangagsugs-create.github.io/ANGAGSU-Game-Studio/index.html',
+                'ADR;TYPE=WORK:;;;Yerevan;;;Armenia',
+                'END:VCARD'
+            ].join('\r\n');
+            var blob = new Blob([vcf], { type: 'text/vcard;charset=utf-8' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'angagsu-game-studio.vcf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+        });
+    </script>
+</body>
+</html>
