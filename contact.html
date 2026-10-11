@@ -44,17 +44,13 @@
                 <i class="fas fa-envelope"></i>
                 <span><span class="k">Email</span><span class="text-white break-all">gagbalabekyan@gmail.com</span></span>
             </a>
-            <a class="row" href="tel:+37477123456">
+            <a class="row" href="tel:+37444252010">
                 <i class="fas fa-phone"></i>
-                <span><span class="k">Phone</span><span class="text-white">+374 77 123456</span></span>
+                <span><span class="k">Phone</span><span class="text-white">+374 44 252010</span></span>
             </a>
             <a class="row" href="https://spartakangagsugs-create.github.io/ANGAGSU-Game-Studio/index.html" target="_blank" rel="noopener">
                 <i class="fas fa-globe"></i>
                 <span><span class="k">Website</span><span class="text-white tracking-widest">ANGAGSU</span></span>
-            </a>
-            <a class="row" href="https://www.google.com/maps/search/?api=1&amp;query=Yerevan%2C+Armenia" target="_blank" rel="noopener">
-                <i class="fas fa-map-marker-alt"></i>
-                <span><span class="k">Location</span><span class="text-white">Yerevan, Armenia</span></span>
             </a>
         </div>
 
@@ -72,12 +68,13 @@
             var vcf = [
                 'BEGIN:VCARD',
                 'VERSION:3.0',
-                'FN:ANGAGSU Game Studio',
-                'ORG:ANGAGSU Game Studio',
+                'FN:Gagik Balabekyan Angagsu Game Studio Founder',
+                'N:;Gagik Balabekyan Angagsu Game Studio Founder;;;',
+                'ORG:Angagsu Game Studio',
+                'TITLE:Founder',
                 'EMAIL;TYPE=INTERNET,WORK:gagbalabekyan@gmail.com',
-                'TEL;TYPE=WORK,VOICE:+37477123456',
+                'TEL;TYPE=WORK,VOICE:+37444252010',
                 'URL:https://spartakangagsugs-create.github.io/ANGAGSU-Game-Studio/index.html',
-                'ADR;TYPE=WORK:;;;Yerevan;;;Armenia',
                 'END:VCARD'
             ].join('\r\n');
             var blob = new Blob([vcf], { type: 'text/vcard;charset=utf-8' });
