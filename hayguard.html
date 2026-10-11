@@ -3,13 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hayguard: Rise of Highland — a fantasy tower defense game by ANGAGSU Game Studio. Build towers, command heroes, defend the Highlands.">
     <link rel="icon" type="image/png" href="public/Icon_transparent.png">
     <title>Hayguard: Rise of Highland | ANGAGSU Game Studio</title>
+    <link rel="canonical" href="https://angagsugs.com/hayguard.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ANGAGSU Game Studio">
+    <meta property="og:title" content="Hayguard: Rise of Highland — Tower Defense | ANGAGSU Game Studio">
+    <meta property="og:description" content="Defend. Upgrade. Survive. Build mighty towers, command legendary heroes and stop the ancient evil from consuming the Highlands. Coming soon.">
+    <meta property="og:url" content="https://angagsugs.com/hayguard.html">
+    <meta property="og:image" content="https://angagsugs.com/games/tower_defense/hayguard-og.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Hayguard: Rise of Highland — Tower Defense">
+    <meta name="twitter:description" content="Build towers, command heroes, defend the Highlands. Coming soon from ANGAGSU Game Studio.">
+    <meta name="twitter:image" content="https://angagsugs.com/games/tower_defense/hayguard-og.jpg">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoGame",
+      "name": "Hayguard: Rise of Highland",
+      "url": "https://angagsugs.com/hayguard.html",
+      "description": "A fantasy tower defense strategy game. Build and upgrade unique towers, command powerful heroes and survive waves of fearsome enemies.",
+      "image": "https://angagsugs.com/games/tower_defense/hayguard-og.jpg",
+      "genre": ["Strategy", "Tower Defense"],
+      "gamePlatform": ["Android", "iOS"],
+      "applicationCategory": "Game",
+      "operatingSystem": "Android, iOS",
+      "inLanguage": "en",
+      "publisher": { "@type": "Organization", "name": "ANGAGSU Game Studio", "url": "https://angagsugs.com/" },
+      "author": { "@type": "Organization", "name": "ANGAGSU Game Studio" },
+      "trailer": {
+        "@type": "VideoObject",
+        "name": "Hayguard: Rise of Highland — Official Trailer",
+        "description": "Official trailer of Hayguard: Rise of Highland.",
+        "thumbnailUrl": "https://angagsugs.com/games/tower_defense/hayguard-og.jpg",
+        "embedUrl": "https://www.youtube.com/embed/-louU7ntrCk",
+        "contentUrl": "https://www.youtube.com/watch?v=-louU7ntrCk",
+        "uploadDate": "2026-10-11"
+      }
+    }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;600;700&display=swap');
 
+        html { scroll-behavior: smooth; }
+        /* Gallery */
+        .viewer { position:relative; min-height:300px; background:#050507; overflow:hidden; }
+        @media (min-width:640px){ .viewer { min-height:100%; } }
+        .viewer .vimg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover !important;
+            opacity:0; pointer-events:none; transition:opacity .6s ease; }
+        .viewer .vimg.active { opacity:1; pointer-events:auto; }
+        /* smooth fade of the picture into the text panel (left edge) */
+        .viewer::before { content:""; position:absolute; inset:0 auto 0 0; width:42%; z-index:2; pointer-events:none;
+            background:linear-gradient(90deg,#0b0908 0%,rgba(11,9,8,.9) 20%,rgba(11,9,8,.5) 55%,rgba(11,9,8,0) 100%); }
+        @media (max-width:1023px){ .viewer::before { inset:0 0 auto 0; width:100%; height:25%;
+            background:linear-gradient(180deg,#0b0908 0%,rgba(11,9,8,0) 100%); } }
+        .viewer::after { content:""; position:absolute; inset:0 0 0 auto; width:30%; z-index:2; pointer-events:none;
+            background:linear-gradient(270deg,#0b0908 0%,rgba(11,9,8,.8) 22%,rgba(11,9,8,0) 100%); }
+        @media (max-width:639px){ .viewer::after { inset:auto 0 0 0; width:100%; height:20%;
+            background:linear-gradient(0deg,#0b0908 0%,rgba(11,9,8,0) 100%); } }
+        .thumbs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; padding:6px; background:#0b0908; }
+        @media (min-width:640px){ .thumbs { grid-template-columns:1fr; grid-template-rows:repeat(3,1fr); padding:0; gap:3px; margin-left:-3px; } }
+        .thumb { position:relative; display:block; padding:2px; border:0; cursor:pointer; background:linear-gradient(135deg,#f3d58a,#7a5518);
+            aspect-ratio:16/9; filter:brightness(.8); transition:filter .3s ease, transform .3s ease; }
+        @media (min-width:640px){ .thumb { aspect-ratio:auto; clip-path:polygon(9% 0,100% 0,100% 100%,0 100%); } }
+        .thumb-in { display:block; width:100%; height:100%; overflow:hidden; background:#000; }
+        @media (min-width:640px){ .thumb-in { clip-path:polygon(9% 0,100% 0,100% 100%,0 100%); } }
+        .thumb img { width:100%; height:100%; object-fit:cover !important; display:block; transition:transform .5s ease; }
+        .thumb:hover { filter:brightness(1.05); }
+        .thumb:hover img { transform:scale(1.07); }
+        .thumb.active { filter:brightness(1.25) saturate(1.1); background:linear-gradient(135deg,#fff1c4,#e0b04f); }
+        .thumb:focus-visible { outline:2px solid var(--gold-light); outline-offset:-2px; }
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: #050507;
@@ -97,6 +165,11 @@
             letter-spacing: 0.1em;
             transition: color 0.2s ease;
         }
+        .store-soon { position:relative; cursor:not-allowed; user-select:none; }
+        .store-soon > i, .store-soon > div { opacity:.45; filter:grayscale(.6); }
+        .store-soon:hover { background:#0d0b0a; border-color:rgba(217,164,65,.25); transform:none; }
+        .soon-tag { margin-left:auto; padding:4px 10px; border:1px solid rgba(217,164,65,.55); border-radius:999px;
+            font-size:.6rem; font-weight:800; letter-spacing:.18em; text-transform:uppercase; color:var(--gold-light); background:rgba(217,164,65,.08); white-space:nowrap; }
         .legal-link:hover { color: #a78bfa; }
 
         .social-btn {
@@ -120,6 +193,109 @@
         #lightbox-modal { transition: opacity 0.3s ease; }
         #lightbox-img { transition: transform 0.3s ease; }
         .clickable-img { cursor: zoom-in; }
+        :root { --gold:#d9a441; --gold-light:#f3d58a; --gold-dark:#7a5518; --ember:#c2410c; }
+
+        .gold-text {
+            background: linear-gradient(180deg, #fff1c4 0%, #e0b04f 50%, #9a6a1e 100%);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+
+        .hero-hg { position: relative; background:#050507; }
+        .hero-hg img.hero-img { width:100%; display:block; min-height:320px; max-height:78vh; object-fit:cover; object-position:center; }
+        .hero-hg::after { content:""; position:absolute; inset:auto 0 0 0; height:45%;
+            background: linear-gradient(180deg, rgba(5,5,7,0) 0%, #050507 100%); pointer-events:none; }
+        .hero-hg .hero-top { position:absolute; inset:0 0 auto 0; height:120px;
+            background: linear-gradient(180deg, rgba(5,5,7,.85), rgba(5,5,7,0)); }
+        .hero-actions { position:absolute; left:0; right:0; bottom:2.2rem; z-index:5; }
+
+        .btn-gold {
+            display:inline-flex; align-items:center; justify-content:center; gap:10px;
+            padding:14px 28px; font-weight:800; font-size:.8rem; letter-spacing:.15em; text-transform:uppercase;
+            color:#1a1204; background:linear-gradient(180deg,#f3d58a,#d9a441 55%,#a9751f);
+            border:1px solid #f3d58a; border-radius:6px; transition:all .25s ease;
+            box-shadow:0 0 0 rgba(217,164,65,0);
+        }
+        .btn-gold:hover { transform:translateY(-2px); box-shadow:0 10px 30px -8px rgba(217,164,65,.6); filter:brightness(1.08); }
+        .btn-outline-gold {
+            display:inline-flex; align-items:center; justify-content:center; gap:10px;
+            padding:14px 28px; font-weight:800; font-size:.8rem; letter-spacing:.15em; text-transform:uppercase;
+            color:var(--gold-light); background:rgba(5,5,7,.55); border:1px solid rgba(217,164,65,.6);
+            border-radius:6px; backdrop-filter:blur(4px); transition:all .25s ease;
+        }
+        .btn-outline-gold:hover { background:rgba(217,164,65,.15); border-color:var(--gold-light); transform:translateY(-2px); }
+
+        .gold-frame {
+            position:relative; border:1px solid rgba(217,164,65,.45); border-radius:6px;
+            background:linear-gradient(135deg, #0d0b0a 0%, #08080b 100%);
+            box-shadow: inset 0 0 0 4px #08080b, inset 0 0 0 5px rgba(217,164,65,.25), 0 30px 60px -20px rgba(0,0,0,.8);
+        }
+        .gold-frame::before, .gold-frame::after {
+            content:""; position:absolute; width:22px; height:22px; border:2px solid var(--gold); pointer-events:none;
+        }
+        .gold-frame::before { top:-1px; left:-1px; border-right:0; border-bottom:0; border-top-left-radius:6px; }
+        .gold-frame::after { bottom:-1px; right:-1px; border-left:0; border-top:0; border-bottom-right-radius:6px; }
+
+        .gold-frame.plain { box-shadow:0 30px 60px -20px rgba(0,0,0,.8); background:#0b0908; }
+
+        .section-title { font-family:'Bebas Neue',sans-serif; letter-spacing:.08em; }
+        .divider-gold { height:1px; background:linear-gradient(90deg, rgba(217,164,65,0), rgba(217,164,65,.7), rgba(217,164,65,0)); }
+
+        .feature-item { display:flex; align-items:center; gap:14px; padding:10px 0; border-bottom:1px solid rgba(217,164,65,.12); color:#e7dcc3; font-size:.95rem; }
+        .feature-item:last-child { border-bottom:0; }
+        .feature-item i { color:var(--gold); font-size:.8rem; width:16px; text-align:center; }
+
+        .shot { position:relative; overflow:hidden; background:#000; border:1px solid rgba(217,164,65,.5); cursor:zoom-in; }
+        .shot img { width:100%; height:100%; object-fit:cover !important; transition:transform .5s ease; display:block; }
+        .shot:hover img { transform:scale(1.06); }
+        .shot-slant { clip-path:polygon(7% 0, 100% 3%, 100% 100%, 0 97%); border:0; padding:2px; background:linear-gradient(135deg,#f3d58a,#7a5518); }
+        .shot-slant > div { clip-path:polygon(7% 0, 100% 3%, 100% 100%, 0 97%); height:100%; overflow:hidden; background:#000; }
+
+        .video-container { border-radius:6px; border:1px solid rgba(217,164,65,.45); }
+
+        .store-button { background:#0d0b0a; border:1px solid rgba(217,164,65,.25); }
+        .store-button:hover { background:#17120a; border-color:var(--gold); }
+        .legal-link:hover { color: var(--gold-light); }
+
+        .badge-dev { display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border:1px solid rgba(217,164,65,.5);
+            border-radius:999px; font-size:.7rem; font-weight:800; letter-spacing:.2em; text-transform:uppercase; color:var(--gold-light); background:rgba(5,5,7,.6); }
+        .badge-dev span.dot { width:8px; height:8px; border-radius:50%; background:var(--ember); box-shadow:0 0 10px var(--ember); animation:pulse 1.6s infinite; }
+        @keyframes pulse { 50% { opacity:.35; } }
+
+        .fade-in { opacity:0; transform:translateY(24px); transition:opacity .8s ease, transform .8s ease; }
+        .fade-in.visible { opacity:1; transform:none; }
+
+        .edge{background:#0b0908;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent),linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent),linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent);mask-composite:intersect}
+        .video-container{box-shadow:0 30px 80px -30px rgba(217,164,65,.25)}
+        .info-k{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:#8a7f66;font-weight:700}
+        .info-v{color:#f1e7cf;font-weight:600;margin-top:4px}
+        .bgx{position:relative;isolation:isolate;overflow:hidden}
+        .bgx>.bg{position:absolute;inset:-40px;z-index:-2;background-size:cover;background-position:center;filter:blur(26px) brightness(.38) saturate(1.2)}
+        .bgx::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#050507 0%,rgba(5,5,7,.15) 28%,rgba(5,5,7,.15) 72%,#050507 100%)}
+        .side-card{border-left:1px solid rgba(217,164,65,.3);padding-left:28px;background:linear-gradient(90deg,rgba(217,164,65,.06),transparent)}
+        @media(min-width:1024px){.sticky-card{position:sticky;top:104px}}
+        .notify{display:flex;gap:8px;max-width:420px}
+        .notify input{flex:1;min-width:0;background:rgba(5,5,7,.6);border:0;border-bottom:1px solid rgba(217,164,65,.5);padding:12px 4px;color:#fff;outline:none}
+        .notify input:focus{border-bottom-color:var(--gold-light)}
+
+        .stage{position:relative;isolation:isolate;overflow:clip}
+        .stage::before{content:"";position:absolute;inset:-40px;z-index:-2;background:url(games/tower_defense/hayguard-main.jpg) center/cover;filter:blur(30px) brightness(.26) saturate(1.1)}
+        .stage::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse 80% 30% at 50% 100%,rgba(194,65,12,.3),transparent 70%),linear-gradient(180deg,#050507 0%,rgba(5,5,7,.55) 12%,rgba(5,5,7,.55) 100%)}
+        .char{position:absolute;z-index:0;pointer-events:none;user-select:none;height:auto}
+        .c-demon{right:-8%;top:-6%;width:clamp(190px,32vw,470px);-webkit-mask-image:linear-gradient(180deg,#000 62%,transparent 100%);mask-image:linear-gradient(180deg,#000 62%,transparent 100%)}
+        .c-golem{display:block;width:calc(100% + 2.5rem);max-width:380px;margin-left:-2.5rem;-webkit-mask-image:linear-gradient(180deg,#000 68%,transparent 100%);mask-image:linear-gradient(180deg,#000 68%,transparent 100%)}
+        .c-elf{right:-3%;bottom:-2%;width:clamp(190px,36vw,520px)}
+        .c-goblin{right:25%;bottom:12%;width:clamp(110px,18vw,260px)}
+        .c-imp{left:-2%;bottom:0;width:clamp(140px,24vw,330px)}
+        .c-warrior{right:12%;bottom:0;width:clamp(160px,30vw,430px);-webkit-mask-image:linear-gradient(180deg,#000 82%,transparent 100%);mask-image:linear-gradient(180deg,#000 82%,transparent 100%)}
+        @media(max-width:1023px){.char{opacity:.3}.c-goblin{display:none}}
+        .narrator{max-width:300px;aspect-ratio:4/5;object-fit:cover !important;object-position:center 30%;-webkit-mask-image:radial-gradient(ellipse 72% 72% at 50% 45%,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse 72% 72% at 50% 45%,#000 55%,transparent 100%)}
+        .info-card{border:1px solid rgba(255,255,255,.07);border-top-color:rgba(255,255,255,.16);border-left-color:rgba(255,255,255,.14);border-radius:4px;background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.025));padding:20px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+        .gwide .viewer{min-height:0}
+        @media(max-width:639px){.gwide .thumbs{grid-template-columns:repeat(3,1fr)}}
+        @media(min-width:640px){.gwide .viewer{aspect-ratio:2/1}.gwide .viewer::before,.gwide .viewer::after{display:none}.gwide .thumbs{margin-left:0;gap:6px;grid-template-rows:repeat(3,1fr)}.gwide .viewer{-webkit-mask-image:linear-gradient(90deg,#000 0,#000 78%,rgba(0,0,0,.5) 90%,transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 78%,rgba(0,0,0,.5) 90%,transparent 100%)}}
+        .badge-store{display:inline-flex;align-items:center;gap:12px;padding:10px 20px;background:#000;border:1px solid #8a8a8a;border-radius:10px;color:#fff;min-width:180px;opacity:.92;cursor:not-allowed}
+        .badge-store small{display:block;font-size:.6rem;line-height:1}
+        .badge-store b{font-size:1.25rem;line-height:1.1;white-space:nowrap}
 </style>
 </head>
 <body class="antialiased">
@@ -152,78 +328,77 @@
         </div>
     </nav>
 
-
-    <div class="pt-24 min-h-screen pb-32">
-        <div class="max-w-7xl mx-auto px-6 pt-10">
-            <a href="index.html#games" class="flex items-center gap-2 text-gray-500 hover:text-white mb-12 transition-colors uppercase font-bold tracking-widest text-sm w-fit">
-                <i class="fas fa-arrow-left"></i> Back to Games
-            </a>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                <div class="lg:col-span-2">
-                    <div class="video-container mb-10 shadow-2xl"><iframe src="https://www.youtube.com/embed/fty9N_UV0HI?autoplay=1&mute=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
-
-                    <div class="flex gap-4 mb-10 overflow-x-auto pb-4 scrollbar-hide">
-                        <img src="games/tower_defense/art_1.png" class="w-48 aspect-video rounded-xl border border-white/10 object-cover cursor-pointer hover:border-purple-500 transition-all clickable-img" alt="Hayguard: Rise of Highland screenshot">
-                        <img src="games/tower_defense/art_2.png" class="w-48 aspect-video rounded-xl border border-white/10 object-cover cursor-pointer hover:border-purple-500 transition-all clickable-img" alt="Hayguard: Rise of Highland screenshot">
-                        <img src="games/tower_defense/art_3.png" class="w-48 aspect-video rounded-xl border border-white/10 object-cover cursor-pointer hover:border-purple-500 transition-all clickable-img" alt="Hayguard: Rise of Highland screenshot">
-                    </div>
-
-                    <h1 class="font-display text-5xl md:text-7xl text-white mb-6">Hayguard: Rise of Highland</h1>
-                    <div class="text-gray-400 text-lg leading-relaxed space-y-4">
-                        <p>Experience the ultimate strategy challenge in Hayguard: Rise of Highland. Command diverse elemental towers and unlock devastating spells to halt the advance of the Dark Legion. With over 50 unique levels and endless combinations of tactical possibilities, every wave is a test of your wit.</p>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-1">
-                    <div class="bg-[#0a0a0e] border border-white/5 rounded-3xl p-8 sticky top-32">
-                        <img src="games/tower_defense/tdicon.png" class="w-32 h-32 rounded-2xl mb-8 border border-white/10 shadow-lg mx-auto lg:mx-0 clickable-img" alt="Hayguard: Rise of Highland icon">
-
-                        <div class="space-y-4 mb-10">
-                            <a href="#" class="store-button w-full">
-                                <i class="fab fa-google-play text-3xl text-green-500"></i>
-                                <div>
-                                    <p class="text-[10px] uppercase font-bold text-gray-500">Get it on</p>
-                                    <p class="text-lg font-bold">Google Play</p>
-                                </div>
-                            </a>
-                            <a href="#" class="store-button w-full">
-                                <i class="fab fa-apple text-3xl text-gray-100"></i>
-                                <div>
-                                    <p class="text-[10px] uppercase font-bold text-gray-500">Download on the</p>
-                                    <p class="text-lg font-bold">App Store</p>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="space-y-4 text-sm mb-10">
-                            <div class="flex justify-between border-b border-white/5 pb-2">
-                                <span class="text-gray-500 uppercase font-bold tracking-widest text-[10px]">Developer</span>
-                                <span class="text-white">ANGAGSU</span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/5 pb-2">
-                                <span class="text-gray-500 uppercase font-bold tracking-widest text-[10px]">Genre</span>
-                                <span class="text-white">Strategy</span>
-                            </div>
-                            <div class="flex justify-between border-b border-white/5 pb-2">
-                                <span class="text-gray-500 uppercase font-bold tracking-widest text-[10px]">Status</span>
-                                <span class="text-yellow-500 font-bold">IN DEVELOPMENT</span>
-                            </div>
-                        </div>
-
-                        <div class="border-t border-white/5 pt-6">
-                            <p class="text-gray-500 uppercase font-bold tracking-widest text-[10px] mb-4">Legal</p>
-                            <div class="flex flex-col gap-3">
-                                <a href="terms-hayguard.html" class="legal-link"><i class="fas fa-file-contract"></i> Terms of Use</a>
-                                <a href="privacy-hayguard.html" class="legal-link"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
-                            </div>
-                        </div>
-                    </div>
+    <main>
+        <!-- HERO -->
+        <section class="hero-hg pt-[72px]">
+            <img class="hero-img" src="games/tower_defense/hayguard-hero.jpg" alt="Hayguard: Rise of Highland key art — heroes defending the Highlands against the dark army">
+            <div class="hero-top"></div>
+            <div class="absolute left-0 right-0 top-[96px] z-10">
+                <div class="max-w-7xl mx-auto px-6">
+                    <a href="index.html#games" class="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-colors uppercase font-bold tracking-widest text-sm w-fit drop-shadow-[0_2px_6px_rgba(0,0,0,.9)]">
+                        <i class="fas fa-arrow-left"></i> Back to Games
+                    </a>
                 </div>
             </div>
-        </div>
-    </div>
+            <h1 class="sr-only">Hayguard: Rise of Highland</h1>
+            <div class="hero-actions">
+                <div class="max-w-7xl mx-auto px-6 flex flex-wrap items-center justify-center gap-4">
+                    <a href="#trailer" class="btn-gold"><i class="fas fa-play"></i> Watch Trailer</a>
+                    <a href="#play" class="btn-outline-gold"><i class="fas fa-hourglass-half"></i> Coming Soon</a>
+                </div>
+            </div>
+        </section>
 
+
+        <div class="stage">
+        <section id="trailer" class="relative max-w-6xl mx-auto px-6 pt-12 pb-16 scroll-mt-28">
+          <img src="games/tower_defense/characters/demon.png" alt="" class="char c-demon" loading="lazy" onerror="this.remove()">
+          <div class="relative z-10 grid lg:grid-cols-12 gap-10 items-center">
+            <div class="lg:col-span-7"><div class="video-container"><iframe src="https://www.youtube.com/embed/-louU7ntrCk?rel=0&playsinline=1&modestbranding=1" title="Hayguard: Rise of Highland trailer" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe></div></div>
+            <div class="lg:col-span-5"><div class="lg:pl-4"><h2 class="section-title text-5xl md:text-6xl gold-text leading-none">Official Trailer</h2>
+            <div class="divider-gold mt-4 mb-6" style="background:linear-gradient(90deg,rgba(217,164,65,.7),rgba(217,164,65,0))"></div>
+            <p class="text-[#d6ccb4] mb-6 text-sm">Towers, heroes and an ancient evil. Watch how the battle begins.</p>
+            <ul class="space-y-1 text-sm"><li class="feature-item"><i class="fas fa-plus"></i> Unique upgradeable towers</li><li class="feature-item"><i class="fas fa-plus"></i> Legendary heroes</li><li class="feature-item"><i class="fas fa-plus"></i> Waves of fearsome enemies</li></ul>
+            </div></div>
+          </div></section>
+
+        <section class="relative max-w-6xl mx-auto px-6 pb-28">
+          <img src="games/tower_defense/characters/elf.png" alt="" class="char c-elf" loading="lazy" onerror="this.remove()"><img src="games/tower_defense/characters/goblin.png" alt="" class="char c-goblin" loading="lazy" onerror="this.remove()">
+          <div class="relative z-10 grid lg:grid-cols-12 gap-x-10 gap-y-12">
+            <div class="lg:col-span-4"><img src="games/tower_defense/characters/golem.png" alt="" class="c-golem" onerror="this.onerror=null;this.src='games/tower_defense/hayguard-shot-1.jpg';this.classList.add('narrator')"></div>
+            <div class="lg:col-span-4 lg:pt-6"><h2 class="section-title text-2xl text-[#e0b04f] mb-3">Game Features</h2><div class="feature-item"><i class="fas fa-plus"></i> Build and upgrade unique towers</div><div class="feature-item"><i class="fas fa-plus"></i> Command powerful heroes</div><div class="feature-item"><i class="fas fa-plus"></i> Face waves of fearsome enemies</div><div class="feature-item"><i class="fas fa-plus"></i> Use strategy and timing to survive</div><div class="feature-item"><i class="fas fa-plus"></i> Stunning fantasy world and visuals</div></div>
+            <div class="lg:col-span-4 lg:pt-6"><div class="info-card"><div class="space-y-3 text-sm"><div class="flex justify-between gap-4 border-b border-white/5 pb-2"><span class="info-k">Developer</span><span class="text-[#f1e7cf]">ANGAGSU</span></div><div class="flex justify-between gap-4 border-b border-white/5 pb-2"><span class="info-k">Genre</span><span class="text-[#f1e7cf]">Strategy</span></div><div class="flex justify-between gap-4 border-b border-white/5 pb-2"><span class="info-k">Platforms</span><span class="text-[#f1e7cf]">Android · iOS</span></div><div class="flex justify-between gap-4 border-b border-white/5 pb-2"><span class="info-k">Status</span><span class="text-[#f1e7cf]" style=color:#e0b04f>In Development</span></div></div><div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 mt-6"><a href="privacy-hayguard.html" class="legal-link" style="font-size:.68rem;letter-spacing:.1em;gap:6px;white-space:nowrap"><i class="fas fa-shield-alt"></i> Privacy Policy</a><a href="terms-hayguard.html" class="legal-link" style="font-size:.68rem;letter-spacing:.1em;gap:6px;white-space:nowrap"><i class="fas fa-file-contract"></i> Terms of Use</a></div></div></div>
+            <div class="lg:col-span-12"><div class="gwide grid grid-cols-1 sm:grid-cols-12 relative sm:gap-2">
+                        <!-- VIEWER (green zone). Image 4 = main picture shown by default. -->
+                        <div class="sm:col-span-9 viewer" id="hg-viewer">
+                            <img src="games/tower_defense/hayguard-main.jpg" data-slot="0" class="clickable-img vimg active" alt="Hayguard: Rise of Highland — towers, heroes and enemies">
+                            <img src="games/tower_defense/hayguard-shot-1.jpg" data-slot="1" class="clickable-img vimg" alt="Hayguard: Rise of Highland screenshot 1" loading="lazy">
+                            <img src="games/tower_defense/hayguard-shot-2.jpg" data-slot="2" class="clickable-img vimg" alt="Hayguard: Rise of Highland screenshot 2" loading="lazy">
+                            <img src="games/tower_defense/hayguard-shot-3.jpg" data-slot="3" class="clickable-img vimg" alt="Hayguard: Rise of Highland screenshot 3" loading="lazy">
+                        </div>
+                        <!-- THUMBNAILS (blue zone). Click = show in viewer, click again = back to main picture. -->
+                        <div class="sm:col-span-3 thumbs">
+                            <button type="button" class="thumb" data-slot="1" aria-label="Show screenshot 1"><span class="thumb-in"><img src="games/tower_defense/hayguard-shot-1.jpg" alt=""></span></button>
+                            <button type="button" class="thumb" data-slot="2" aria-label="Show screenshot 2"><span class="thumb-in"><img src="games/tower_defense/hayguard-shot-2.jpg" alt=""></span></button>
+                            <button type="button" class="thumb" data-slot="3" aria-label="Show screenshot 3"><span class="thumb-in"><img src="games/tower_defense/hayguard-shot-3.jpg" alt=""></span></button>
+                        </div>
+                    </div></div>
+          </div></section>
+
+        <section id="play" class="relative scroll-mt-28 pt-16 pb-24 min-h-[380px]">
+          <div class="divider-gold absolute top-0 inset-x-0"></div>
+          <img src="games/tower_defense/characters/imp.png" alt="" class="char c-imp" loading="lazy" onerror="this.remove()"><img src="games/tower_defense/characters/warrior.png" alt="" class="char c-warrior" loading="lazy" onerror="this.remove()">
+          <div class="relative z-10 max-w-3xl mx-auto px-6 text-center">
+            <h2 class="section-title text-4xl md:text-5xl gold-text">Download the Game</h2>
+            <p class="text-[#d6ccb4] mt-3 mb-8">Prepare your defense. The battle is coming.</p>
+            <div class="flex flex-wrap justify-center gap-4" aria-disabled="true" title="Coming soon">
+              <span class="badge-store"><i class="fab fa-google-play text-2xl text-green-400"></i><span class="text-left"><small>GET IT ON</small><b>Google Play</b></span></span>
+              <span class="badge-store"><i class="fab fa-apple text-3xl"></i><span class="text-left"><small>Download on the</small><b>App Store</b></span></span>
+            </div>
+            <p class="mt-5 text-[#e0b04f] text-xs font-bold tracking-widest uppercase">Coming soon</p>
+          </div></section>
+        </div>
+    </main>
 
     <div id="lightbox-modal" class="fixed inset-0 bg-black/95 z-[100] hidden flex items-center justify-center p-4 cursor-zoom-out">
         <button class="absolute top-6 right-6 text-white text-4xl hover:text-purple-500 transition-colors">&times;</button>
@@ -265,7 +440,7 @@
             </div>
             <div class="border-t border-white/5 pt-10 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-center text-gray-600 text-[10px] uppercase font-bold tracking-[0.2em]">
                 <span>&copy; 2026 ANGAGSU GAME STUDIO. All rights reserved.</span>
-                <a href="privacy.html" class="inline-flex items-center gap-2 text-gray-500 hover:text-purple-400 transition-colors"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
+                <a href="terms-hayguard.html" class="inline-flex items-center gap-2 text-gray-500 hover:text-purple-400 transition-colors"><i class="fas fa-file-contract"></i> Hayguard Terms of Use</a><a href="privacy-hayguard.html" class="inline-flex items-center gap-2 text-gray-500 hover:text-purple-400 transition-colors"><i class="fas fa-shield-alt"></i> Hayguard Privacy Policy</a><a href="privacy.html" class="inline-flex items-center gap-2 text-gray-500 hover:text-purple-400 transition-colors"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
             </div>
         </div>
     </footer>
@@ -287,6 +462,42 @@
                 lightbox.classList.remove('flex');
                 document.body.style.overflow = '';
             }
+        });
+
+        // Reveal on scroll
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); } });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+
+        // Gallery: 3 selectable thumbnails + main picture (slot 0)
+        (function () {
+            const imgs = document.querySelectorAll('#hg-viewer .vimg');
+            const thumbs = document.querySelectorAll('.thumb');
+            let current = 0;
+            function show(slot) {
+                current = slot;
+                imgs.forEach(i => i.classList.toggle('active', +i.dataset.slot === slot));
+                thumbs.forEach(t => t.classList.toggle('active', +t.dataset.slot === slot));
+            }
+            thumbs.forEach(t => t.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const slot = +t.dataset.slot;
+                show(current === slot ? 0 : slot);
+            }));
+        })();
+
+        // Smooth scroll for in-page anchors (with fixed-navbar offset)
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', (e) => {
+                const id = a.getAttribute('href');
+                if (id.length < 2) return;
+                const t = document.querySelector(id);
+                if (!t) return;
+                e.preventDefault();
+                const y = t.getBoundingClientRect().top + window.scrollY - 90;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            });
         });
 
         // Navbar visibility on scroll
